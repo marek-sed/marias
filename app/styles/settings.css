@@ -1,0 +1,8 @@
+.form-control {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-control:not(:first-of-type) {
+  margin-top: var(--size-4);
+}

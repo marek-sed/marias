@@ -1,0 +1,97 @@
+@import "https://unpkg.com/open-props";
+@import "https://unpkg.com/open-props/normalize.min.css";
+@import "https://unpkg.com/open-props/buttons.min.css";
+
+:root {
+  --gutter: var(--size-fluid-2);
+
+  --link: var(--pink-6);
+  --link-visited: var(--pink-5);
+}
+
+body {
+  overflow-y: auto;
+}
+
+main > * {
+  padding-inline: var(--gutter);
+  padding-bottom: var(--size-3);
+}
+
+body > header {
+  padding-block: var(--size-3);
+  position: sticky;
+  top: 0;
+  background-color: var(--surface-1);
+  border-bottom: var(--border-size-1) solid var(--gray-7);
+}
+
+body > * + * {
+  margin-top: var(--size-5);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-7);
+}
+
+h1 {
+  font-size: var(--font-size-5);
+}
+
+h2 {
+  font-size: var(--font-size-4);
+}
+
+hr {
+  margin-block: var(--size-8);
+}
+
+hr.full {
+  margin-inline: calc(var(--gutter) * -1);
+}
+
+input[type="number"] {
+  text-align: end;
+}
+
+a.btn {
+  display: inline-flex;
+  padding-inline: var(--size-2);
+  padding-block: var(--size-2);
+  background-color: var(--surface-2);
+  border-radius: var(--radius-2);
+}
+
+a.btn > svg {
+  height: var(--size-4);
+  width: var(--size-4);
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline: var(--gutter);
+}
+
+.hstack {
+  display: flex;
+  align-items: center;
+}
+
+.hstack > * + * {
+  margin-left: var(--size-3);
+}
+
+.vstack {
+  display: flex;
+  flex-direction: column;
+}
+.vstack > * + * {
+  margin-top: var(--size-4);
+}
