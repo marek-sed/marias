@@ -6,3 +6,7 @@
 .form-control:not(:first-of-type) {
   margin-top: var(--size-4);
 }
+
+form button {
+  align-self: flex-end;
+}

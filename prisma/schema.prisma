@@ -15,7 +15,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   password Password?
-  notes    Note[]
+  games    Game[]
 }
 
 model Password {
@@ -25,14 +25,77 @@ model Password {
   userId String @unique
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Player {
+  id     String          @id @default(cuid())
+  name   String          @unique
+  rounds PlayerInRound[]
+  games  PlayerInGame[]
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Stake {
+  id            String @id @default(cuid())
+  game          Int
+  betterGame    Int
+  seven         Int
+  betterSeven   Int
+  hundred       Int
+  betterHundred Int
+  hundredSeven  Int
+  betl          Int
+  durch         Int
+}
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+model Game {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  rounds    Round[]
+  user      User?          @relation(fields: [userId], references: [id])
+  userId    String?
+  players   PlayerInGame[]
+  isActive  Boolean        @default(false)
+}
+
+model PlayerInGame {
+  game       Game   @relation(fields: [gameId], references: [id])
+  player     Player @relation(fields: [playerId], references: [id])
+  position   Int
+  gameId     String
+  playerId   String
+  totalScore Int    @default(0)
+
+  @@id([gameId, playerId])
+  @@unique([gameId, playerId, position])
+}
+
+model PlayerInRound {
+  round  Round  @relation(fields: [roundId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+
+  roundId  String
+  playerId String
+  score    Int
+
+  @@id([roundId, playerId])
+}
+
+model Result {
+  id            String @id @default(cuid())
+  game          Int
+  betterGame    Int
+  seven         Int
+  betterSeven   Int
+  hundred       Int
+  betterHundred Int
+  hundredSeven  Int
+  betl          Int
+  durch         Int
+}
+
+model Round {
+  id      String          @id @default(cuid())
+  number  Int
+  gameId  String
+  game    Game            @relation(fields: [gameId], references: [id])
+  players PlayerInRound[]
 }

@@ -13,9 +13,8 @@ body {
   overflow-y: auto;
 }
 
-main > * {
+body > main {
   padding-inline: var(--gutter);
-  padding-bottom: var(--size-3);
 }
 
 body > header {
@@ -36,7 +35,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: var(--font-weight-7);
+  font-weight: var(--font-weight-5);
 }
 
 h1 {
@@ -47,12 +46,33 @@ h2 {
   font-size: var(--font-size-4);
 }
 
+h3 {
+  font-size: var(--font-size-3);
+}
+
 hr {
   margin-block: var(--size-8);
 }
 
 hr.full {
   margin-inline: calc(var(--gutter) * -1);
+}
+
+table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th {
+  text-align: center;
+  border: 1px solid var(--gray-6);
+}
+
+td[data-type="numeric"] {
+  text-align: end;
+  border: 1px solid var(--gray-6);
+  padding-right: var(--size-2);
 }
 
 input[type="number"] {

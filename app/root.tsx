@@ -12,15 +12,15 @@ import {
 } from "@remix-run/react";
 
 import { getUser } from "./session.server";
-import globalCss from "~/styles/global.css";
-import { Layout } from "./components/Layout";
-import { GearIcon } from "@radix-ui/react-icons";
+import appCss from "~/styles/app.css";
+import { GearIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 export const links: LinksFunction = () => {
   return [
     {
       rel: "stylesheet",
-      href: globalCss,
+      href: appCss,
     },
   ];
 };
@@ -37,34 +37,55 @@ export async function loader({ request }: LoaderArgs) {
   });
 }
 
+function Menu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className="rounded bg-sage-9 p-2">
+        <HamburgerMenuIcon />
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className="space-y-4 rounded-lg  border border-sage-6 bg-sage-3 py-2 text-end text-sage-12 shadow-xl">
+          <DropdownMenu.Item className="px-4">
+            <Link className="inline-flex items-center space-x-2" to="/games">
+              <span>Hry</span>
+            </Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className="px-4">
+            <Link className="inline-flex items-center space-x-2" to="/settings">
+              <span>Settings</span>
+            </Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator className="m-0 h-0.5 bg-sage-7" />
+          <DropdownMenu.Item className="px-4">Odhlasit</DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
+
 export default function App() {
   const matches = useMatches();
   const currentMatch = matches[matches.length - 1];
-  const isRoot = currentMatch.pathname === "/";
+  const action = currentMatch.handle?.action;
 
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <head>
         <Meta />
         <Links />
       </head>
-      <body>
-        <header className="app-header">
-          <div className="hstack">
-            {currentMatch.handle?.backLink && (
-              <div>{currentMatch.handle?.backLink}</div>
-            )}
+      <body className="relative flex h-screen flex-col overflow-scroll bg-sage-1">
+        <header className="sticky top-0 flex h-16 justify-between space-x-4 border-b border-sage-6 bg-sage-2 py-4 px-6 text-2xl text-sage-12">
+          <div className="flex items-center space-x-4">
             <h1 className="app-title">{currentMatch.handle?.title}</h1>
           </div>
-          {isRoot && (
-            <nav>
-              <Link to="/settings" className="btn">
-                <GearIcon />
-              </Link>
-            </nav>
-          )}
+          <div className="flex items-center space-x-2">
+            {action}
+            <Menu />
+          </div>
         </header>
-        <main>
+        <main className="h-full px-6 text-sage-12">
           <Outlet />
         </main>
         <ScrollRestoration />

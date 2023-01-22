@@ -1,7 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import { PlayerInGame, PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
+
+const initialStakes = {
+  game: 1,
+  betterGame: 2,
+  seven: 2,
+  betterSeven: 4,
+  hundred: 4,
+  betterHundred: 8,
+  hundredSeven: 6,
+  betl: 15,
+  durch: 30,
+} as const;
 
 async function seed() {
   const email = "rachel@remix.run";
@@ -11,9 +23,15 @@ async function seed() {
     // no worries if it doesn't exist yet
   });
 
+  await prisma.round.deleteMany({});
+  await prisma.playerInGame.deleteMany({});
+  await prisma.playerInRound.deleteMany({});
+  await prisma.player.deleteMany({});
+  await prisma.game.deleteMany({});
+
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       password: {
@@ -24,22 +42,181 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
+  await prisma.stake.create({ data: initialStakes });
+
+  const player1 = await prisma.player.create({
     data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
+      name: "Maros",
     },
   });
 
-  await prisma.note.create({
+  const player2 = await prisma.player.create({
     data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
+      name: "Roman",
     },
   });
 
+  const player3 = await prisma.player.create({
+    data: {
+      name: "Igor",
+    },
+  });
+
+  const game = await prisma.game.create({
+    data: {
+      rounds: {
+        create: [],
+      },
+      players: {
+        create: [
+          {
+            position: 1,
+            totalScore: 10,
+            player: {
+              connect: {
+                id: player1.id,
+              },
+            },
+          },
+          {
+            position: 2,
+            totalScore: 24,
+            player: {
+              connect: {
+                id: player2.id,
+              },
+            },
+          },
+          {
+            position: 3,
+            totalScore: 17,
+            player: {
+              connect: {
+                id: player3.id,
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const round1 = await prisma.round.create({
+    data: {
+      number: 1,
+      game: {
+        connect: {
+          id: game.id,
+        },
+      },
+      players: {
+        create: [
+          {
+            score: 10,
+            player: {
+              connect: {
+                id: player1.id,
+              },
+            },
+          },
+          {
+            score: 14,
+            player: {
+              connect: {
+                id: player2.id,
+              },
+            },
+          },
+          {
+            score: 18,
+            player: {
+              connect: {
+                id: player3.id,
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const round2 = await prisma.round.create({
+    data: {
+      number: 2,
+      game: {
+        connect: {
+          id: game.id,
+        },
+      },
+      players: {
+        create: [
+          {
+            score: 10,
+            player: {
+              connect: {
+                id: player1.id,
+              },
+            },
+          },
+          {
+            score: 14,
+            player: {
+              connect: {
+                id: player2.id,
+              },
+            },
+          },
+          {
+            score: 18,
+            player: {
+              connect: {
+                id: player3.id,
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const round3 = await prisma.round.create({
+    data: {
+      number: 3,
+      game: {
+        connect: {
+          id: game.id,
+        },
+      },
+      players: {
+        create: [
+          {
+            score: 10,
+            player: {
+              connect: {
+                id: player1.id,
+              },
+            },
+          },
+          {
+            score: 14,
+            player: {
+              connect: {
+                id: player2.id,
+              },
+            },
+          },
+          {
+            score: 18,
+            player: {
+              connect: {
+                id: player3.id,
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
   console.log(`Database has been seeded. 🌱`);
 }
 
