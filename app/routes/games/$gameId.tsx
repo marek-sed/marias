@@ -14,6 +14,7 @@ import { FormControl } from "~/components/formControl";
 import { Select } from "~/components/select";
 import { Checkbox } from "~/components/checkbox";
 import { Input } from "~/components/input";
+import { RadioGroup } from "~/components/radioGroup";
 
 export const handle = {
   title: "Hra",
@@ -87,11 +88,12 @@ export default function ActiveGame() {
           <div className="flex flex-col items-center space-y-4">
             <FormControl
               name="gameType"
-              label="Typ hry"
+              label="Zvol hru"
               value={called}
               onChange={setCalled}
             >
-              <Select placeholder="Vyber hru" options={calledGameTypes} />
+              {/* <Select placeholder="Vyber hru" options={calledGameTypes} /> */}
+              <RadioGroup />
             </FormControl>
             {isNormalGame && (
               <>

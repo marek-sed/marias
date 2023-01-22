@@ -7,9 +7,10 @@ const checkboxClass = cva([
   "rounded",
   "bg-sage-7",
   "hover:bg-sage-8",
-  "active:bg-sage-9",
+  "active:bg-teal-10 active:text-sage-7",
   "w-6 h-6",
   "items-center justify-center",
+  "border-teal-7 border-2",
 ]);
 const indicatorClass = cva(["text-teal-9"]);
 

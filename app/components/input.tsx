@@ -2,29 +2,38 @@ import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
 import { useCallback } from "react";
 
+const rootClass = cva("border-2 rounded border-teal-7", {
+  variants: {
+    type: {
+      text: "",
+      number: "flex h-8 items-center",
+    },
+  },
+});
+
 const inputClass = cva(
-  ["bg-sage-7 text-sage-12", "border-none", "focus:ring-0", "h-8 w-16", ""],
+  [
+    "bg-sage-7 text-sage-12",
+    "border-none boder-teal-9 border-2",
+    "h-full w-16",
+    "focus:ring-0",
+  ],
   {
     variants: {
       type: {
         number: "text-right",
-        text: "",
+        text: "text-start",
       },
     },
   }
 );
 
-const numberButton = cva(
-  ["flex justify-center items-center", "bg-sage-7 text-teal-9", "h-full w-6"],
-  {
-    variants: {
-      position: {
-        left: "rounded-l",
-        right: "rounded-r",
-      },
-    },
-  }
-);
+const numberButton = cva([
+  "flex justify-center items-center",
+  "bg-sage-7 text-teal-9",
+  "h-full w-6",
+  "active:bg-teal-10 active:text-sage-7",
+]);
 
 type Props = {
   id?: string;
@@ -57,35 +66,41 @@ export function Input({
   );
 
   const decrement = useCallback(() => {
-    const v = value ?? defaultValue;
+    const v = value ?? defaultValue ?? 0;
     onNumericChange?.(Math.max(v - step, min));
   }, [value, onNumericChange, defaultValue, step, min]);
 
   const increment = useCallback(() => {
-    const v = value ?? defaultValue;
+    const v = value ?? defaultValue ?? 0;
     onNumericChange?.(Math.min(v + step, max));
   }, [value, onNumericChange, defaultValue, step, max]);
 
   return (
-    <div className="flex h-8 items-center">
-      <button
-        type="button"
-        onClick={decrement}
-        className={numberButton({ position: "left" })}
-      >
-        <MinusIcon />
-      </button>
+    <div className={rootClass({ type })}>
+      {type === "number" && (
+        <button
+          tabIndex={-1}
+          type="button"
+          onClick={decrement}
+          className={numberButton()}
+        >
+          <MinusIcon />
+        </button>
+      )}
       <input
         className={inputClass({ type: type })}
         {...{ type, min, max, step, value, onChange, defaultValue, ...props }}
       />
-      <button
-        type="button"
-        onClick={increment}
-        className={numberButton({ position: "right" })}
-      >
-        <PlusIcon />
-      </button>
+      {type === "number" && (
+        <button
+          tabIndex={-1}
+          type="button"
+          onClick={increment}
+          className={numberButton()}
+        >
+          <PlusIcon />
+        </button>
+      )}
     </div>
   );
 }
