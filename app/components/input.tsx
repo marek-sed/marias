@@ -1,5 +1,5 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import { cva } from "class-variance-authority";
+import { cva, VariantProps } from "class-variance-authority";
 import { useCallback } from "react";
 
 const rootClass = cva("border-2 h-10 rounded border-teal-7", {
@@ -8,11 +8,15 @@ const rootClass = cva("border-2 h-10 rounded border-teal-7", {
       text: "",
       number: "flex h-10 items-center",
     },
+    color: {
+      teal: "border-teal-7",
+      red: "border-red-7",
+    },
   },
 });
 
 const inputClass = cva(
-  ["text-lg", "bg-sage-7 text-sage-12", "h-9 border-none", "focus:ring-0"],
+  ["text-lg", "bg-sage-6 text-sage-12", "h-9 border-none", "focus:ring-0"],
   {
     variants: {
       type: {
@@ -23,17 +27,28 @@ const inputClass = cva(
   }
 );
 
-const numberButton = cva([
-  "flex justify-center items-center",
-  "bg-sage-7 text-teal-9",
-  "h-9 w-12",
-  "active:bg-teal-10 active:text-sage-7",
-]);
+const numberButton = cva(
+  [
+    "flex justify-center items-center",
+    "bg-sage-6",
+    "h-9 w-12",
+    "active:text-sage-7",
+  ],
+  {
+    variants: {
+      color: {
+        teal: "active:bg-teal-10 text-teal-11",
+        red: "active:bg-tomato-10 text-tomato-11",
+      },
+    },
+  }
+);
 
 type Props = {
   id?: string;
   name?: string;
   type: "number" | "text";
+  color?: "red" | "teal";
   step?: number;
   min?: number;
   max?: number;
@@ -47,6 +62,7 @@ export function Input({
   onChange: onNumericChange,
   value,
   defaultValue,
+  color,
   min = 0,
   max = 190,
   step = 10,
@@ -71,13 +87,13 @@ export function Input({
   }, [value, onNumericChange, defaultValue, step, max]);
 
   return (
-    <div className={rootClass({ type })}>
+    <div className={rootClass({ type, color })}>
       {type === "number" && (
         <button
           tabIndex={-1}
           type="button"
           onClick={decrement}
-          className={numberButton()}
+          className={numberButton({ color })}
         >
           <MinusIcon className="h-6 w-6" />
         </button>
@@ -91,7 +107,7 @@ export function Input({
           tabIndex={-1}
           type="button"
           onClick={increment}
-          className={numberButton()}
+          className={numberButton({ color })}
         >
           <PlusIcon className="h-6 w-6" />
         </button>

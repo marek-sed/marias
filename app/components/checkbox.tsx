@@ -7,22 +7,40 @@ import {
 } from "@radix-ui/react-icons";
 import { useCallback } from "react";
 
-const checkboxClass = cva([
-  "flex",
-  "rounded",
-  "bg-sage-7",
-  "hover:bg-sage-8",
-  "active:bg-teal-10 active:text-sage-7",
-  "w-8 h-8",
-  "items-center justify-center",
-  "border-teal-7 border-2",
-]);
-const indicatorClass = cva(["text-teal-9"]);
+const checkboxClass = cva(
+  [
+    "flex",
+    "rounded",
+    "bg-sage-7",
+    "hover:bg-sage-8",
+    "active:text-sage-7",
+    "w-8 h-8",
+    "items-center justify-center",
+    "border-2",
+  ],
+  {
+    variants: {
+      color: {
+        teal: "border-teal-7 active:bg-teal-10 active:text-sage-7",
+        red: "border-tomato-7 active:bg-tomato-10 active:text-sage-7",
+      },
+    },
+  }
+);
+const indicatorClass = cva([""], {
+  variants: {
+    color: {
+      teal: "text-teal-11",
+      red: " text-tomato-11",
+    },
+  },
+});
 
 type Props = {
   id?: string;
   type?: "indeterminate" | "normal";
   name?: string;
+  color?: "teal" | "red";
   value?: boolean | "indeterminate";
   defaultValue?: boolean;
   onChange?: (checked: boolean | "indeterminate") => void;
@@ -31,6 +49,7 @@ export function Checkbox({
   id,
   name,
   value,
+  color = "teal",
   type = "normal",
   defaultValue,
   onChange,
@@ -59,16 +78,17 @@ export function Checkbox({
     <rc.Root
       id={id}
       name={name}
-      className={checkboxClass()}
-      //   checked={value}
-      //   defaultChecked={defaultValue}
+      className={checkboxClass({ color })}
+      checked={value}
+      defaultChecked={defaultValue}
       onCheckedChange={onCheckedChange}
-      checked="indeterminate"
     >
-      <rc.CheckboxIndicator className={indicatorClass()}>
-        {value === true && <CheckIcon className="h-6 w-6" />}
+      <rc.CheckboxIndicator className={indicatorClass({ color })}>
+        {value === true && <CheckIcon className="h-7 w-7" />}
         {value === false && <Cross1Icon className="h-6 w-6" />}
-        {value === "indeterminate" && <DividerHorizontalIcon />}
+        {value === "indeterminate" && (
+          <DividerHorizontalIcon className="h-7 w-7" />
+        )}
       </rc.CheckboxIndicator>
     </rc.Root>
   );

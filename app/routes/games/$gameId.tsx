@@ -15,7 +15,7 @@ import { FormControl, Label } from "~/components/formControl";
 import { Select } from "~/components/select";
 import { Checkbox } from "~/components/checkbox";
 import { Input } from "~/components/input";
-import { RadioGroup } from "~/components/gamePicker";
+import { GamePicker } from "~/components/gamePicker";
 import { HeartBox } from "~/components/heartBox";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -149,7 +149,7 @@ export default function ActiveGame() {
 
   const [playedBy, setPlayedBy] = useState(actorOption.value);
   const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
-  const [silent, setSilent] = useState(silentGameTypes[0].value);
+  const [counter100, setCounter100] = useState(false);
   const [better, setBetter] = useState<boolean>(false);
   const [won, setWon] = useState(false);
   const [seven, setSeven] = useState(false);
@@ -166,9 +166,10 @@ export default function ActiveGame() {
           </legend>
           <div className="flex flex-col items-center space-y-4">
             <div className="flex w-full justify-between">
-              <RadioGroup
+              <GamePicker
                 id="gameType"
                 name="gameType"
+                type={better ? "better" : "normal"}
                 value={called}
                 onChange={setCalled as any}
                 options={calledGameTypes as unknown as Option[]}
@@ -176,8 +177,13 @@ export default function ActiveGame() {
             </div>
 
             {called === "hundred" && (
-              <FormControl name="players" label="Proti" defaultValue={false}>
-                <Checkbox />
+              <FormControl
+                name="players"
+                label="Proti"
+                value={counter100}
+                onChange={setCounter100}
+              >
+                <Checkbox color={better ? "red" : "teal"} />
               </FormControl>
             )}
             <div className="w-full items-center space-y-4 pt-8">
@@ -198,7 +204,12 @@ export default function ActiveGame() {
                 onChange={setFlek}
                 label="Flek"
               >
-                <Input step={1} type="number" />
+                <Input
+                  color={better ? "red" : "teal"}
+                  step={1}
+                  max={10}
+                  type="number"
+                />
               </FormControl>
             </div>
           </div>
