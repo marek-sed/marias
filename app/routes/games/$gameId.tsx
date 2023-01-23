@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormControl, Label } from "~/components/formControl";
 import { Select } from "~/components/select";
-import { Checkbox } from "~/components/checkbox";
+import { Checkbox, IndeterminateCheckbox } from "~/components/checkbox";
 import { Input } from "~/components/input";
 import { GamePicker } from "~/components/gamePicker";
 import { HeartBox } from "~/components/heartBox";
@@ -148,7 +148,7 @@ export default function ActiveGame() {
     useLoaderData<typeof loader>();
 
   const [playedBy, setPlayedBy] = useState(actorOption.value);
-  const [called, setCalled] = useState<GameType>(calledGameTypes[2].value);
+  const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
 
   const onGameChanged = useCallback(
     (called: GameType) => {
@@ -162,7 +162,7 @@ export default function ActiveGame() {
   const [counter100, setCounter100] = useState(false);
   const [better, setBetter] = useState<boolean>(false);
 
-  const [won, setWon] = useState(false);
+  const [won, setWon] = useState<boolean | "indeterminate">("indeterminate");
   const [seven, setSeven] = useState(false);
   const [points, setPoints] = useState(50);
   const isNormalGame = called !== "betl" && called !== "durch";
@@ -175,7 +175,7 @@ export default function ActiveGame() {
           <legend>
             {calledGameTypes.find(({ value }) => value === called)?.label}
           </legend>
-          <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-2">
             <div className="flex w-full justify-between">
               <GamePicker
                 id="gameType"
@@ -199,6 +199,7 @@ export default function ActiveGame() {
                     <Checkbox color={better ? "red" : "teal"} />
                   </FormControl>
                 )}
+
                 <div className="w-full items-center space-y-4 pt-8">
                   <FormControl
                     direction="horizontal"
@@ -260,28 +261,6 @@ export default function ActiveGame() {
         </fieldset>
         <button className="rounded bg-sage-4 px-4 py-2">zapist kolo</button>
       </Form>
-      {/* <table>
-        <thead>
-          <tr>
-            <th>Kolo</th>
-            {game?.players.map(({ player }) => (
-              <th key={player.id}>{player.name}</th>
-            ))}
-            <th>Erik</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {game?.rounds.map((round) => (
-            <tr key={round.id}>
-              <td>{round.number}</td>
-              {round.players.map((player, idx) => (
-                <td key={`round-player-${idx}`}>{player.score}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import * as rc from "@radix-ui/react-checkbox";
-import { cva } from "class-variance-authority";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
+import { cva } from "class-variance-authority";
+import { motion } from "framer-motion";
 
 const checkboxClass = cva([
   "flex",
@@ -13,6 +14,8 @@ const checkboxClass = cva([
   "border-tomato-7 border-2",
 ]);
 const indicatorClass = cva(["text-tomato-9 "]);
+
+const MotionHeart = motion(HeartFilledIcon, { forwardMotionProps: true });
 
 type Props = {
   id?: string;
@@ -32,7 +35,20 @@ export function HeartBox({ id, name, value, defaultValue, onChange }: Props) {
       onCheckedChange={onChange}
     >
       <rc.CheckboxIndicator className={indicatorClass()}>
-        <HeartFilledIcon className="h-6 w-6" />
+        <MotionHeart
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut",
+            repeat: 100,
+            repeatType: "loop",
+            repeatDelay: 0.3,
+          }}
+          initial={{ scale: 1.05 }}
+          animate={{
+            scale: 1.25,
+          }}
+          className="h-5 w-5"
+        />
       </rc.CheckboxIndicator>
     </rc.Root>
   );
