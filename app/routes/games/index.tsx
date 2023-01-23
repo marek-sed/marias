@@ -42,7 +42,7 @@ export default function GamesIndex() {
             >
               <Link to={game.id}>
                 <header className="text-xl font-bold">
-                  {new Date(game.createdAt).toLocaleDateString()}
+                  {new Date(game.createdAt).toLocaleString()}
                 </header>
                 <div>
                   {game.players.map(({ player, totalScore }) => (

@@ -15,13 +15,13 @@ const inputClass = cva(
   [
     "bg-sage-7 text-sage-12",
     "border-none boder-teal-9 border-2",
-    "h-full w-16",
+    "h-full",
     "focus:ring-0",
   ],
   {
     variants: {
       type: {
-        number: "text-right",
+        number: "text-right w-13",
         text: "text-start",
       },
     },

@@ -1,5 +1,6 @@
 import * as rrg from "@radix-ui/react-radio-group";
-import { cva } from "class-variance-authority";
+import type { Option } from "./select";
+import { cva, cx } from "class-variance-authority";
 import { motion } from "framer-motion";
 
 const rootClass = cva([
@@ -8,43 +9,66 @@ const rootClass = cva([
 const itemClass = cva([
   "relative",
   "h-8",
-  "bg-sage-7",
-  "hover:bg-sage-8",
-  "active:bg-teal-10",
+  "bg-sage-4",
+  "hover:bg-sage-5",
+  "active:bg-teal-9",
 ]);
 const labelClass = cva(["cursor-pointer relative px-3 z-10"]);
-const indicatorClass = cva(["absolute top-0 z-10 h-8 w-full bg-teal-9"]);
+const indicatorClass = cva(["absolute top-0 z-10 h-8 w-full bg-tomato-9"], {
+  variants: {
+    position: {
+      left: "rounded-l",
+      center: "rounded-none",
+      right: "rounded-r",
+    },
+  },
+  defaultVariants: {
+    position: "center",
+  },
+});
 
-export function RadioGroup() {
+type Props = {
+  id?: string;
+  name?: string;
+  options: Option[];
+  onChange?: (value: string) => void;
+  value?: string;
+  defaultValue?: string;
+};
+
+export function RadioGroup({
+  id,
+  name,
+  value,
+  defaultValue,
+  options,
+  onChange,
+}: Props) {
+  const optionCount = options.length;
   return (
-    <rrg.Root className={rootClass()} defaultValue="game">
-      <rrg.Item className={itemClass()} value="game" id="r1">
-        <rrg.Indicator asChild>
-          <motion.div layoutId="indicator" className={indicatorClass()} />
-        </rrg.Indicator>
-        <label className={labelClass()}>hra</label>
-      </rrg.Item>
-
-      <rrg.Item className={itemClass()} value="hundred" id="r2">
-        <rrg.Indicator asChild>
-          <motion.div layoutId="indicator" className={indicatorClass()} />
-        </rrg.Indicator>
-        <label className={labelClass()}>stovka</label>
-      </rrg.Item>
-
-      <rrg.Item className={itemClass()} value="betl" id="r3">
-        <rrg.Indicator asChild>
-          <motion.div layoutId="indicator" className={indicatorClass()} />
-        </rrg.Indicator>
-        <label className={labelClass()}>betl</label>
-      </rrg.Item>
-
-      <rrg.Item className={itemClass()} value="durch" id="r4">
-        <rrg.Indicator asChild>
-          <motion.div layoutId="indicator" className={indicatorClass()} />
-        </rrg.Indicator>
-        <label className={labelClass()}>durch</label>
-      </rrg.Item>
+    <rrg.Root
+      {...{ value, defaultValue, id, name }}
+      onValueChange={onChange}
+      className={rootClass()}
+    >
+      {options.map(({ value, label }, index) => (
+        <rrg.Item key={value} className={itemClass()} value={value} id={value}>
+          <rrg.Indicator asChild>
+            <motion.div
+              layoutId={name}
+              className={indicatorClass({
+                position:
+                  index === 0
+                    ? "left"
+                    : index === optionCount - 1
+                    ? "right"
+                    : "center",
+              })}
+            />
+          </rrg.Indicator>
+          <label className={labelClass()}>{label}</label>
+        </rrg.Item>
+      ))}
     </rrg.Root>
   );
 }

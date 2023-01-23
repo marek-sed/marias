@@ -6,7 +6,7 @@ import * as rl from "@radix-ui/react-label";
 
 type Props<T> = VariantProps<typeof formControlClass> & {
   name: string;
-  label: string;
+  label?: string;
   onChange?: (value: T) => void;
   value?: T;
   defaultValue?: T;
@@ -59,6 +59,19 @@ const labelClass = cva(["text-sage-11"], {
     direction: "horizontal",
   },
 });
+
+export function Label({
+  name,
+  children,
+  direction,
+  type,
+}: VariantProps<typeof labelClass> & { name: string; children: ReactNode }) {
+  return (
+    <rl.Root className={labelClass({ direction, type })} htmlFor={name}>
+      {children}
+    </rl.Root>
+  );
+}
 
 export function FormControl<T>({
   name,

@@ -41,9 +41,9 @@ export function Select({
           <ChevronDownIcon />
         </rs.Icon>
       </rs.Trigger>
-      <rs.Portal>
+      <rs.Portal className="z-10">
         <rs.Content>
-          <rs.Viewport className="m rounded bg-sage-3 p-1  text-teal-12">
+          <rs.Viewport className="relative rounded bg-sage-3 p-1  text-teal-12">
             {options.map((opt) => (
               <rs.Item
                 key={opt.value}

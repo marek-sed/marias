@@ -2079,6 +2079,42 @@ select {
   left: 0px;
 }
 
+.right-0 {
+  right: 0px;
+}
+
+.-top-10 {
+  top: -2.5rem;
+}
+
+.-top-4 {
+  top: -1rem;
+}
+
+.-top-5 {
+  top: -1.25rem;
+}
+
+.right-2 {
+  right: 0.5rem;
+}
+
+.-top-7 {
+  top: -1.75rem;
+}
+
+.-top-8 {
+  top: -2rem;
+}
+
+.-top-6 {
+  top: -1.5rem;
+}
+
+.right-1 {
+  right: 0.25rem;
+}
+
 .-z-10 {
   z-index: -10;
 }
@@ -2118,6 +2154,14 @@ select {
 
 .mb-1 {
   margin-bottom: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
 }
 
 .block {
@@ -2192,6 +2236,10 @@ select {
   height: 50%;
 }
 
+.h-9 {
+  height: 2.25rem;
+}
+
 .min-h-full {
   min-height: 100%;
 }
@@ -2230,6 +2278,26 @@ select {
 
 .w-20 {
   width: 5rem;
+}
+
+.w-2 {
+  width: 0.5rem;
+}
+
+.w-1 {
+  width: 0.25rem;
+}
+
+.w-12 {
+  width: 3rem;
+}
+
+.w-9 {
+  width: 2.25rem;
+}
+
+.w-7 {
+  width: 1.75rem;
 }
 
 .max-w-md {
@@ -2340,6 +2408,12 @@ select {
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
+.space-x-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.25rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .divide-y-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-y-reverse: 0;
   border-top-width: calc(2px * calc(1 - var(--tw-divide-y-reverse)));
@@ -2380,6 +2454,14 @@ select {
 
 .rounded-lg {
   border-radius: 0.5rem;
+}
+
+.rounded-none {
+  border-radius: 0px;
+}
+
+.rounded-full {
+  border-radius: 9999px;
 }
 
 .rounded-l {
@@ -2448,6 +2530,14 @@ select {
 
 .border-teal-8 {
   border-color: var(--teal8);
+}
+
+.border-crimson-7 {
+  border-color: var(--crimson7);
+}
+
+.border-tomato-7 {
+  border-color: var(--tomato7);
 }
 
 .bg-sage-9 {
@@ -2520,6 +2610,54 @@ select {
   background-color: var(--tealA8);
 }
 
+.bg-teal-4 {
+  background-color: var(--teal4);
+}
+
+.bg-sage-5 {
+  background-color: var(--sage5);
+}
+
+.bg-teal-5 {
+  background-color: var(--teal5);
+}
+
+.bg-teal-7 {
+  background-color: var(--teal7);
+}
+
+.bg-teal-10 {
+  background-color: var(--teal10);
+}
+
+.bg-sage-10 {
+  background-color: var(--sage10);
+}
+
+.bg-sage-8 {
+  background-color: var(--sage8);
+}
+
+.bg-teal-6 {
+  background-color: var(--teal6);
+}
+
+.bg-teal-8 {
+  background-color: var(--teal8);
+}
+
+.bg-tomato-9 {
+  background-color: var(--tomato9);
+}
+
+.bg-red-9 {
+  background-color: var(--red9);
+}
+
+.bg-crimson-9 {
+  background-color: var(--crimson9);
+}
+
 .p-2 {
   padding: 0.5rem;
 }
@@ -2530,6 +2668,10 @@ select {
 
 .p-3 {
   padding: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
 }
 
 .py-2 {
@@ -2706,6 +2848,26 @@ select {
   color: var(--sageA12);
 }
 
+.text-red-12 {
+  color: var(--red12);
+}
+
+.text-red-9 {
+  color: var(--red9);
+}
+
+.text-crimson-9 {
+  color: var(--crimson9);
+}
+
+.text-tomato-9 {
+  color: var(--tomato9);
+}
+
+.text-red-10 {
+  color: var(--red10);
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -2739,6 +2901,26 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+.first\:visible:first-child {
+  visibility: visible;
+}
+
+.first\:inline-block:first-child {
+  display: inline-block;
+}
+
+.first\:hidden:first-child {
+  display: none;
+}
+
+.last\:visible:last-child {
+  visibility: visible;
+}
+
+.last\:hidden:last-child {
+  display: none;
+}
+
 .hover\:scale-105:hover {
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;
@@ -2764,6 +2946,14 @@ input[type="number"]::-webkit-outer-spin-button {
 .hover\:bg-blue-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-sage-4:hover {
+  background-color: var(--sage4);
+}
+
+.hover\:bg-sage-5:hover {
+  background-color: var(--sage5);
 }
 
 .hover\:text-teal-10:hover {
@@ -2794,6 +2984,26 @@ input[type="number"]::-webkit-outer-spin-button {
   background-color: var(--teal10);
 }
 
+.active\:bg-red-10:active {
+  background-color: var(--red10);
+}
+
+.active\:bg-crimson-10:active {
+  background-color: var(--crimson10);
+}
+
+.active\:bg-teal-8:active {
+  background-color: var(--teal8);
+}
+
+.active\:bg-teal-9:active {
+  background-color: var(--teal9);
+}
+
+.active\:bg-tomato-10:active {
+  background-color: var(--tomato10);
+}
+
 .active\:text-teal-2:active {
   color: var(--teal2);
 }
@@ -2812,6 +3022,34 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .active\:text-sage-11:active {
   color: var(--sage11);
+}
+
+.data-\[state\=checked\]\:visible[data-state=checked] {
+  visibility: visible;
+}
+
+.data-\[state\=unchecked\]\:visible[data-state=unchecked] {
+  visibility: visible;
+}
+
+.data-\[state\=checked\]\:block[data-state=checked] {
+  display: block;
+}
+
+.data-\[state\=unchecked\]\:block[data-state=unchecked] {
+  display: block;
+}
+
+.data-\[state\=checked\]\:inline-block[data-state=checked] {
+  display: inline-block;
+}
+
+.data-\[state\=unchecked\]\:inline-block[data-state=unchecked] {
+  display: inline-block;
+}
+
+.data-\[state\=checked\]\:hidden[data-state=checked] {
+  display: none;
 }
 
 .data-\[highlighted\]\:bg-sage-5[data-highlighted] {
@@ -2836,6 +3074,46 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .data-\[state\=checked\]\:bg-teal-9[data-state=checked] {
   background-color: var(--teal9);
+}
+
+.data-\[state\=checked\]\:first\:visible:first-child[data-state=checked] {
+  visibility: visible;
+}
+
+.data-\[state\=checked\]\:first\:block:first-child[data-state=checked] {
+  display: block;
+}
+
+.data-\[state\=checked\]\:first\:inline-block:first-child[data-state=checked] {
+  display: inline-block;
+}
+
+.data-\[state\=unchecked\]\:first\:hidden:first-child[data-state=unchecked] {
+  display: none;
+}
+
+.data-\[state-unchecked\]\:first\:hidden:first-child[data-state-unchecked] {
+  display: none;
+}
+
+.data-\[state\=unchecked\]\:last\:visible:last-child[data-state=unchecked] {
+  visibility: visible;
+}
+
+.data-\[state\=unchecked\]\:last\:block:last-child[data-state=unchecked] {
+  display: block;
+}
+
+.data-\[state\=unchecked\]\:last\:inline-block:last-child[data-state=unchecked] {
+  display: inline-block;
+}
+
+.data-\[state\=checked\]\:last\:hidden:last-child[data-state=checked] {
+  display: none;
+}
+
+.data-\[state\=unchecked\]\:last\:text-pink-9:last-child[data-state=unchecked] {
+  color: var(--pink9);
 }
 
 @media (min-width: 640px) {
