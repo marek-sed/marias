@@ -148,9 +148,10 @@ export default function ActiveGame() {
     useLoaderData<typeof loader>();
 
   const [playedBy, setPlayedBy] = useState(actorOption.value);
-  const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
+  const [called, setCalled] = useState<GameType>(calledGameTypes[2].value);
   const [counter100, setCounter100] = useState(false);
   const [better, setBetter] = useState<boolean>(false);
+
   const [won, setWon] = useState(false);
   const [seven, setSeven] = useState(false);
   const [points, setPoints] = useState(50);
@@ -176,42 +177,65 @@ export default function ActiveGame() {
               />
             </div>
 
-            {called === "hundred" && (
-              <FormControl
-                name="players"
-                label="Proti"
-                value={counter100}
-                onChange={setCounter100}
-              >
-                <Checkbox color={better ? "red" : "teal"} />
-              </FormControl>
-            )}
-            <div className="w-full items-center space-y-4 pt-8">
-              <FormControl
-                direction="horizontal"
-                label="Lepsia"
-                name="better"
-                value={better}
-                onChange={setBetter}
-              >
-                <HeartBox />
-              </FormControl>
+            {called === "game" || called === "hundred" ? (
+              <>
+                {called === "hundred" && (
+                  <FormControl
+                    name="players"
+                    label="Proti"
+                    value={counter100}
+                    onChange={setCounter100}
+                  >
+                    <Checkbox color={better ? "red" : "teal"} />
+                  </FormControl>
+                )}
+                <div className="w-full items-center space-y-4 pt-8">
+                  <FormControl
+                    direction="horizontal"
+                    label="Lepsia"
+                    name="better"
+                    value={better}
+                    onChange={setBetter}
+                  >
+                    <HeartBox />
+                  </FormControl>
 
-              <FormControl
-                direction="horizontal"
-                name="flek"
-                value={flek}
-                onChange={setFlek}
-                label="Flek"
-              >
-                <Input
-                  color={better ? "red" : "teal"}
-                  step={1}
-                  max={10}
-                  type="number"
-                />
-              </FormControl>
-            </div>
+                  <FormControl
+                    direction="horizontal"
+                    name="flek"
+                    value={flek}
+                    onChange={setFlek}
+                    label="Flek"
+                  >
+                    <Input
+                      color={better ? "red" : "teal"}
+                      step={1}
+                      max={10}
+                      type="number"
+                    />
+                  </FormControl>
+                </div>
+              </>
+            ) : (
+              // BETL DURCH
+              <>
+                <FormControl
+                  name="player"
+                  label="Hru zahlasil"
+                  value={playedBy}
+                  onChange={setPlayedBy}
+                >
+                  <Select placeholder="Kto hral sam?" options={playerOptions} />
+                </FormControl>
+                <FormControl
+                  label="Vylozeny"
+                  name="openDurch"
+                  defaultValue={true}
+                >
+                  <Checkbox />
+                </FormControl>
+              </>
+            )}
           </div>
         </fieldset>
         <fieldset className="relative rounded border border-sage-7 p-4">

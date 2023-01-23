@@ -27,6 +27,7 @@ const checkboxClass = cva(
     },
   }
 );
+
 const indicatorClass = cva([""], {
   variants: {
     color: {
@@ -79,15 +80,21 @@ export function Checkbox({
       id={id}
       name={name}
       className={checkboxClass({ color })}
-      checked={value}
+      // checked={value}
       defaultChecked={defaultValue}
-      onCheckedChange={onCheckedChange}
+      // onCheckedChange={value ? onCheckedChange : undefined}
     >
       <rc.CheckboxIndicator className={indicatorClass({ color })}>
-        {value === true && <CheckIcon className="h-7 w-7" />}
-        {value === false && <Cross1Icon className="h-6 w-6" />}
-        {value === "indeterminate" && (
-          <DividerHorizontalIcon className="h-7 w-7" />
+        {value === undefined ? (
+          <CheckIcon className="h-7 w-7" />
+        ) : (
+          <>
+            {value === true && <CheckIcon className="h-7 w-7" />}
+            {value === false && <Cross1Icon className="h-6 w-6" />}
+            {value === "indeterminate" && (
+              <DividerHorizontalIcon className="h-7 w-7" />
+            )}
+          </>
         )}
       </rc.CheckboxIndicator>
     </rc.Root>

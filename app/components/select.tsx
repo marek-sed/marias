@@ -14,8 +14,8 @@ type Props = {
 };
 
 const triggerClass = cva([
-  "inline-flex gap-1 items-center justify-center",
-  "h-8 px-4",
+  "inline-flex gap-8 items-center justify-between",
+  "h-10 pl-3 pr-1",
   "rounded border-2 border-teal-7 bg-sage-7 hover:bg-sage-7",
 ]);
 
@@ -37,8 +37,8 @@ export function Select({
     >
       <rs.Trigger id={id} className={triggerClass()}>
         <rs.Value placeholder={placeholder} />
-        <rs.Icon className="text-teal-9 hover:text-teal-10">
-          <ChevronDownIcon />
+        <rs.Icon className="text-teal-11 hover:text-teal-10">
+          <ChevronDownIcon className="h-6 w-6" />
         </rs.Icon>
       </rs.Trigger>
       <rs.Portal className="z-10">
@@ -54,8 +54,8 @@ export function Select({
               >
                 <rs.ItemText>{opt.label}</rs.ItemText>
 
-                <rs.ItemIndicator className="text-teal-10">
-                  <CheckIcon />
+                <rs.ItemIndicator className="text-teal-11">
+                  <CheckIcon className="h-6 w-6" />
                 </rs.ItemIndicator>
               </rs.Item>
             ))}
