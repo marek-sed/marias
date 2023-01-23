@@ -1,12 +1,6 @@
 import * as rc from "@radix-ui/react-checkbox";
 import { cva } from "class-variance-authority";
-import {
-  CheckIcon,
-  Cross1Icon,
-  DividerHorizontalIcon,
-  HeartFilledIcon,
-  HeartIcon,
-} from "@radix-ui/react-icons";
+import { HeartFilledIcon } from "@radix-ui/react-icons";
 
 const checkboxClass = cva([
   "flex",
@@ -14,7 +8,7 @@ const checkboxClass = cva([
   "bg-sage-7",
   "hover:bg-sage-8",
   "active:bg-tomato-10 active:text-sage-7",
-  "w-7 h-7",
+  "w-8 h-8",
   "items-center justify-center",
   "border-tomato-7 border-2",
 ]);
@@ -38,7 +32,7 @@ export function HeartBox({ id, name, value, defaultValue, onChange }: Props) {
       onCheckedChange={onChange}
     >
       <rc.CheckboxIndicator className={indicatorClass()}>
-        <HeartFilledIcon className="h-5 w-5" />
+        <HeartFilledIcon className="h-6 w-6" />
       </rc.CheckboxIndicator>
     </rc.Root>
   );

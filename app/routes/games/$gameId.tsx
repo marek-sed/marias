@@ -15,7 +15,7 @@ import { FormControl, Label } from "~/components/formControl";
 import { Select } from "~/components/select";
 import { Checkbox } from "~/components/checkbox";
 import { Input } from "~/components/input";
-import { RadioGroup } from "~/components/radioGroup";
+import { RadioGroup } from "~/components/gamePicker";
 import { HeartBox } from "~/components/heartBox";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -104,9 +104,6 @@ function Game({
     case "hundred":
       return (
         <>
-          <FormControl name="flek" value={flek} onChange={setFlek} label="Flek">
-            <Input step={1} type="number" />
-          </FormControl>
           <FormControl name="better" label="Lepsia" {...better}>
             <Checkbox />
           </FormControl>
@@ -145,11 +142,13 @@ function Game({
 
 export default function ActiveGame() {
   const formRef = useRef<HTMLFormElement>(null);
+
+  const [flek, setFlek] = useState(0);
   const { game, playerOptions, actorOption, lastRound } =
     useLoaderData<typeof loader>();
 
   const [playedBy, setPlayedBy] = useState(actorOption.value);
-  const [called, setCalled] = useState<GameType>(calledGameTypes[0].value);
+  const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
   const [silent, setSilent] = useState(silentGameTypes[0].value);
   const [better, setBetter] = useState<boolean>(false);
   const [won, setWon] = useState(false);
@@ -161,52 +160,47 @@ export default function ActiveGame() {
     <div className="mx-auto max-w-screen-sm space-y-2">
       <h1 className="mt-4 text-xl">Kolo {lastRound}</h1>
       <Form ref={formRef} className="space-y-4" method="post">
-        <fieldset className="relative rounded border border-sage-7 p-4">
-          <legend>{actorOption.label}</legend>
-          <AnimatePresence initial={false}>
-            {(called === "game" || called === "hundred") && (
-              <motion.div
-                className="absolute right-1 -top-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0,
-                  transition: {
-                    duration: 0.3,
-                  },
-                }}
-              >
-                <FormControl name="better" defaultValue={false}>
-                  <HeartBox />
-                </FormControl>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <fieldset className="relative rounded border border-sage-7 px-3 py-3">
+          <legend>
+            {calledGameTypes.find(({ value }) => value === called)?.label}
+          </legend>
           <div className="flex flex-col items-center space-y-4">
             <div className="flex w-full justify-between">
-              <div className="flex space-x-1">
-                <Label name="gameType">Zvol hru</Label>
-              </div>
-              <motion.div layout className="inline-flex items-center space-x-1">
-                <RadioGroup
-                  id="gameType"
-                  name="gameType"
-                  value={called}
-                  onChange={setCalled as any}
-                  options={calledGameTypes as unknown as Option[]}
-                />
-              </motion.div>
+              <RadioGroup
+                id="gameType"
+                name="gameType"
+                value={called}
+                onChange={setCalled as any}
+                options={calledGameTypes as unknown as Option[]}
+              />
             </div>
 
-            <Game
-              type={called}
-              playerOptions={playerOptions}
-              playedBy={{ value: playedBy, onChange: setPlayedBy }}
-              seven={{ value: seven, onChange: setSeven }}
-              better={{ value: better, onChange: setBetter }}
-              points={{ value: points, onChange: setPoints }}
-            />
+            {called === "hundred" && (
+              <FormControl name="players" label="Proti" defaultValue={false}>
+                <Checkbox />
+              </FormControl>
+            )}
+            <div className="w-full items-center space-y-4 pt-8">
+              <FormControl
+                direction="horizontal"
+                label="Lepsia"
+                name="better"
+                value={better}
+                onChange={setBetter}
+              >
+                <HeartBox />
+              </FormControl>
+
+              <FormControl
+                direction="horizontal"
+                name="flek"
+                value={flek}
+                onChange={setFlek}
+                label="Flek"
+              >
+                <Input step={1} type="number" />
+              </FormControl>
+            </div>
           </div>
         </fieldset>
         <fieldset className="relative rounded border border-sage-7 p-4">
@@ -216,15 +210,6 @@ export default function ActiveGame() {
               <div className="flex space-x-1">
                 <Label name="gameType">Zvol hru</Label>
               </div>
-              <motion.div layout className="inline-flex items-center space-x-1">
-                <RadioGroup
-                  id="gameType"
-                  name="gameType"
-                  value={called}
-                  onChange={setCalled as any}
-                  options={silentGameTypes as unknown as Option[]}
-                />
-              </motion.div>
             </div>
           </div>
         </fieldset>

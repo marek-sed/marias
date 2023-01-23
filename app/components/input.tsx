@@ -2,22 +2,17 @@ import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
 import { useCallback } from "react";
 
-const rootClass = cva("border-2 rounded border-teal-7", {
+const rootClass = cva("border-2 h-10 rounded border-teal-7", {
   variants: {
     type: {
       text: "",
-      number: "flex h-8 items-center",
+      number: "flex h-10 items-center",
     },
   },
 });
 
 const inputClass = cva(
-  [
-    "bg-sage-7 text-sage-12",
-    "border-none boder-teal-9 border-2",
-    "h-full",
-    "focus:ring-0",
-  ],
+  ["text-lg", "bg-sage-7 text-sage-12", "h-9 border-none", "focus:ring-0"],
   {
     variants: {
       type: {
@@ -31,7 +26,7 @@ const inputClass = cva(
 const numberButton = cva([
   "flex justify-center items-center",
   "bg-sage-7 text-teal-9",
-  "h-full w-6",
+  "h-9 w-12",
   "active:bg-teal-10 active:text-sage-7",
 ]);
 
@@ -84,7 +79,7 @@ export function Input({
           onClick={decrement}
           className={numberButton()}
         >
-          <MinusIcon />
+          <MinusIcon className="h-6 w-6" />
         </button>
       )}
       <input
@@ -98,7 +93,7 @@ export function Input({
           onClick={increment}
           className={numberButton()}
         >
-          <PlusIcon />
+          <PlusIcon className="h-6 w-6" />
         </button>
       )}
     </div>

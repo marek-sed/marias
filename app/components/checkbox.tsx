@@ -13,7 +13,7 @@ const checkboxClass = cva([
   "bg-sage-7",
   "hover:bg-sage-8",
   "active:bg-teal-10 active:text-sage-7",
-  "w-6 h-6",
+  "w-8 h-8",
   "items-center justify-center",
   "border-teal-7 border-2",
 ]);
@@ -66,8 +66,8 @@ export function Checkbox({
       checked="indeterminate"
     >
       <rc.CheckboxIndicator className={indicatorClass()}>
-        {value === true && <CheckIcon className="h-5 w-5" />}
-        {value === false && <Cross1Icon className="h-5 w-5" />}
+        {value === true && <CheckIcon className="h-6 w-6" />}
+        {value === false && <Cross1Icon className="h-6 w-6" />}
         {value === "indeterminate" && <DividerHorizontalIcon />}
       </rc.CheckboxIndicator>
     </rc.Root>

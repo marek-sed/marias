@@ -16,10 +16,8 @@ type Props<T> = VariantProps<typeof formControlClass> & {
 const formControlClass = cva(["flex w-full"], {
   variants: {
     direction: {
-      horizontal: [
-        "flex-col space-y-2 items-start md:flex-row md:items-center",
-      ],
-      vertical: ["flex-col", "space-y-1", "items-start"],
+      horizontal: ["space-y-1 items-center justify-between md:items-center"],
+      vertical: ["flex-col", "space-y-1", "items-end"],
     },
     type: {
       input: [],
@@ -30,7 +28,8 @@ const formControlClass = cva(["flex w-full"], {
     {
       direction: "horizontal",
       type: "input",
-      className: "justify-between sm:space-y-0  sm:space-x-2",
+      className:
+        "justify-start sm:justify-between sm:space-y-1 items-start sm:space-x-2",
     },
     {
       direction: "horizontal",
@@ -47,8 +46,8 @@ const formControlClass = cva(["flex w-full"], {
 const labelClass = cva(["text-sage-11"], {
   variants: {
     direction: {
-      horizontal: ["text-md"],
-      vertical: ["text-sm"],
+      horizontal: [""],
+      vertical: [""],
     },
     type: {
       checkbox: "ml-2",

@@ -4,17 +4,18 @@ import { cva, cx } from "class-variance-authority";
 import { motion } from "framer-motion";
 
 const rootClass = cva([
-  "flex divide-x-2 divide-teal-7 rounded border-teal-7 border-2",
+  "flex w-full divide-x-2 divide-teal-7 rounded border-teal-7 border-2",
 ]);
 const itemClass = cva([
   "relative",
-  "h-8",
+  "h-12",
+  "flex-grow",
   "bg-sage-4",
   "hover:bg-sage-5",
   "active:bg-teal-9",
 ]);
-const labelClass = cva(["cursor-pointer relative px-3 z-10"]);
-const indicatorClass = cva(["absolute top-0 z-10 h-8 w-full bg-tomato-9"], {
+const labelClass = cva(["cursor-pointer block relative z-10"]);
+const indicatorClass = cva(["absolute top-0 z-10 h-12 w-full bg-tomato-9"], {
   variants: {
     position: {
       left: "rounded-l",
