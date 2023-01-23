@@ -50,7 +50,7 @@ type Props = {
   type?: "normal" | "better";
 };
 
-export function GamePicker({
+export function GamePicker<T>({
   id,
   name,
   value,

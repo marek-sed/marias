@@ -10,7 +10,7 @@ import {
   playerPositionToRole,
 } from "~/utils/utils.server";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FormControl, Label } from "~/components/formControl";
 import { Select } from "~/components/select";
 import { Checkbox } from "~/components/checkbox";
@@ -149,6 +149,16 @@ export default function ActiveGame() {
 
   const [playedBy, setPlayedBy] = useState(actorOption.value);
   const [called, setCalled] = useState<GameType>(calledGameTypes[2].value);
+
+  const onGameChanged = useCallback(
+    (called: GameType) => {
+      setCalled(called as GameType);
+      if (called === "betl" || called === "durch") {
+        setBetter(false);
+      }
+    },
+    [setCalled]
+  );
   const [counter100, setCounter100] = useState(false);
   const [better, setBetter] = useState<boolean>(false);
 
@@ -172,7 +182,7 @@ export default function ActiveGame() {
                 name="gameType"
                 type={better ? "better" : "normal"}
                 value={called}
-                onChange={setCalled as any}
+                onChange={onGameChanged as any}
                 options={calledGameTypes as unknown as Option[]}
               />
             </div>
