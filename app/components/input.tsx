@@ -1,22 +1,19 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cva, VariantProps } from "class-variance-authority";
 import { useCallback } from "react";
+import { Button } from "./button";
 
-const rootClass = cva("border-2 h-10 rounded border-teal-7", {
+const rootClass = cva("border-2 border-game-color h-10 rounded ", {
   variants: {
     type: {
       text: "",
       number: "flex h-10 items-center",
     },
-    color: {
-      teal: "border-teal-7",
-      red: "border-red-7",
-    },
   },
 });
 
 const inputClass = cva(
-  ["text-lg", "bg-sage-6 text-sage-12", "h-9 border-none", "focus:ring-0"],
+  ["text-lg", "bg-sage-3 text-sage-12", "h-9 border-none", "focus:ring-0"],
   {
     variants: {
       type: {
@@ -27,28 +24,11 @@ const inputClass = cva(
   }
 );
 
-const numberButton = cva(
-  [
-    "flex justify-center items-center",
-    "bg-sage-6",
-    "h-9 w-12",
-    "active:text-sage-7",
-  ],
-  {
-    variants: {
-      color: {
-        teal: "active:bg-teal-10 text-teal-11",
-        red: "active:bg-tomato-10 text-tomato-11",
-      },
-    },
-  }
-);
-
 type Props = {
   id?: string;
   name?: string;
   type: "number" | "text";
-  color?: "red" | "teal";
+  color?: "game" | "accent" | "default";
   step?: number;
   min?: number;
   max?: number;
@@ -87,30 +67,32 @@ export function Input({
   }, [value, onNumericChange, defaultValue, step, max]);
 
   return (
-    <div className={rootClass({ type, color })}>
+    <div className={rootClass({ type })}>
       {type === "number" && (
-        <button
+        <Button
           tabIndex={-1}
           type="button"
           onClick={decrement}
-          className={numberButton({ color })}
+          color={color}
+          aspect="square"
         >
           <MinusIcon className="h-6 w-6" />
-        </button>
+        </Button>
       )}
       <input
         className={inputClass({ type: type })}
         {...{ type, min, max, step, value, onChange, defaultValue, ...props }}
       />
       {type === "number" && (
-        <button
+        <Button
           tabIndex={-1}
           type="button"
           onClick={increment}
-          className={numberButton({ color })}
+          color={color}
+          aspect="square"
         >
           <PlusIcon className="h-6 w-6" />
-        </button>
+        </Button>
       )}
     </div>
   );

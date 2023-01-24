@@ -10,7 +10,13 @@ import {
   playerPositionToRole,
 } from "~/utils/utils.server";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { FormControl, Label } from "~/components/formControl";
 import { Select } from "~/components/select";
 import { Checkbox, IndeterminateCheckbox } from "~/components/checkbox";
@@ -89,59 +95,9 @@ type GameProps = {
     value: number;
   };
 };
-function Game({
-  type,
-  playerOptions,
-  playedBy,
-  seven,
-  better,
-  points,
-}: GameProps) {
-  const [flek, setFlek] = useState(0);
-
-  switch (type) {
-    case "game":
-    case "hundred":
-      return (
-        <>
-          <FormControl name="better" label="Lepsia" {...better}>
-            <Checkbox />
-          </FormControl>
-          <FormControl name="seven" label="Sedma" {...seven}>
-            <Checkbox />
-          </FormControl>
-          {type === "game" ? (
-            <FormControl name="won" label="Vyhral?" defaultValue={false}>
-              <Checkbox />
-            </FormControl>
-          ) : (
-            <FormControl name="points" {...points} label="Body">
-              <Input type="number" />
-            </FormControl>
-          )}
-        </>
-      );
-    case "betl":
-    case "durch":
-      return (
-        <>
-          <FormControl name="player" label="Hru zahlasil" {...playedBy}>
-            <Select placeholder="Kto hral sam?" options={playerOptions} />
-          </FormControl>
-          <FormControl label="Vylozeny" name="openDurch" defaultValue={false}>
-            <Checkbox />
-          </FormControl>
-
-          <FormControl name="won" label="Vyhral?" defaultValue={false}>
-            <Checkbox />
-          </FormControl>
-        </>
-      );
-  }
-}
 
 export default function ActiveGame() {
-  const formRef = useRef<HTMLFormElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const [flek, setFlek] = useState(0);
   const { game, playerOptions, actorOption, lastRound } =
@@ -161,6 +117,17 @@ export default function ActiveGame() {
   );
   const [counter100, setCounter100] = useState(false);
   const [better, setBetter] = useState<boolean>(false);
+  useLayoutEffect(() => {
+    rootRef.current?.style.setProperty(
+      "--game-color",
+      better ? "var(--tomato6)" : "var(--teal6)"
+    );
+
+    rootRef.current?.style.setProperty(
+      "--game-accent-color",
+      better ? "var(--tomato9)" : "var(--teal9)"
+    );
+  }, [better]);
 
   const [won, setWon] = useState<boolean | "indeterminate">("indeterminate");
   const [seven, setSeven] = useState(false);
@@ -168,9 +135,9 @@ export default function ActiveGame() {
   const isNormalGame = called !== "betl" && called !== "durch";
 
   return (
-    <div className="mx-auto max-w-screen-sm space-y-2">
+    <div ref={rootRef} className="mx-auto max-w-screen-sm space-y-2">
       <h1 className="mt-4 text-xl">Kolo {lastRound}</h1>
-      <Form ref={formRef} className="space-y-4" method="post">
+      <Form className="space-y-4" method="post">
         <fieldset className="relative rounded border border-sage-7 px-3 py-3">
           <legend>
             {calledGameTypes.find(({ value }) => value === called)?.label}
@@ -180,7 +147,6 @@ export default function ActiveGame() {
               <GamePicker
                 id="gameType"
                 name="gameType"
-                type={better ? "better" : "normal"}
                 value={called}
                 onChange={onGameChanged as any}
                 options={calledGameTypes as unknown as Option[]}
@@ -218,12 +184,7 @@ export default function ActiveGame() {
                     onChange={setFlek}
                     label="Flek"
                   >
-                    <Input
-                      color={better ? "red" : "teal"}
-                      step={1}
-                      max={10}
-                      type="number"
-                    />
+                    <Input color="game" step={1} max={10} type="number" />
                   </FormControl>
                 </div>
               </>

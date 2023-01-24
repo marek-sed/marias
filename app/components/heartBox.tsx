@@ -6,9 +6,9 @@ import { motion } from "framer-motion";
 const checkboxClass = cva([
   "flex",
   "rounded",
-  "bg-sage-7",
-  "hover:bg-sage-8",
-  "active:bg-tomato-10 active:text-sage-7",
+  "bg-sage-3",
+  "hover:bg-sage-4",
+  "active:bg-tomato-9 active:text-sage-7",
   "w-8 h-8",
   "items-center justify-center",
   "border-tomato-7 border-2",

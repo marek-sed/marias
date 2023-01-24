@@ -11,9 +11,9 @@ const checkboxClass = cva(
   [
     "flex",
     "rounded",
-    "bg-sage-7",
-    "hover:bg-sage-8",
-    "active:text-sage-7",
+    "bg-sage-3",
+    "hover:bg-sage-4",
+    "active:text-sage-1",
     "w-8 h-8",
     "items-center justify-center",
     "border-2",
