@@ -24,6 +24,8 @@ import { Input } from "~/components/input";
 import { GamePicker } from "~/components/gamePicker";
 import { HeartBox } from "~/components/heartBox";
 import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "~/components/button";
+import { GameContext } from "~/components/gameContext";
 
 export const handle = {
   title: "Hra",
@@ -116,16 +118,31 @@ export default function ActiveGame() {
     [setCalled]
   );
   const [counter100, setCounter100] = useState(false);
-  const [better, setBetter] = useState<boolean>(false);
+  const [better, setBetter] = useState<boolean>(true);
   useLayoutEffect(() => {
     rootRef.current?.style.setProperty(
       "--game-color",
-      better ? "var(--tomato6)" : "var(--teal6)"
+      better ? "var(--bronze11)" : "var(--green11)"
     );
 
     rootRef.current?.style.setProperty(
-      "--game-accent-color",
-      better ? "var(--tomato9)" : "var(--teal9)"
+      "--game-bg-color",
+      better ? "var(--bronze3)" : "var(--green3)"
+    );
+
+    rootRef.current?.style.setProperty(
+      "--game-bg-active-color",
+      better ? "var(--bronze5)" : "var(--green5)"
+    );
+
+    rootRef.current?.style.setProperty(
+      "--game-border-color",
+      better ? "var(--bronze6)" : "var(--green6)"
+    );
+
+    rootRef.current?.style.setProperty(
+      "--game-border-hover-color",
+      better ? "var(--bronze8)" : "var(--green8)"
     );
   }, [better]);
 
@@ -135,93 +152,142 @@ export default function ActiveGame() {
   const isNormalGame = called !== "betl" && called !== "durch";
 
   return (
-    <div ref={rootRef} className="mx-auto max-w-screen-sm space-y-2">
-      <h1 className="mt-4 text-xl">Kolo {lastRound}</h1>
-      <Form className="space-y-4" method="post">
-        <fieldset className="relative rounded border border-sage-7 px-3 py-3">
-          <legend>
-            {calledGameTypes.find(({ value }) => value === called)?.label}
-          </legend>
-          <div className="flex flex-col items-center space-y-2">
-            <div className="flex w-full justify-between">
-              <GamePicker
-                id="gameType"
-                name="gameType"
-                value={called}
-                onChange={onGameChanged as any}
-                options={calledGameTypes as unknown as Option[]}
-              />
+    <GameContext value={{ type: better ? "better" : "default" }}>
+      <div ref={rootRef} className="mx-auto max-w-screen-sm space-y-2">
+        <h1 className="mt-4 text-xl">Kolo {lastRound}</h1>
+        <Form className="space-y-4" method="post">
+          <fieldset className="relative rounded border border-sage-7 bg-sage-2 px-3 py-3">
+            <legend className="text-teal-12">
+              {calledGameTypes.find(({ value }) => value === called)?.label}
+            </legend>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="flex w-full justify-between">
+                <GamePicker
+                  key={better.toString()}
+                  id="gameType"
+                  name="gameType"
+                  value={called}
+                  onChange={onGameChanged as any}
+                  options={calledGameTypes as unknown as Option[]}
+                />
+              </div>
+
+              <motion.div
+                layout
+                className="w-full"
+                transition={{
+                  duration: 0.3,
+                }}
+              >
+                <AnimatePresence mode="popLayout">
+                  {called === "game" || called === "hundred" ? (
+                    <motion.div
+                      key="gamehundred"
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 0.3,
+                      }}
+                    >
+                      {called === "hundred" && (
+                        <FormControl
+                          name="players"
+                          label="Proti"
+                          value={counter100}
+                          onChange={setCounter100}
+                        >
+                          <Checkbox />
+                        </FormControl>
+                      )}
+
+                      <div className="w-full items-center space-y-4 pt-8">
+                        <FormControl
+                          direction="horizontal"
+                          label="Lepsia"
+                          name="better"
+                          value={better}
+                          onChange={setBetter}
+                        >
+                          <HeartBox />
+                        </FormControl>
+
+                        <FormControl
+                          direction="horizontal"
+                          name="flek"
+                          value={flek}
+                          onChange={setFlek}
+                          label="Flek"
+                        >
+                          <Input
+                            key={better.toString()}
+                            color="game"
+                            step={1}
+                            max={10}
+                            type="number"
+                          />
+                        </FormControl>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    // BETL DURCH
+                    <motion.div
+                      key="betldurch"
+                      className="space-y-4"
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: 0.3,
+                      }}
+                    >
+                      <FormControl
+                        name="player"
+                        label="Hru zahlasil"
+                        value={playedBy}
+                        onChange={setPlayedBy}
+                      >
+                        <Select
+                          placeholder="Kto hral sam?"
+                          options={playerOptions}
+                        />
+                      </FormControl>
+                      <FormControl
+                        label="Vylozeny"
+                        name="openDurch"
+                        defaultValue={true}
+                      >
+                        <Checkbox />
+                      </FormControl>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </div>
-
-            {called === "game" || called === "hundred" ? (
-              <>
-                {called === "hundred" && (
-                  <FormControl
-                    name="players"
-                    label="Proti"
-                    value={counter100}
-                    onChange={setCounter100}
-                  >
-                    <Checkbox color={better ? "red" : "teal"} />
-                  </FormControl>
-                )}
-
-                <div className="w-full items-center space-y-4 pt-8">
-                  <FormControl
-                    direction="horizontal"
-                    label="Lepsia"
-                    name="better"
-                    value={better}
-                    onChange={setBetter}
-                  >
-                    <HeartBox />
-                  </FormControl>
-
-                  <FormControl
-                    direction="horizontal"
-                    name="flek"
-                    value={flek}
-                    onChange={setFlek}
-                    label="Flek"
-                  >
-                    <Input color="game" step={1} max={10} type="number" />
-                  </FormControl>
+          </fieldset>
+          <fieldset className="relative rounded border border-sage-7 bg-sage-2 p-4">
+            <legend className="text-teal-12">Obrana</legend>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="flex w-full justify-between">
+                <div className="flex space-x-1">
+                  <Label name="gameType">Zvol hru</Label>
                 </div>
-              </>
-            ) : (
-              // BETL DURCH
-              <>
-                <FormControl
-                  name="player"
-                  label="Hru zahlasil"
-                  value={playedBy}
-                  onChange={setPlayedBy}
-                >
-                  <Select placeholder="Kto hral sam?" options={playerOptions} />
-                </FormControl>
-                <FormControl
-                  label="Vylozeny"
-                  name="openDurch"
-                  defaultValue={true}
-                >
-                  <Checkbox />
-                </FormControl>
-              </>
-            )}
-          </div>
-        </fieldset>
-        <fieldset className="relative rounded border border-sage-7 p-4">
-          <legend>Obrana</legend>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex w-full justify-between">
-              <div className="flex space-x-1">
-                <Label name="gameType">Zvol hru</Label>
               </div>
             </div>
+          </fieldset>
+
+          <div className="flex w-full justify-end">
+            <Button
+              color="game"
+              type="button"
+              size="large"
+              border
+              // className="flex h-12 w-48 items-center justify-center rounded border-2 border-teal-7 bg-gradient-to-tr
+              //  from-teal-2 via-sage-2 to-bronze-4 font-semibold text-teal-12 hover:border-teal-8"
+            >
+              Zapisat kolo
+            </Button>
           </div>
-        </fieldset>
-        <button className="rounded bg-sage-4 px-4 py-2">zapist kolo</button>
-      </Form>
-    </div>
+        </Form>
+      </div>
+    </GameContext>
   );
 }

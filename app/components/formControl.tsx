@@ -43,7 +43,7 @@ const formControlClass = cva(["flex w-full"], {
   },
 });
 
-const labelClass = cva(["text-sage-11"], {
+const labelClass = cva(["text-teal-12"], {
   variants: {
     direction: {
       horizontal: [""],

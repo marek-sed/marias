@@ -2156,12 +2156,12 @@ select {
   height: 3rem;
 }
 
-.h-8 {
-  height: 2rem;
-}
-
 .h-6 {
   height: 1.5rem;
+}
+
+.h-8 {
+  height: 2rem;
 }
 
 .h-5 {
@@ -2192,16 +2192,16 @@ select {
   width: 3rem;
 }
 
-.w-8 {
-  width: 2rem;
-}
-
 .w-7 {
   width: 1.75rem;
 }
 
 .w-6 {
   width: 1.5rem;
+}
+
+.w-8 {
+  width: 2rem;
 }
 
 .w-5 {
@@ -2226,6 +2226,10 @@ select {
 
 .flex-grow {
   flex-grow: 1;
+}
+
+.flex-grow-0 {
+  flex-grow: 0;
 }
 
 .cursor-pointer {
@@ -2332,8 +2336,8 @@ select {
   border-left-width: calc(2px * calc(1 - var(--tw-divide-x-reverse)));
 }
 
-.divide-game-color > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--game-color);
+.divide-game-border-color > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--game-border-color);
 }
 
 .self-end {
@@ -2386,16 +2390,20 @@ select {
   border-color: var(--sage6);
 }
 
-.border-teal-7 {
-  border-color: var(--teal7);
-}
-
-.border-tomato-7 {
-  border-color: var(--tomato7);
+.border-game-border-color {
+  border-color: var(--game-border-color);
 }
 
 .border-game-color {
   border-color: var(--game-color);
+}
+
+.border-red-6 {
+  border-color: var(--red6);
+}
+
+.border-teal-7 {
+  border-color: var(--teal7);
 }
 
 .border-gray-500 {
@@ -2432,8 +2440,16 @@ select {
   background-color: var(--sage2);
 }
 
-.bg-game-color {
-  background-color: var(--game-color);
+.bg-game-bg-color {
+  background-color: var(--game-bg-color);
+}
+
+.bg-game-bg-active-color {
+  background-color: var(--game-bg-active-color);
+}
+
+.bg-red-3 {
+  background-color: var(--red3);
 }
 
 .bg-blue-500 {
@@ -2441,12 +2457,31 @@ select {
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 
+.bg-teal-9 {
+  background-color: var(--teal9);
+}
+
 .bg-sage-4 {
   background-color: var(--sage4);
 }
 
-.bg-teal-9 {
-  background-color: var(--teal9);
+.bg-gradient-to-tr {
+  background-image: linear-gradient(to top right, var(--tw-gradient-stops));
+}
+
+.from-teal-2 {
+  --tw-gradient-from: var(--teal2);
+  --tw-gradient-to: rgb(255 255 255 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.via-sage-2 {
+  --tw-gradient-to: rgb(255 255 255 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--sage2), var(--tw-gradient-to);
+}
+
+.to-bronze-4 {
+  --tw-gradient-to: var(--bronze4);
 }
 
 .p-2 {
@@ -2484,6 +2519,11 @@ select {
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+
+.px-0 {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .py-3 {
@@ -2567,6 +2607,10 @@ select {
   font-weight: 500;
 }
 
+.font-semibold {
+  font-weight: 600;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -2575,32 +2619,24 @@ select {
   color: var(--sage12);
 }
 
-.text-game-accent-color {
-  color: var(--game-accent-color);
-}
-
-.text-accent-color {
-  color: var(--teal9);
-}
-
-.text-teal-11 {
-  color: var(--teal11);
-}
-
-.text-tomato-11 {
-  color: var(--tomato11);
-}
-
-.text-sage-11 {
-  color: var(--sage11);
-}
-
-.text-tomato-9 {
-  color: var(--tomato9);
+.text-game-color {
+  color: var(--game-color);
 }
 
 .text-teal-12 {
   color: var(--teal12);
+}
+
+.text-red-9 {
+  color: var(--red9);
+}
+
+.text-tealA-12 {
+  color: var(--tealA12);
+}
+
+.text-teal-11 {
+  color: var(--teal11);
 }
 
 .text-gray-700 {
@@ -2661,6 +2697,12 @@ select {
   transition-duration: 150ms;
 }
 
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2681,16 +2723,28 @@ input[type="number"]::-webkit-outer-spin-button {
   border-width: 2px;
 }
 
+.hover\:border-game-border-hover-color:hover {
+  border-color: var(--game-border-hover-color);
+}
+
+.hover\:border-red-8:hover {
+  border-color: var(--red8);
+}
+
+.hover\:border-teal-8:hover {
+  border-color: var(--teal8);
+}
+
 .hover\:border-teal-9:hover {
   border-color: var(--teal9);
 }
 
-.hover\:bg-sage-4:hover {
-  background-color: var(--sage4);
+.hover\:bg-red-4:hover {
+  background-color: var(--red4);
 }
 
-.hover\:bg-sage-7:hover {
-  background-color: var(--sage7);
+.hover\:bg-sage-4:hover {
+  background-color: var(--sage4);
 }
 
 .hover\:bg-blue-600:hover {
@@ -2718,24 +2772,12 @@ input[type="number"]::-webkit-outer-spin-button {
   --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
 }
 
-.active\:bg-teal-10:active {
-  background-color: var(--teal10);
+.active\:bg-red-3:active {
+  background-color: var(--red3);
 }
 
-.active\:bg-tomato-10:active {
-  background-color: var(--tomato10);
-}
-
-.active\:bg-tomato-9:active {
-  background-color: var(--tomato9);
-}
-
-.active\:text-sage-1:active {
-  color: var(--sage1);
-}
-
-.active\:text-sage-7:active {
-  color: var(--sage7);
+.active\:text-gray-7:active {
+  color: var(--gray7);
 }
 
 .data-\[highlighted\]\:bg-sage-5[data-highlighted] {

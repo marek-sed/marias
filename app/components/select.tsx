@@ -16,7 +16,7 @@ type Props = {
 const triggerClass = cva([
   "inline-flex gap-8 items-center justify-between",
   "h-10 pl-3 pr-1",
-  "rounded border-2 border-teal-7 bg-sage-7 hover:bg-sage-7",
+  "rounded border-2 border-teal-7 bg-sage-3 hover:bg-sage-4",
 ]);
 
 export function Select({

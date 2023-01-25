@@ -6,65 +6,35 @@ import {
   DividerHorizontalIcon,
 } from "@radix-ui/react-icons";
 import { useCallback } from "react";
+import { Pressable } from "./pressable";
 
-const checkboxClass = cva(
-  [
-    "flex",
-    "rounded",
-    "bg-sage-3",
-    "hover:bg-sage-4",
-    "active:text-sage-1",
-    "w-8 h-8",
-    "items-center justify-center",
-    "border-2",
-  ],
-  {
-    variants: {
-      color: {
-        teal: "border-teal-7 active:bg-teal-10 active:text-sage-7",
-        red: "border-tomato-7 active:bg-tomato-10 active:text-sage-7",
-      },
-    },
-  }
-);
+const checkboxClass = cva([]);
 
-const indicatorClass = cva([""], {
-  variants: {
-    color: {
-      teal: "text-teal-11",
-      red: " text-tomato-11",
-    },
-  },
-});
+const indicatorClass = cva(["text-game-color"]);
 
 type Props = {
   id?: string;
   name?: string;
-  color?: "teal" | "red";
   value?: boolean | "indeterminate";
   defaultValue?: boolean;
   onChange?: (checked: boolean | "indeterminate") => void;
 };
-export function Checkbox({
-  id,
-  name,
-  value,
-  color = "teal",
-  defaultValue,
-  onChange,
-}: Props) {
+export function Checkbox({ id, name, value, defaultValue, onChange }: Props) {
   return (
     <rc.Root
       id={id}
       name={name}
-      className={checkboxClass({ color })}
+      className={checkboxClass()}
       checked={value}
       defaultChecked={defaultValue}
       onCheckedChange={onChange}
+      asChild
     >
-      <rc.CheckboxIndicator className={indicatorClass({ color })}>
-        <CheckIcon className="h-7 w-7" />
-      </rc.CheckboxIndicator>
+      <Pressable aspect="square" size="small" border>
+        <rc.CheckboxIndicator className={indicatorClass()}>
+          <CheckIcon className="h-7 w-7" />
+        </rc.CheckboxIndicator>
+      </Pressable>
     </rc.Root>
   );
 }
@@ -100,20 +70,22 @@ export function IndeterminateCheckbox({
     <rc.Root
       id={id}
       name={name}
-      className={checkboxClass({ color })}
+      className={checkboxClass()}
       checked={value}
       onCheckedChange={onCheckedChange}
     >
-      <rc.CheckboxIndicator className={indicatorClass({ color })}>
-        {value === "indeterminate" ? (
-          <DividerHorizontalIcon className="h-7 w-7" />
-        ) : (
-          <CheckIcon className="h-7 w-7" />
-        )}
+      <rc.CheckboxIndicator forceMount asChild className={indicatorClass()}>
+        <Pressable>
+          {value === "indeterminate" ? (
+            <DividerHorizontalIcon className="h-7 w-7" />
+          ) : (
+            <CheckIcon className="h-7 w-7" />
+          )}
+        </Pressable>
       </rc.CheckboxIndicator>
 
       {value === false && (
-        <Cross1Icon className={cx("h-6 w-6", indicatorClass({ color }))} />
+        <Cross1Icon className={cx("h-6 w-6", indicatorClass())} />
       )}
     </rc.Root>
   );

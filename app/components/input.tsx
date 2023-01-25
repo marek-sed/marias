@@ -1,19 +1,27 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
-import { cva, VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { useCallback } from "react";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 
-const rootClass = cva("border-2 border-game-color h-10 rounded ", {
-  variants: {
-    type: {
-      text: "",
-      number: "flex h-10 items-center",
+const rootClass = cva(
+  "border-2 border-game-border-color hover:border-game-border-hover-color h-10 rounded ",
+  {
+    variants: {
+      type: {
+        text: "",
+        number: "flex h-10 items-center",
+      },
     },
-  },
-});
+  }
+);
 
 const inputClass = cva(
-  ["text-lg", "bg-sage-3 text-sage-12", "h-9 border-none", "focus:ring-0"],
+  [
+    "text-lg",
+    "bg-game-bg-color text-tealA-12",
+    "h-9 border-none",
+    "focus:ring-0",
+  ],
   {
     variants: {
       type: {
@@ -69,30 +77,28 @@ export function Input({
   return (
     <div className={rootClass({ type })}>
       {type === "number" && (
-        <Button
+        <Pressable
           tabIndex={-1}
           type="button"
           onClick={decrement}
-          color={color}
           aspect="square"
         >
           <MinusIcon className="h-6 w-6" />
-        </Button>
+        </Pressable>
       )}
       <input
         className={inputClass({ type: type })}
         {...{ type, min, max, step, value, onChange, defaultValue, ...props }}
       />
       {type === "number" && (
-        <Button
+        <Pressable
           tabIndex={-1}
           type="button"
           onClick={increment}
-          color={color}
           aspect="square"
         >
           <PlusIcon className="h-6 w-6" />
-        </Button>
+        </Pressable>
       )}
     </div>
   );

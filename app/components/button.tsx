@@ -1,10 +1,10 @@
-import type { ButtonHTMLAttributes, ForwardedRef, MouseEvent } from "react";
-import { forwardRef, useCallback } from "react";
+import type { ButtonHTMLAttributes, ForwardedRef } from "react";
+import { forwardRef } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { MotionProps } from "framer-motion";
 import { motion, useAnimation } from "framer-motion";
-import { usePress } from "@react-aria/interactions";
+import { usePressable } from "./pressable";
 
 const buttonClass = cva(
   [
@@ -13,22 +13,25 @@ const buttonClass = cva(
     "flex flex-grow",
     "items-center",
     "justify-center",
-    "hover:bg-sage-4 bg-sage-3",
+    "bg-game-bg-color",
   ],
   {
     variants: {
+      border: {
+        false: "border-none",
+        true: "border-2 hover:border-game-border-hover-color",
+      },
       size: {
-        small: "h-7",
-        normal: "h-9",
+        small: "h-7 px-2",
+        normal: "h-9 px-4",
         large: "h-12",
       },
       aspect: {
-        square: "",
-        wide: "w-full",
+        square: "px-0",
+        wide: "px-4 w-full",
       },
       color: {
-        game: "text-game-accent-color",
-        accent: "text-accent-color",
+        game: "text-game-color",
         default: "text-sage-12",
       },
     },
@@ -39,6 +42,13 @@ const buttonClass = cva(
         className: "w-9",
       },
       { aspect: "square", size: "large", className: "w-12" },
+      {
+        border: true,
+        color: "default",
+        className:
+          "border-game-border-color hover:border-game-border-hover-color",
+      },
+      { border: true, color: "game", className: "border-game-color" },
     ],
     defaultVariants: {
       size: "normal",
@@ -53,49 +63,17 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> &
   MotionProps;
 export const Button = forwardRef(
   (
-    { color, aspect, size, onClick, ...props }: Props,
+    { color, aspect, size, onClick, border, ...props }: Props,
     ref: ForwardedRef<HTMLButtonElement>
   ) => {
-    const { pressProps } = usePress({
-      onPressStart: () => {
-        controls.stop();
-        controls.set({
-          background: "var(--sage6)",
-          color: "var(--sage12)",
-          transition: {
-            duration: 0.4,
-          },
-        });
-      },
-      onPress: (e) => {
-        onClick?.({ ...e, isPropagationStopped: () => true } as any);
-      },
-      onPressEnd: (e) => {
-        console.log("color", color);
-        controls.start({
-          background: "var(--sage3)",
-          color: [
-            "var(--sage12)",
-            color === "default"
-              ? "var(--sage-12)"
-              : color === "game"
-              ? "var(--game-accent-color)"
-              : "var(--teal-9)",
-          ],
-          transition: {
-            duration: 0.3,
-          },
-        });
-      },
-    });
-    const controls = useAnimation();
+    const { controls, pressProps } = usePressable({ onClick });
     return (
       <motion.button
         {...(pressProps as any)}
         {...props}
         animate={controls}
         ref={ref}
-        className={buttonClass({ color, aspect, size })}
+        className={buttonClass({ color, aspect, size, border })}
         {...props}
       />
     );
