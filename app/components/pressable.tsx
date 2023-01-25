@@ -109,6 +109,7 @@ export const Pressable = forwardRef<HTMLButtonElement, Props>(
 
     return (
       <motion.button
+        key={game?.type}
         ref={ref}
         {...(pressProps as any)}
         {...buttonProps}

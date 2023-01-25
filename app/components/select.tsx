@@ -16,7 +16,7 @@ type Props = {
 const triggerClass = cva([
   "inline-flex gap-8 items-center justify-between",
   "h-10 pl-3 pr-1",
-  "rounded border-2 border-teal-7 bg-sage-3 hover:bg-sage-4",
+  "rounded border-2 border-green-7 bg-sage-3 hover:bg-sage-4",
 ]);
 
 export function Select({
@@ -37,13 +37,13 @@ export function Select({
     >
       <rs.Trigger id={id} className={triggerClass()}>
         <rs.Value placeholder={placeholder} />
-        <rs.Icon className="text-teal-11 hover:text-teal-10">
+        <rs.Icon className="text-green-11 hover:text-green-10">
           <ChevronDownIcon className="h-6 w-6" />
         </rs.Icon>
       </rs.Trigger>
       <rs.Portal className="z-10">
         <rs.Content>
-          <rs.Viewport className="relative rounded bg-sage-3 p-1  text-teal-12">
+          <rs.Viewport className="relative rounded bg-sage-3 p-1  text-green-12">
             {options.map((opt) => (
               <rs.Item
                 key={opt.value}
@@ -54,7 +54,7 @@ export function Select({
               >
                 <rs.ItemText>{opt.label}</rs.ItemText>
 
-                <rs.ItemIndicator className="text-teal-11">
+                <rs.ItemIndicator className="text-green-11">
                   <CheckIcon className="h-6 w-6" />
                 </rs.ItemIndicator>
               </rs.Item>

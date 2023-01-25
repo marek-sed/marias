@@ -157,13 +157,12 @@ export default function ActiveGame() {
         <h1 className="mt-4 text-xl">Kolo {lastRound}</h1>
         <Form className="space-y-4" method="post">
           <fieldset className="relative rounded border border-sage-7 bg-sage-2 px-3 py-3">
-            <legend className="text-teal-12">
+            <legend className="text-green-12">
               {calledGameTypes.find(({ value }) => value === called)?.label}
             </legend>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex w-full justify-between">
                 <GamePicker
-                  key={better.toString()}
                   id="gameType"
                   name="gameType"
                   value={called}
@@ -264,7 +263,7 @@ export default function ActiveGame() {
             </div>
           </fieldset>
           <fieldset className="relative rounded border border-sage-7 bg-sage-2 p-4">
-            <legend className="text-teal-12">Obrana</legend>
+            <legend className="text-green-12">{""}</legend>
             <div className="flex flex-col items-center space-y-4">
               <div className="flex w-full justify-between">
                 <div className="flex space-x-1">
@@ -280,8 +279,8 @@ export default function ActiveGame() {
               type="button"
               size="large"
               border
-              // className="flex h-12 w-48 items-center justify-center rounded border-2 border-teal-7 bg-gradient-to-tr
-              //  from-teal-2 via-sage-2 to-bronze-4 font-semibold text-teal-12 hover:border-teal-8"
+              // className="flex h-12 w-48 items-center justify-center rounded border-2 border-green-7 bg-gradient-to-tr
+              //  from-green-2 via-sage-2 to-bronze-4 font-semibold text-green-12 hover:border-green-8"
             >
               Zapisat kolo
             </Button>

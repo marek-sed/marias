@@ -2420,6 +2420,10 @@ select {
   border-color: var(--sage7);
 }
 
+.border-green-7 {
+  border-color: var(--green7);
+}
+
 .bg-sage-9 {
   background-color: var(--sage9);
 }
@@ -2465,12 +2469,22 @@ select {
   background-color: var(--sage4);
 }
 
+.bg-green-9 {
+  background-color: var(--green9);
+}
+
 .bg-gradient-to-tr {
   background-image: linear-gradient(to top right, var(--tw-gradient-stops));
 }
 
 .from-teal-2 {
   --tw-gradient-from: var(--teal2);
+  --tw-gradient-to: rgb(255 255 255 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-green-2 {
+  --tw-gradient-from: var(--green2);
   --tw-gradient-to: rgb(255 255 255 / 0);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
@@ -2674,6 +2688,14 @@ select {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
+.text-green-12 {
+  color: var(--green12);
+}
+
+.text-green-11 {
+  color: var(--green11);
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -2739,6 +2761,14 @@ input[type="number"]::-webkit-outer-spin-button {
   border-color: var(--teal9);
 }
 
+.hover\:border-green-8:hover {
+  border-color: var(--green8);
+}
+
+.hover\:border-green-9:hover {
+  border-color: var(--green9);
+}
+
 .hover\:bg-red-4:hover {
   background-color: var(--red4);
 }
@@ -2754,6 +2784,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .hover\:text-teal-10:hover {
   color: var(--teal10);
+}
+
+.hover\:text-green-10:hover {
+  color: var(--green10);
 }
 
 .focus\:bg-blue-400:focus {
