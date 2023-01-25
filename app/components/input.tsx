@@ -77,12 +77,7 @@ export function Input({
   return (
     <div className={rootClass({ type })}>
       {type === "number" && (
-        <Pressable
-          tabIndex={-1}
-          type="button"
-          onClick={decrement}
-          aspect="square"
-        >
+        <Pressable tabIndex={-1} onClick={decrement} aspect="square">
           <MinusIcon className="h-6 w-6" />
         </Pressable>
       )}
@@ -91,12 +86,7 @@ export function Input({
         {...{ type, min, max, step, value, onChange, defaultValue, ...props }}
       />
       {type === "number" && (
-        <Pressable
-          tabIndex={-1}
-          type="button"
-          onClick={increment}
-          aspect="square"
-        >
+        <Pressable tabIndex={-1} onClick={increment} aspect="square">
           <PlusIcon className="h-6 w-6" />
         </Pressable>
       )}

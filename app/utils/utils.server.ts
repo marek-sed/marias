@@ -13,10 +13,19 @@ export function playerPositionToRole(
   return (position + roundNumber) % playerCount;
 }
 
-export function isPlayerCallingTheGame(
+export function isPlayerActor(
   position: number,
   roundNumber: number,
   playerCount = 4
 ) {
   return playerPositionToRole(position, roundNumber, playerCount) === 0;
+}
+
+export function isPlayerOposition(
+  position: number,
+  roundNumber: number,
+  playerCount = 4
+) {
+  const role = playerPositionToRole(position, roundNumber, playerCount);
+  return role === 1 || role === 2;
 }

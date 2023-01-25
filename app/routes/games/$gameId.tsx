@@ -5,10 +5,7 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { getFullGame } from "~/models/game.server";
 import { getPlayers } from "~/models/settings.server";
-import {
-  isPlayerCallingTheGame as isPlayerActor,
-  playerPositionToRole,
-} from "~/utils/utils.server";
+import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
 
 import {
   useCallback,
@@ -26,6 +23,7 @@ import { HeartBox } from "~/components/heartBox";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "~/components/button";
 import { GameContext } from "~/components/gameContext";
+import { Marriage } from "~/components/marriage";
 
 export const handle = {
   title: "Hra",
@@ -57,9 +55,13 @@ export const loader = async ({ params }: LoaderArgs) => {
   const actor = game.players.find((p) =>
     isPlayerActor(p.position, lastRound, game.players.length)
   )!.player;
-  const actorOption = { value: actor.id, label: actor.name };
+  const oposition = game.players
+    .filter((p) =>
+      isPlayerOposition(p.position, lastRound, game.players.length)
+    )
+    .map((p) => p.player);
 
-  return json({ game, playerOptions, actorOption, lastRound });
+  return json({ game, playerOptions, actor, oposition, lastRound });
 };
 
 const calledGameTypes = [
@@ -68,13 +70,6 @@ const calledGameTypes = [
   { label: "Betl", value: "betl" },
   { label: "Durch", value: "durch" },
 ] as const;
-
-const silentGameTypes = [
-  { label: "Sedma", value: "seven" },
-  { label: "Sto proti", value: "hundred" },
-  { label: "Betl", value: "betl" },
-  { label: "Durch", value: "durch" },
-];
 
 type GameType = (typeof calledGameTypes)[number]["value"];
 type GameProps = {
@@ -102,10 +97,11 @@ export default function ActiveGame() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   const [flek, setFlek] = useState(0);
-  const { game, playerOptions, actorOption, lastRound } =
+  const { game, playerOptions, actor, oposition, lastRound } =
     useLoaderData<typeof loader>();
 
-  const [playedBy, setPlayedBy] = useState(actorOption.value);
+  const [playedBy, setPlayedBy] = useState(actor.id);
+  const [counter100, setCounter100] = useState(false);
   const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
 
   const onGameChanged = useCallback(
@@ -113,13 +109,22 @@ export default function ActiveGame() {
       setCalled(called as GameType);
       if (called === "betl" || called === "durch") {
         setBetter(false);
+        setCounter100(false);
       }
     },
-    [setCalled]
+    [setCalled, setCounter100]
   );
-  const [counter100, setCounter100] = useState(false);
+
+  const playedLegendLabel = counter100
+    ? oposition.map((p) => p.name).join(", ")
+    : playerOptions.find((opt) => opt.value === playedBy)?.label;
+
+  const opositioniLegendLabel = !counter100
+    ? oposition.map((p) => p.name).join(", ")
+    : playerOptions.find((opt) => opt.value === playedBy)?.label;
+
   const [better, setBetter] = useState<boolean>(true);
-  useLayoutEffect(() => {
+  useEffect(() => {
     rootRef.current?.style.setProperty(
       "--game-color",
       better ? "var(--bronze11)" : "var(--green11)"
@@ -154,12 +159,10 @@ export default function ActiveGame() {
   return (
     <GameContext value={{ type: better ? "better" : "default" }}>
       <div ref={rootRef} className="mx-auto max-w-screen-sm space-y-2">
-        <h1 className="mt-4 text-xl">Kolo {lastRound}</h1>
+        <h1 className="text-xl">Kolo {lastRound}</h1>
         <Form className="space-y-4" method="post">
           <fieldset className="relative rounded border border-sage-7 bg-sage-2 px-3 py-3">
-            <legend className="text-green-12">
-              {calledGameTypes.find(({ value }) => value === called)?.label}
-            </legend>
+            <legend className="text-green-12">Zvolena hra</legend>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex w-full justify-between">
                 <GamePicker
@@ -208,6 +211,14 @@ export default function ActiveGame() {
                           onChange={setBetter}
                         >
                           <HeartBox />
+                        </FormControl>
+
+                        <FormControl
+                          name="sedma"
+                          label="Sedma"
+                          value="indeterminate"
+                        >
+                          <IndeterminateCheckbox />
                         </FormControl>
 
                         <FormControl
@@ -262,28 +273,88 @@ export default function ActiveGame() {
               </motion.div>
             </div>
           </fieldset>
-          <fieldset className="relative rounded border border-sage-7 bg-sage-2 p-4">
-            <legend className="text-green-12">{""}</legend>
+          <motion.fieldset
+            layout
+            className="relative rounded border border-sage-7 bg-sage-2 p-4"
+          >
+            <motion.legend
+              key={playedLegendLabel}
+              initial={{ y: -5, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-green-12"
+            >
+              {playedLegendLabel}
+            </motion.legend>
             <div className="flex flex-col items-center space-y-4">
-              <div className="flex w-full justify-between">
-                <div className="flex space-x-1">
-                  <Label name="gameType">Zvol hru</Label>
-                </div>
-              </div>
+              <FormControl
+                name="silentSeven"
+                label="Ticha sedma"
+                value="indeterminate"
+              >
+                <IndeterminateCheckbox />
+              </FormControl>
+
+              <FormControl name="mariage" label="Hlasky">
+                <Marriage />
+              </FormControl>
+
+              <FormControl
+                name="points"
+                label="Body"
+                value={points}
+                onChange={setPoints}
+              >
+                <Input type="number" min={0} max={90} step={10} />
+              </FormControl>
             </div>
-          </fieldset>
+          </motion.fieldset>
+
+          {called !== "betl" && called !== "durch" && (
+            <motion.fieldset
+              layout
+              className="relative rounded border border-sage-7 bg-sage-2 p-4"
+            >
+              <motion.legend
+                key={opositioniLegendLabel}
+                initial={{ y: -5, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                className="text-green-12"
+              >
+                {opositioniLegendLabel}
+              </motion.legend>
+              <div className="flex flex-col items-center space-y-4">
+                <FormControl
+                  name="silentSeven"
+                  label="Ticha sedma"
+                  value="indeterminate"
+                >
+                  <IndeterminateCheckbox />
+                </FormControl>
+
+                <FormControl name="mariage" label="Hlasky">
+                  <Marriage />
+                </FormControl>
+
+                <FormControl
+                  name="points"
+                  label="Body"
+                  value={points}
+                  onChange={setPoints}
+                >
+                  <Input type="number" min={0} max={90} step={10} />
+                </FormControl>
+              </div>
+            </motion.fieldset>
+          )}
 
           <div className="flex w-full justify-end">
-            <Button
-              color="game"
-              type="button"
-              size="large"
-              border
-              // className="flex h-12 w-48 items-center justify-center rounded border-2 border-green-7 bg-gradient-to-tr
-              //  from-green-2 via-sage-2 to-bronze-4 font-semibold text-green-12 hover:border-green-8"
-            >
-              Zapisat kolo
-            </Button>
+            <div className="w-48">
+              <Button color="game" type="button" size="large" border>
+                Zapisat kolo
+              </Button>
+            </div>
           </div>
         </Form>
       </div>

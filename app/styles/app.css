@@ -2071,6 +2071,10 @@ select {
   top: 0px;
 }
 
+.z-20 {
+  z-index: 20;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -2090,10 +2094,6 @@ select {
 
 .mt-1 {
   margin-top: 0.25rem;
-}
-
-.mt-4 {
-  margin-top: 1rem;
 }
 
 .mb-10 {
@@ -2196,16 +2196,16 @@ select {
   width: 1.75rem;
 }
 
+.w-5 {
+  width: 1.25rem;
+}
+
 .w-6 {
   width: 1.5rem;
 }
 
 .w-8 {
   width: 2rem;
-}
-
-.w-5 {
-  width: 1.25rem;
 }
 
 .w-4 {
@@ -2324,12 +2324,6 @@ select {
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
-.space-x-1 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.25rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
 .divide-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-x-reverse: 0;
   border-right-width: calc(2px * var(--tw-divide-x-reverse));
@@ -2402,8 +2396,8 @@ select {
   border-color: var(--red6);
 }
 
-.border-teal-7 {
-  border-color: var(--teal7);
+.border-green-7 {
+  border-color: var(--green7);
 }
 
 .border-gray-500 {
@@ -2418,10 +2412,6 @@ select {
 
 .border-sage-7 {
   border-color: var(--sage7);
-}
-
-.border-green-7 {
-  border-color: var(--green7);
 }
 
 .bg-sage-9 {
@@ -2461,41 +2451,12 @@ select {
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 
-.bg-teal-9 {
-  background-color: var(--teal9);
-}
-
-.bg-sage-4 {
-  background-color: var(--sage4);
-}
-
 .bg-green-9 {
   background-color: var(--green9);
 }
 
-.bg-gradient-to-tr {
-  background-image: linear-gradient(to top right, var(--tw-gradient-stops));
-}
-
-.from-teal-2 {
-  --tw-gradient-from: var(--teal2);
-  --tw-gradient-to: rgb(255 255 255 / 0);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-.from-green-2 {
-  --tw-gradient-from: var(--green2);
-  --tw-gradient-to: rgb(255 255 255 / 0);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-.via-sage-2 {
-  --tw-gradient-to: rgb(255 255 255 / 0);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--sage2), var(--tw-gradient-to);
-}
-
-.to-bronze-4 {
-  --tw-gradient-to: var(--bronze4);
+.bg-sage-4 {
+  background-color: var(--sage4);
 }
 
 .p-2 {
@@ -2528,6 +2489,11 @@ select {
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .px-2 {
@@ -2621,10 +2587,6 @@ select {
   font-weight: 500;
 }
 
-.font-semibold {
-  font-weight: 600;
-}
-
 .font-bold {
   font-weight: 700;
 }
@@ -2637,8 +2599,8 @@ select {
   color: var(--game-color);
 }
 
-.text-teal-12 {
-  color: var(--teal12);
+.text-sage-11 {
+  color: var(--sage11);
 }
 
 .text-red-9 {
@@ -2649,8 +2611,12 @@ select {
   color: var(--tealA12);
 }
 
-.text-teal-11 {
-  color: var(--teal11);
+.text-green-11 {
+  color: var(--green11);
+}
+
+.text-green-12 {
+  color: var(--green12);
 }
 
 .text-gray-700 {
@@ -2688,14 +2654,6 @@ select {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.text-green-12 {
-  color: var(--green12);
-}
-
-.text-green-11 {
-  color: var(--green11);
-}
-
 .underline {
   text-decoration-line: underline;
 }
@@ -2706,9 +2664,24 @@ select {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-sm {
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.shadow-sage-6 {
+  --tw-shadow-color: var(--sage6);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .transition {
@@ -2753,18 +2726,6 @@ input[type="number"]::-webkit-outer-spin-button {
   border-color: var(--red8);
 }
 
-.hover\:border-teal-8:hover {
-  border-color: var(--teal8);
-}
-
-.hover\:border-teal-9:hover {
-  border-color: var(--teal9);
-}
-
-.hover\:border-green-8:hover {
-  border-color: var(--green8);
-}
-
 .hover\:border-green-9:hover {
   border-color: var(--green9);
 }
@@ -2780,10 +2741,6 @@ input[type="number"]::-webkit-outer-spin-button {
 .hover\:bg-blue-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
-}
-
-.hover\:text-teal-10:hover {
-  color: var(--teal10);
 }
 
 .hover\:text-green-10:hover {
@@ -2812,6 +2769,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .active\:text-gray-7:active {
   color: var(--gray7);
+}
+
+.data-\[state\=on\]\:bg-game-bg-active-color[data-state=on] {
+  background-color: var(--game-bg-active-color);
 }
 
 .data-\[highlighted\]\:bg-sage-5[data-highlighted] {

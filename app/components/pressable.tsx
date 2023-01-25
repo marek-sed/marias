@@ -27,7 +27,7 @@ const pressableClass = cva(
       aspect: {
         square: "px-0 flex-grow-0",
       },
-      type: {
+      color: {
         game: "text-game-color",
         default: "text-sage-12",
       },
@@ -50,14 +50,14 @@ const pressableClass = cva(
       { aspect: "square", size: "large", className: "w-12" },
       {
         border: true,
-        type: "game",
+        color: "game",
         className:
           "border-game-border-color hover:border-game-border-hover-color",
       },
     ],
     defaultVariants: {
       size: "normal",
-      type: "default",
+      color: "default",
     },
   }
 );
@@ -65,7 +65,7 @@ type PressableVariantProps = VariantProps<typeof pressableClass>;
 type PressableOptions = PressableVariantProps & {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 };
-export function usePressable({ onClick, type }: PressableOptions) {
+export function usePressable({ onClick, color: type }: PressableOptions) {
   const controls = useAnimation();
 
   const { pressProps, isPressed } = usePress({
@@ -111,10 +111,11 @@ export const Pressable = forwardRef<HTMLButtonElement, Props>(
       <motion.button
         key={game?.type}
         ref={ref}
+        type="button"
         {...(pressProps as any)}
         {...buttonProps}
         animate={controls}
-        className={pressableClass({ size, aspect, type, border })}
+        className={pressableClass({ size, aspect, color: type, border })}
       >
         {children}
       </motion.button>

@@ -10,6 +10,7 @@ const buttonClass = cva(
   [
     "focus:ring-none outline-none",
     "relative",
+    "rounded",
     "flex flex-grow",
     "items-center",
     "justify-center",

@@ -73,20 +73,21 @@ export function IndeterminateCheckbox({
       className={checkboxClass()}
       checked={value}
       onCheckedChange={onCheckedChange}
+      asChild
     >
-      <rc.CheckboxIndicator forceMount asChild className={indicatorClass()}>
-        <Pressable>
+      <Pressable aspect="square" size="small" border>
+        <rc.CheckboxIndicator forceMount className={indicatorClass()}>
           {value === "indeterminate" ? (
-            <DividerHorizontalIcon className="h-7 w-7" />
+            <DividerHorizontalIcon className="h-7 w-5" />
           ) : (
             <CheckIcon className="h-7 w-7" />
           )}
-        </Pressable>
-      </rc.CheckboxIndicator>
+        </rc.CheckboxIndicator>
 
-      {value === false && (
-        <Cross1Icon className={cx("h-6 w-6", indicatorClass())} />
-      )}
+        {value === false && (
+          <Cross1Icon className={cx("h-6 w-6", indicatorClass())} />
+        )}
+      </Pressable>
     </rc.Root>
   );
 }

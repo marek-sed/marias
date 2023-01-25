@@ -76,7 +76,7 @@ export default function App() {
         <Links />
       </head>
       <body className="relative flex h-screen flex-col overflow-scroll bg-sage-1">
-        <header className="sticky top-0 flex h-16 justify-between space-x-4 border-b border-sage-6 bg-sage-2 py-4 px-6 text-2xl text-sage-12">
+        <header className="sticky top-0 z-20 flex h-16 justify-between space-x-4  border-sage-6 bg-sage-2 py-4 px-6 text-2xl text-sage-12 shadow-sm shadow-sage-6">
           <div className="flex items-center space-x-4">
             <h1 className="app-title">{currentMatch.handle?.title}</h1>
           </div>
@@ -85,7 +85,7 @@ export default function App() {
             <Menu />
           </div>
         </header>
-        <main className="h-full px-6 text-sage-12">
+        <main className="py-8 px-6 text-sage-12">
           <Outlet />
         </main>
         <ScrollRestoration />
