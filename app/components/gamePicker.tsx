@@ -2,7 +2,7 @@ import * as rrg from "@radix-ui/react-radio-group";
 import type { Option } from "./select";
 import { cva } from "class-variance-authority";
 import { motion } from "framer-motion";
-import { Touchable } from "./pressable";
+import { Touchable } from "./touchable";
 
 const rootClass = cva([
   "flex w-full divide-x-2 rounded border-2",

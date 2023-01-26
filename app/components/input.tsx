@@ -1,7 +1,7 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
 import { useCallback } from "react";
-import { Touchable } from "./pressable";
+import { Touchable } from "./touchable";
 
 const rootClass = cva(
   "border-2 border-game-border-color hover:border-game-border-hover-color  rounded ",

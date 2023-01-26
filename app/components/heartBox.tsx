@@ -2,7 +2,7 @@ import * as rc from "@radix-ui/react-checkbox";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
 import { AnimatePresence, motion } from "framer-motion";
-import { Touchable } from "./pressable";
+import { Touchable } from "./touchable";
 
 const checkboxClass = cva([
   "flex",

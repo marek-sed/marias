@@ -4,7 +4,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { MotionProps } from "framer-motion";
 import { motion, useAnimation } from "framer-motion";
-import { usePressable } from "./pressable";
+import { usePressable } from "./touchable";
 
 const buttonClass = cva(
   [

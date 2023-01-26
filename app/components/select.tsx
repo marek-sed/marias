@@ -1,6 +1,6 @@
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 import * as rs from "@radix-ui/react-select";
-import { Touchable } from "./pressable";
+import { Touchable } from "./touchable";
 import { motion } from "framer-motion";
 
 export type Option = { value: string; label: string };

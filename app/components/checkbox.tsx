@@ -6,7 +6,7 @@ import {
   DividerHorizontalIcon,
 } from "@radix-ui/react-icons";
 import { useCallback } from "react";
-import { Touchable } from "./pressable";
+import { Touchable } from "./touchable";
 
 const checkboxClass = cva([]);
 

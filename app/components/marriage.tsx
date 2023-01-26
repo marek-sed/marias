@@ -12,7 +12,7 @@ import {
 import * as rtg from "@radix-ui/react-toggle-group";
 import { cva } from "class-variance-authority";
 import { useState } from "react";
-import { Touchable } from "./pressable";
+import { Touchable } from "./touchable";
 
 const rootClass = cva([
   "flex divide-x-2 divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
