@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, MouseEvent } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { forwardRef } from "react";
-import { usePress } from "@react-aria/interactions";
+import { usePress, useHover } from "@react-aria/interactions";
 import { motion, useAnimation } from "framer-motion";
 import { useGameContext } from "./gameContext";
 import { cva } from "class-variance-authority";
@@ -78,11 +78,13 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
   let bg: string;
   let text: string;
   let textActive: string;
+  let hover: string;
   switch (color) {
     case "red": {
       active = "var(--red5)";
       textActive = "var(--red11)";
       bg = "var(--red1)";
+      hover = "var(--red3)";
       text = "var(--red9)";
       break;
     }
@@ -90,6 +92,7 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
       active = "var(--game-bg-active-color)";
       textActive = "var(--game-color-active)";
       bg = "var(--game-bg-color)";
+      hover = "var(--game-bg-hover-color)";
       text = "var(--game-color)";
       break;
     }
@@ -120,9 +123,31 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
     },
   });
 
+  const { hoverProps } = useHover({
+    onHoverStart: (e) => {
+      controls.stop();
+      controls.set({
+        background: hover,
+        color: text,
+        transition: {
+          duration: 0.2,
+        },
+      });
+    },
+    onHoverEnd: (e) => {
+      controls.start({
+        background: bg,
+        color: isPressed ? text : textActive,
+        transition: {
+          duration: 0.1,
+        },
+      });
+    },
+  });
+
   return {
     pressProps,
-    isPressed,
+    hoverProps,
     controls,
   };
 }
@@ -144,7 +169,7 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
     },
     ref
   ) => {
-    const { pressProps, controls } = usePressable({
+    const { pressProps, hoverProps, controls } = usePressable({
       onClick,
       isPressed,
       color,
@@ -157,6 +182,7 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
         ref={ref}
         type="button"
         {...(pressProps as any)}
+        {...(hoverProps as any)}
         {...buttonProps}
         animate={controls}
         className={touchableClass({

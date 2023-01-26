@@ -146,6 +146,11 @@ export default function ActiveGame() {
     );
 
     rootRef.current?.style.setProperty(
+      "--game-bg-hover-color",
+      better ? "var(--bronze3)" : "var(--green3)"
+    );
+
+    rootRef.current?.style.setProperty(
       "--game-bg-active-color",
       better ? "var(--bronze5)" : "var(--green5)"
     );
