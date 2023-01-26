@@ -6,7 +6,7 @@ import {
   DividerHorizontalIcon,
 } from "@radix-ui/react-icons";
 import { useCallback } from "react";
-import { Pressable } from "./pressable";
+import { Touchable } from "./pressable";
 
 const checkboxClass = cva([]);
 
@@ -30,11 +30,11 @@ export function Checkbox({ id, name, value, defaultValue, onChange }: Props) {
       onCheckedChange={onChange}
       asChild
     >
-      <Pressable aspect="square" size="small" border>
+      <Touchable aspect="square" size="normal" border color="game">
         <rc.CheckboxIndicator className={indicatorClass()}>
           <CheckIcon className="h-7 w-7" />
         </rc.CheckboxIndicator>
-      </Pressable>
+      </Touchable>
     </rc.Root>
   );
 }
@@ -75,7 +75,7 @@ export function IndeterminateCheckbox({
       onCheckedChange={onCheckedChange}
       asChild
     >
-      <Pressable aspect="square" size="small" border>
+      <Touchable aspect="square" border color="game">
         <rc.CheckboxIndicator forceMount className={indicatorClass()}>
           {value === "indeterminate" ? (
             <DividerHorizontalIcon className="h-7 w-5" />
@@ -87,7 +87,7 @@ export function IndeterminateCheckbox({
         {value === false && (
           <Cross1Icon className={cx("h-6 w-6", indicatorClass())} />
         )}
-      </Pressable>
+      </Touchable>
     </rc.Root>
   );
 }

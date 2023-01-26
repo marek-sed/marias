@@ -1,6 +1,7 @@
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
 import * as rs from "@radix-ui/react-select";
+import { Touchable } from "./pressable";
 
 export type Option = { value: string; label: string };
 type Props = {
@@ -35,11 +36,13 @@ export function Select({
       defaultValue={defaultValue}
       onValueChange={onChange}
     >
-      <rs.Trigger id={id} className={triggerClass()}>
-        <rs.Value placeholder={placeholder} />
-        <rs.Icon className="text-green-11 hover:text-green-10">
-          <ChevronDownIcon className="h-6 w-6" />
-        </rs.Icon>
+      <rs.Trigger id={id} asChild>
+        <Touchable className="flex-grow-0 gap-8 pl-3 pr-1" color="game" border>
+          <rs.Value placeholder={placeholder} />
+          <rs.Icon>
+            <ChevronDownIcon className="h-6 w-6" />
+          </rs.Icon>
+        </Touchable>
       </rs.Trigger>
       <rs.Portal className="z-10">
         <rs.Content>

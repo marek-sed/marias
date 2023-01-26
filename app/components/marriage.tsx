@@ -3,14 +3,11 @@ import {
   CropIcon,
   HeartFilledIcon,
   SquareIcon,
-  TextAlignCenterIcon,
-  TextAlignLeftIcon,
-  TextAlignRightIcon,
 } from "@radix-ui/react-icons";
 import * as rtg from "@radix-ui/react-toggle-group";
 import { cva } from "class-variance-authority";
 import { useState } from "react";
-import { Pressable } from "./pressable";
+import { Touchable } from "./pressable";
 
 const rootClass = cva([
   "flex divide-x-2 divide-game-border-color  border-game-border-color rounded border-2",
@@ -36,9 +33,9 @@ export function Marriage() {
         value="left"
         aria-label="Left aligned"
       >
-        <Pressable aspect="square">
+        <Touchable color="game" aspect="square">
           <SquareIcon />
-        </Pressable>
+        </Touchable>
       </rtg.Item>
       <rtg.Item
         asChild
@@ -46,9 +43,9 @@ export function Marriage() {
         value="center"
         aria-label="Center aligned"
       >
-        <Pressable aspect="square">
+        <Touchable color="game" aspect="square">
           <CropIcon />
-        </Pressable>
+        </Touchable>
       </rtg.Item>
 
       <rtg.Item
@@ -57,9 +54,9 @@ export function Marriage() {
         value="right"
         aria-label="Right aligned"
       >
-        <Pressable aspect="square">
+        <Touchable aspect="square">
           <CircleIcon />
-        </Pressable>
+        </Touchable>
       </rtg.Item>
 
       <rtg.Item
@@ -68,9 +65,9 @@ export function Marriage() {
         value="right"
         aria-label="Right aligned"
       >
-        <Pressable aspect="square">
+        <Touchable aspect="square">
           <HeartFilledIcon />
-        </Pressable>
+        </Touchable>
       </rtg.Item>
     </rtg.Root>
   );

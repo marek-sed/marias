@@ -1,31 +1,26 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import { cva } from "class-variance-authority";
 import { useCallback } from "react";
-import { Pressable } from "./pressable";
+import { Touchable } from "./pressable";
 
 const rootClass = cva(
-  "border-2 border-game-border-color hover:border-game-border-hover-color h-10 rounded ",
+  "border-2 border-game-border-color hover:border-game-border-hover-color  rounded ",
   {
     variants: {
       type: {
         text: "",
-        number: "flex h-10 items-center",
+        number: "flex  items-center",
       },
     },
   }
 );
 
 const inputClass = cva(
-  [
-    "text-lg",
-    "bg-game-bg-color text-tealA-12",
-    "h-9 border-none",
-    "focus:ring-0",
-  ],
+  ["text-lg", "bg-game-bg-color text-tealA-12", "border-none", "focus:ring-0"],
   {
     variants: {
       type: {
-        number: "text-right w-13",
+        number: "text-center w-11",
         text: "text-start",
       },
     },
@@ -77,18 +72,28 @@ export function Input({
   return (
     <div className={rootClass({ type })}>
       {type === "number" && (
-        <Pressable tabIndex={-1} onClick={decrement} aspect="square">
-          <MinusIcon className="h-6 w-6" />
-        </Pressable>
+        <Touchable
+          color="game"
+          tabIndex={-1}
+          onClick={decrement}
+          aspect="square"
+        >
+          <MinusIcon className="h-8 w-8" />
+        </Touchable>
       )}
       <input
         className={inputClass({ type: type })}
         {...{ type, min, max, step, value, onChange, defaultValue, ...props }}
       />
       {type === "number" && (
-        <Pressable tabIndex={-1} onClick={increment} aspect="square">
-          <PlusIcon className="h-6 w-6" />
-        </Pressable>
+        <Touchable
+          color="game"
+          tabIndex={-1}
+          onClick={increment}
+          aspect="square"
+        >
+          <PlusIcon className="h-8 w-8" />
+        </Touchable>
       )}
     </div>
   );

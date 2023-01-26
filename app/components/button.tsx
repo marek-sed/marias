@@ -24,7 +24,7 @@ const buttonClass = cva(
       },
       size: {
         small: "h-7 px-2",
-        normal: "h-9 px-4",
+        normal: "h-12 px-4",
         large: "h-12",
       },
       aspect: {

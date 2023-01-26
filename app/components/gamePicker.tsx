@@ -2,16 +2,16 @@ import * as rrg from "@radix-ui/react-radio-group";
 import type { Option } from "./select";
 import { cva } from "class-variance-authority";
 import { motion } from "framer-motion";
-import { Pressable } from "./pressable";
+import { Touchable } from "./pressable";
 
 const rootClass = cva([
-  "flex w-full divide-x-2 scale-1 rounded h-13 border-2",
+  "flex w-full divide-x-2 rounded border-2",
   "divide-game-border-color border-game-border-color",
   "font-medium",
 ]);
-const labelClass = cva(["cursor-pointer text-gray=12 block relative z-10"]);
+const labelClass = cva(["cursor-pointer  block relative z-10"]);
 const indicatorClass = cva(
-  ["absolute top-0 z-10", "h-12 w-full", "bg-game-bg-active-color"],
+  ["absolute z-10", "w-full", "bg-game-bg-active-color"],
   {
     variants: {
       position: {
@@ -54,7 +54,7 @@ export function GamePicker<T>({
     >
       {options.map(({ value, label }, index) => (
         <rrg.Item asChild key={value} value={value} id={value}>
-          <Pressable key={type} color="default" size="large">
+          <Touchable key={type} color="game">
             <rrg.Indicator asChild>
               <motion.div
                 layoutId={name}
@@ -74,7 +74,7 @@ export function GamePicker<T>({
               />
             </rrg.Indicator>
             <label className={labelClass()}>{label}</label>
-          </Pressable>
+          </Touchable>
         </rrg.Item>
       ))}
     </rrg.Root>

@@ -123,7 +123,7 @@ export default function ActiveGame() {
     ? oposition.map((p) => p.name).join(", ")
     : playerOptions.find((opt) => opt.value === playedBy)?.label;
 
-  const [better, setBetter] = useState<boolean>(true);
+  const [better, setBetter] = useState<boolean>(false);
   useEffect(() => {
     rootRef.current?.style.setProperty(
       "--game-color",
