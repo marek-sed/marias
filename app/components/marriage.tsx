@@ -1,5 +1,13 @@
-import { GiSpades, GiHearts, GiClubs, GiDiamonds } from "react-icons/gi";
-import { HeartIcon } from "@radix-ui/react-icons";
+import {
+  BsHeart,
+  BsHeartFill,
+  BsSuitClub,
+  BsSuitClubFill,
+  BsSuitDiamond,
+  BsSuitDiamondFill,
+  BsSuitSpade,
+  BsSuitSpadeFill,
+} from "react-icons/bs";
 
 import * as rtg from "@radix-ui/react-toggle-group";
 import { cva } from "class-variance-authority";
@@ -8,10 +16,6 @@ import { Touchable } from "./pressable";
 
 const rootClass = cva([
   "flex divide-x-2 divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
-]);
-
-const itemClass = cva([
-  "data-[state=on]:bg-game-bg-active-color hover:border-game-border-hover-color",
 ]);
 
 export function Marriage() {
@@ -26,40 +30,52 @@ export function Marriage() {
       }}
       aria-label="Text alignment"
     >
-      <rtg.Item asChild value="spades" aria-label="Left aligned">
+      <rtg.Item asChild value="spade" aria-label="spade">
         <Touchable color="game" aspect="square">
-          <GiSpades className="h-5 w-5" />
+          {!value.includes("spade") ? (
+            <BsSuitSpade className="h-6 w-6" />
+          ) : (
+            <BsSuitSpadeFill className="h-6 w-6" />
+          )}
         </Touchable>
       </rtg.Item>
-      <rtg.Item asChild value="center" aria-label="Center aligned">
+      <rtg.Item asChild value="club" aria-label="club">
         <Touchable color="game" aspect="square">
-          <GiClubs className="h-5 w-5" />
+          {!value.includes("club") ? (
+            <BsSuitClub className="h-6 w-6" />
+          ) : (
+            <BsSuitClubFill className="h-6 w-6" />
+          )}
         </Touchable>
       </rtg.Item>
 
       <rtg.Item
         asChild
         className="ToggleGroupItem"
-        value="diamonds"
-        aria-label="Diamonds"
+        value="diamond"
+        aria-label="diamond"
       >
-        <Touchable
-          isPressed={value.includes("diamonds")}
-          color="game"
-          aspect="square"
-        >
-          <GiDiamonds className="h-5 w-5" />
+        <Touchable color="game" aspect="square">
+          {!value.includes("diamond") ? (
+            <BsSuitDiamond className="h-6 w-6" />
+          ) : (
+            <BsSuitDiamondFill className="h-6 w-6" />
+          )}
         </Touchable>
       </rtg.Item>
 
       <rtg.Item
         asChild
         className="ToggleGroupItem"
-        value="right"
-        aria-label="Right aligned"
+        value="heart"
+        aria-label="heart"
       >
         <Touchable color="red" aspect="square">
-          <HeartIcon className="h-6 w-6 text-red-9" />
+          {!value.includes("heart") ? (
+            <BsHeart className="h-6 w-6" />
+          ) : (
+            <BsHeartFill className="h-6 w-6" />
+          )}
         </Touchable>
       </rtg.Item>
     </rtg.Root>
