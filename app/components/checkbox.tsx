@@ -32,7 +32,7 @@ export function Checkbox({ id, name, value, defaultValue, onChange }: Props) {
     >
       <Touchable aspect="square" size="normal" border color="game">
         <rc.CheckboxIndicator className={indicatorClass()}>
-          <CheckIcon className="h-7 w-7" />
+          <CheckIcon className="h-9 w-9" />
         </rc.CheckboxIndicator>
       </Touchable>
     </rc.Root>

@@ -5,7 +5,10 @@ module.exports = {
     extend: {
       colors: {
         "game-color": "var(--game-color)",
+        "game-color-hover": "var(--game-color-hover)",
+        "game-color-active": "var(--game-color-active)",
         "game-bg-color": "var(--game-bg-color)",
+        "game-bg-hover-color": "var(--game-bg-hover-color)",
         "game-bg-active-color": "var(--game-bg-active-color)",
         "game-border-color": "var(--game-border-color)",
         "game-border-hover-color": "var(--game-border-hover-color)",

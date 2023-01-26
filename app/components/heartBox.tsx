@@ -7,8 +7,8 @@ import { Touchable } from "./pressable";
 const checkboxClass = cva([
   "flex",
   "rounded",
-  "bg-red-3",
-  "hover:bg-red-4",
+  "bg-red-1",
+  "hover:bg-red-2",
   "active:bg-red-3 active:text-gray-7",
   "items-center justify-center",
   "border-red-6 hover:border-red-8 border-2",

@@ -9,7 +9,7 @@ const rootClass = cva([
   "divide-game-border-color border-game-border-color",
   "font-medium",
 ]);
-const labelClass = cva(["cursor-pointer  block relative z-10"]);
+const labelClass = cva(["cursor-pointer block relative z-10"]);
 const indicatorClass = cva(
   ["absolute z-10", "w-full", "bg-game-bg-active-color"],
   {

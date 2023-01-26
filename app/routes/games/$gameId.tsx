@@ -102,7 +102,7 @@ export default function ActiveGame() {
 
   const [playedBy, setPlayedBy] = useState(actor.id);
   const [counter100, setCounter100] = useState(false);
-  const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
+  const [called, setCalled] = useState<GameType>(calledGameTypes[2].value);
 
   const onGameChanged = useCallback(
     (called: GameType) => {
@@ -131,8 +131,18 @@ export default function ActiveGame() {
     );
 
     rootRef.current?.style.setProperty(
+      "--game-color-hover",
+      better ? "var(--bronze10)" : "var(--green10)"
+    );
+
+    rootRef.current?.style.setProperty(
+      "--game-color-active",
+      better ? "var(--bronze11)" : "var(--green11)"
+    );
+
+    rootRef.current?.style.setProperty(
       "--game-bg-color",
-      better ? "var(--bronze3)" : "var(--green3)"
+      better ? "var(--bronze1)" : "var(--green1)"
     );
 
     rootRef.current?.style.setProperty(

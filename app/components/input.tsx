@@ -9,18 +9,24 @@ const rootClass = cva(
     variants: {
       type: {
         text: "",
-        number: "flex  items-center",
+        number: "flex items-center",
       },
     },
   }
 );
 
 const inputClass = cva(
-  ["text-lg", "bg-game-bg-color text-tealA-12", "border-none", "focus:ring-0"],
+  [
+    "text-lg",
+    "text-start",
+    "bg-game-bg-color text-green-12",
+    "border-none",
+    "focus:ring-0",
+  ],
   {
     variants: {
       type: {
-        number: "text-center w-11",
+        number: "w-11",
         text: "text-start",
       },
     },

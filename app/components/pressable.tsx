@@ -6,23 +6,24 @@ import { motion, useAnimation } from "framer-motion";
 import { useGameContext } from "./gameContext";
 import { cva } from "class-variance-authority";
 
-const colorVariants = cva("text-sage-12", {
-  variants: {},
-});
-
 const touchableClass = cva(
   [
     "focus:ring-none outline-none",
     "relative",
-    "flex flex-grow",
+    "flex flex-grow flex-shrink-0",
     "items-center",
-    "justify-center",
+    "justify-start",
     "bg-game-bg-color",
     "transition-colors",
     "duration-400",
   ],
   {
     variants: {
+      align: {
+        start: "justify-start",
+        center: "justify-center",
+        end: "justify-end",
+      },
       size: {
         normal: "h-11",
       },
@@ -31,9 +32,9 @@ const touchableClass = cva(
       },
       color: {
         default: "text-sage-12",
-        red: "text-red-9 bg-red-3",
-        green: "text-green-1",
-        game: "text-game-color",
+        red: "text-red-9 bg-red-1",
+        green: "text-green-3",
+        game: "text-game-color hover:text-game-color-hover",
       },
       border: {
         true: "border-2 rounded",
@@ -61,42 +62,47 @@ const touchableClass = cva(
     defaultVariants: {
       size: "normal",
       color: "default",
+      align: "center",
     },
   }
 );
 type TouchableVariantProps = VariantProps<typeof touchableClass>;
 type TouchableOptions = TouchableVariantProps & {
+  isPressed?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   color: TouchableVariantProps["color"];
 };
-export function usePressable({ onClick, color }: TouchableOptions) {
+export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
   const controls = useAnimation();
   let active: string;
   let bg: string;
   let text: string;
+  let textActive: string;
   switch (color) {
     case "red": {
       active = "var(--red5)";
-      bg = "var(--red3)";
+      textActive = "var(--red11)";
+      bg = "var(--red1)";
       text = "var(--red9)";
       break;
     }
     case "game": {
       active = "var(--game-bg-active-color)";
+      textActive = "var(--game-color-active)";
       bg = "var(--game-bg-color)";
       text = "var(--game-color)";
       break;
     }
   }
 
-  const { pressProps, isPressed } = usePress({
+  const { pressProps } = usePress({
     onPressStart: () => {
       controls.stop();
       controls.set({
         background: active,
-        color: "text",
+        color: text,
         transition: {
-          duration: 0.4,
+          duration: 0.3,
         },
       });
     },
@@ -106,7 +112,7 @@ export function usePressable({ onClick, color }: TouchableOptions) {
     onPressEnd: (e) => {
       controls.start({
         background: bg,
-        color: text,
+        color: isPressed ? text : textActive,
         transition: {
           duration: 0.2,
         },
@@ -125,20 +131,25 @@ type Props = TouchableOptions & ButtonHTMLAttributes<HTMLButtonElement>;
 export const Touchable = forwardRef<HTMLButtonElement, Props>(
   (
     {
+      isPressed,
       children,
       aspect,
       size,
       onClick,
       color,
+      align,
       border,
       className,
       ...buttonProps
     },
     ref
   ) => {
-    const { pressProps, controls } = usePressable({ onClick, color });
+    const { pressProps, controls } = usePressable({
+      onClick,
+      isPressed,
+      color,
+    });
     const game = useGameContext();
-    // const type = game?.type ? "game" : "default";
 
     return (
       <motion.button
@@ -148,7 +159,14 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
         {...(pressProps as any)}
         {...buttonProps}
         animate={controls}
-        className={touchableClass({ size, aspect, color, border, className })}
+        className={touchableClass({
+          size,
+          aspect,
+          color,
+          border,
+          align,
+          className,
+        })}
       >
         {children}
       </motion.button>
