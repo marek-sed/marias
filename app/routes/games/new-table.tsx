@@ -49,7 +49,7 @@ export default function NewTable() {
               <select
                 name="position"
                 defaultValue={players?.[chairPosition]?.id}
-                className="ml-5 w-48 rounded border-b bg-sage-4"
+                className="ml-5 w-48 rounded border-b bg-gray-4"
               >
                 {players.map((player) => (
                   <option key={player.id} value={player.id}>
@@ -68,7 +68,7 @@ export default function NewTable() {
               Stolicka {chairPosition + 1}
               <select
                 name={`chair${chairPosition + 1}`}
-                className="ml-5 w-48 rounded border-b bg-sage-4"
+                className="ml-5 w-48 rounded border-b bg-gray-4"
               >
                 <option value="">nehra</option>
                 {players.map((player) => (

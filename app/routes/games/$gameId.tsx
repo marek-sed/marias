@@ -176,7 +176,7 @@ export default function ActiveGame() {
       <div ref={rootRef} className="mx-auto max-w-screen-sm space-y-2">
         <h1 className="text-xl">Kolo {lastRound}</h1>
         <Form className="space-y-4" method="post">
-          <fieldset className="relative rounded border border-sage-7 bg-sage-2 px-3 py-3">
+          <fieldset className="relative rounded border border-gray-7 bg-gray-2 px-3 py-3">
             <legend className="text-green-12">Zvolena hra</legend>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex w-full justify-between">
@@ -290,7 +290,7 @@ export default function ActiveGame() {
           </fieldset>
           <motion.fieldset
             layout
-            className="relative rounded border border-sage-7 bg-sage-2 p-4"
+            className="relative rounded border border-gray-7 bg-gray-2 p-4"
           >
             <motion.legend
               key={playedLegendLabel}
@@ -328,7 +328,7 @@ export default function ActiveGame() {
           {called !== "betl" && called !== "durch" && (
             <motion.fieldset
               layout
-              className="relative rounded border border-sage-7 bg-sage-2 p-4"
+              className="relative rounded border border-gray-7 bg-gray-2 p-4"
             >
               <motion.legend
                 key={opositioniLegendLabel}

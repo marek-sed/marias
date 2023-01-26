@@ -23,7 +23,7 @@ function NewTable() {
     return <span>nope</span>;
   }
   return (
-    <Link className="rounded bg-green-9 p-2 text-sage-12" to="/games/new-table">
+    <Link className="rounded bg-green-9 p-2 text-gray-12" to="/games/new-table">
       <PlusIcon />
     </Link>
   );
@@ -37,7 +37,7 @@ export default function GamesIndex() {
         {games.map((game) => {
           return (
             <article
-              className="cursor-pointer rounded border border-sage-7 px-4 py-2 transition ease-in-out hover:scale-105 hover:border-2 hover:border-green-9"
+              className="cursor-pointer rounded border border-gray-7 px-4 py-2 transition ease-in-out hover:scale-105 hover:border-2 hover:border-green-9"
               key={game.id}
             >
               <Link to={game.id}>

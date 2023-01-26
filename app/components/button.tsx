@@ -33,7 +33,7 @@ const buttonClass = cva(
       },
       color: {
         game: "text-game-color",
-        default: "text-sage-12",
+        default: "text-gray-12",
       },
     },
     compoundVariants: [

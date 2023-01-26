@@ -31,7 +31,7 @@ const touchableClass = cva(
         square: "px-0 flex-grow-0",
       },
       color: {
-        default: "text-sage-12",
+        default: "text-gray-12",
         red: "text-red-9 bg-red-1",
         green: "text-green-3",
         game: "text-game-color hover:text-game-color-hover",
