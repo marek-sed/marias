@@ -16,7 +16,7 @@ export function useGameTheme(better: boolean) {
 
     rootRef.current?.style.setProperty(
       "--game-color-active",
-      better ? "var(--bronze11)" : "var(--grass11)"
+      better ? "var(--bronze11)" : "var(--grass10)"
     );
 
     rootRef.current?.style.setProperty(

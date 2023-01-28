@@ -1,3 +1,5 @@
+import { ReactNode, useCallback } from "react";
+import type { MarriageType } from "~/utils/types";
 import {
   BsHeart,
   BsHeartFill,
@@ -11,9 +13,37 @@ import {
 
 import * as rtg from "@radix-ui/react-toggle-group";
 import { cva } from "class-variance-authority";
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
 import { Touchable } from "./touchable";
-import { MarriageType } from "~/utils/types";
+
+type MarriageContextType = {
+  actor: MarriageType[];
+  opposition: MarriageType[];
+  setActor: (v: MarriageType[]) => void;
+  setOpposition: (v: MarriageType[]) => void;
+};
+const MarriageContext = createContext<MarriageContextType>({
+  actor: [],
+  opposition: [],
+  setActor: (v: MarriageType[]) => {},
+  setOpposition: (v: MarriageType[]) => {},
+});
+function useMarriageContext() {
+  return useContext(MarriageContext);
+}
+
+export function MarriageProvider({ children }: { children: ReactNode }) {
+  const [actor, setActor] = useState<MarriageType[]>([]);
+  const [opposition, setOpposition] = useState<MarriageType[]>([]);
+
+  return (
+    <MarriageContext.Provider
+      value={{ actor, opposition, setActor, setOpposition }}
+    >
+      {children}
+    </MarriageContext.Provider>
+  );
+}
 
 const rootClass = cva([
   "flex divide-x-2 divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
@@ -22,19 +52,41 @@ const rootClass = cva([
 type Props = {
   value?: MarriageType[];
   onChange?: (v: MarriageType[]) => void;
+  playedBy: string;
 };
-export function Marriage({ value, onChange }: Props) {
+export function Marriage({ value, onChange, playedBy }: Props) {
+  const { actor, opposition, setActor, setOpposition } = useMarriageContext();
+  const disabled = playedBy === "actor" ? opposition : actor;
+  const setDisabled = useCallback(
+    (value: MarriageType[]) => {
+      if (playedBy === "actor") {
+        setActor(value);
+      } else {
+        setOpposition(value);
+      }
+    },
+    [playedBy, setActor, setOpposition]
+  );
+
   return (
     <rtg.Root
       className={rootClass()}
       type="multiple"
       value={value}
       onValueChange={(value) => {
-        if (value) onChange?.(value as MarriageType[]);
+        if (value) {
+          onChange?.(value as MarriageType[]);
+          setDisabled(value as MarriageType[]);
+        }
       }}
       aria-label="Text alignment"
     >
-      <rtg.Item asChild value="spade" aria-label="spade">
+      <rtg.Item
+        asChild
+        value="spade"
+        disabled={disabled.includes("spade")}
+        aria-label="spade"
+      >
         <Touchable color="game" aspect="square">
           {!value?.includes("spade") ? (
             <BsSuitSpade className="h-6 w-6" />
@@ -43,7 +95,12 @@ export function Marriage({ value, onChange }: Props) {
           )}
         </Touchable>
       </rtg.Item>
-      <rtg.Item asChild value="club" aria-label="club">
+      <rtg.Item
+        asChild
+        value="club"
+        disabled={disabled.includes("club")}
+        aria-label="club"
+      >
         <Touchable color="game" aspect="square">
           {!value?.includes("club") ? (
             <BsSuitClub className="h-6 w-6" />
@@ -55,6 +112,7 @@ export function Marriage({ value, onChange }: Props) {
 
       <rtg.Item
         asChild
+        disabled={disabled.includes("diamond")}
         className="ToggleGroupItem"
         value="diamond"
         aria-label="diamond"
@@ -70,6 +128,7 @@ export function Marriage({ value, onChange }: Props) {
 
       <rtg.Item
         asChild
+        disabled={disabled.includes("heart")}
         className="ToggleGroupItem"
         value="heart"
         aria-label="heart"

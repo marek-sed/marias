@@ -32,7 +32,7 @@ export function Select({
     >
       <rs.Trigger id={id} asChild>
         <Touchable
-          className="flex flex-grow-0 gap-8 pl-3 pr-1"
+          className="flex flex-grow-0 gap-8 pl-3 pr-1 text-lg"
           color="game"
           border
         >
@@ -55,8 +55,8 @@ export function Select({
                 <rs.Item key={opt.value} value={opt.value} asChild>
                   <Touchable
                     align="start"
-                    className="gap-8 rounded px-2  
-                 data-[highlighted]:bg-gray-5"
+                    className="gap-8 rounded px-2
+                 text-lg data-[highlighted]:bg-gray-5"
                     color="default"
                   >
                     <rs.ItemText className="block w-full flex-grow py-2">

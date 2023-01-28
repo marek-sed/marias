@@ -7,7 +7,7 @@ import { HeartBox } from "../heartBox";
 import { SevenBox, SevenProvider } from "./seven";
 import { Input } from "../input";
 import { Fieldset } from "../fieldset";
-import { Marriage } from "../marriage";
+import { Marriage, MarriageProvider } from "../marriage";
 
 type Props = {
   called: string;
@@ -75,7 +75,7 @@ function Player({ legend, marriage, seven, points }: PlayedProps) {
         </FormControl>
 
         <FormControl name="mariage" label="Hlasky" {...marriage}>
-          <Marriage />
+          <Marriage playedBy="actor" />
         </FormControl>
 
         <FormControl name="points" label="Body" {...points}>
@@ -108,7 +108,7 @@ function Opposition({ legend, seven, points }: OppositionProps) {
           value={marriage}
           onChange={setMarriage}
         >
-          <Marriage />
+          <Marriage playedBy="opposition" />
         </FormControl>
 
         <FormControl name="points" label="Body">
@@ -137,22 +137,24 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
   const [marriage, setMarriage] = useState<MarriageType[]>([]);
 
   return (
-    <SevenProvider>
-      <Player
-        legend={player.label!}
-        points={{ value: points, onChange: setPoints }}
-        seven={{ value: seven, onChange: setSeven }}
-        marriage={{ value: marriage, onChange: setMarriage }}
-      />
-      <Opposition
-        legend={opposition.label!}
-        points={90 - points}
-        married={marriage}
-        seven={{
-          value: oppositionSeven,
-          onChange: setOppositionSeven,
-        }}
-      />
-    </SevenProvider>
+    <MarriageProvider>
+      <SevenProvider>
+        <Player
+          legend={player.label!}
+          points={{ value: points, onChange: setPoints }}
+          seven={{ value: seven, onChange: setSeven }}
+          marriage={{ value: marriage, onChange: setMarriage }}
+        />
+        <Opposition
+          legend={opposition.label!}
+          points={90 - points}
+          married={marriage}
+          seven={{
+            value: oppositionSeven,
+            onChange: setOppositionSeven,
+          }}
+        />
+      </SevenProvider>
+    </MarriageProvider>
   );
 }
