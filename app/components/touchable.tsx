@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, MouseEvent } from "react";
 import type { VariantProps } from "class-variance-authority";
-import { forwardRef } from "react";
+import { forwardRef, useEffect } from "react";
 import { usePress, useHover } from "@react-aria/interactions";
 import { motion, useAnimation } from "framer-motion";
 import { useGameContext } from "./gameContext";
@@ -16,6 +16,7 @@ const touchableClass = cva(
     "bg-game-bg-color",
     "transition-colors",
     "duration-400",
+    "disabled:cursor-not-allowed disabled:opacity-40 disabled:border-gray-5 disabled:text-gray-11",
   ],
   {
     variants: {
@@ -51,12 +52,17 @@ const touchableClass = cva(
         border: true,
         color: "game",
         className:
-          "border-game-border-color hover:border-game-border-hover-color",
+          "border-game-border-color hover:border-game-border-hover-color disabled:hover:border-gray-5",
       },
       {
         border: true,
         color: "red",
         className: "border-red-6 hover:border-red-7",
+      },
+      {
+        border: true,
+        color: "default",
+        className: "border-gray-6 hover:border-gray-7",
       },
     ],
     defaultVariants: {
@@ -68,17 +74,18 @@ const touchableClass = cva(
 );
 type TouchableVariantProps = VariantProps<typeof touchableClass>;
 type TouchableOptions = TouchableVariantProps & {
-  isPressed?: boolean;
+  disabled?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   color: TouchableVariantProps["color"];
 };
-export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
-  const controls = useAnimation();
-  let active: string;
-  let bg: string;
-  let text: string;
-  let textActive: string;
-  let hover: string;
+
+function resolveColor(color: TouchableOptions["color"]) {
+  let active,
+    textActive,
+    bg,
+    hover,
+    text = "";
+
   switch (color) {
     case "red": {
       active = "var(--red5)";
@@ -96,9 +103,52 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
       text = "var(--game-color)";
       break;
     }
+    case "default": {
+      active = "var(--gray5)";
+      textActive = "var(--gray11)";
+      bg = "var(--gray3)";
+      hover = "var(--gray4)";
+      text = "var(--gray11)";
+    }
   }
 
+  return { active, textActive, bg, hover, text };
+}
+
+export function usePressable({
+  onClick,
+  color,
+  disabled: isDisabled,
+}: TouchableOptions) {
+  const controls = useAnimation();
+  const { active, bg, hover, text, textActive } = resolveColor(color);
+
+  useEffect(() => {
+    const { bg, textActive } = resolveColor(color);
+    if (isDisabled) {
+      controls.start({
+        background: "var(--gray4)",
+        color: "var(--gray11)",
+        transition: {
+          duration: 0,
+        },
+      });
+    } else {
+      controls.start({
+        background: bg,
+        color: textActive,
+        transition: {
+          duration: 0,
+        },
+      });
+    }
+    return () => {
+      controls.stop();
+    };
+  }, [isDisabled, controls, color]);
+
   const { pressProps } = usePress({
+    isDisabled,
     onPressStart: () => {
       controls.stop();
       controls.set({
@@ -115,7 +165,7 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
     onPressEnd: (e) => {
       controls.start({
         background: bg,
-        color: isPressed ? text : textActive,
+        color: textActive,
         transition: {
           duration: 0.2,
         },
@@ -124,6 +174,7 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
   });
 
   const { hoverProps } = useHover({
+    isDisabled,
     onHoverStart: (e) => {
       controls.stop();
       controls.set({
@@ -137,7 +188,7 @@ export function usePressable({ onClick, color, isPressed }: TouchableOptions) {
     onHoverEnd: (e) => {
       controls.start({
         background: bg,
-        color: isPressed ? text : textActive,
+        color: textActive,
         transition: {
           duration: 0.1,
         },
@@ -156,7 +207,7 @@ type Props = TouchableOptions & ButtonHTMLAttributes<HTMLButtonElement>;
 export const Touchable = forwardRef<HTMLButtonElement, Props>(
   (
     {
-      isPressed,
+      disabled: isDisabled = false,
       children,
       aspect,
       size,
@@ -170,8 +221,8 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
     ref
   ) => {
     const { pressProps, hoverProps, controls } = usePressable({
+      disabled: isDisabled,
       onClick,
-      isPressed,
       color,
     });
     const game = useGameContext();
@@ -184,6 +235,7 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
         {...(pressProps as any)}
         {...(hoverProps as any)}
         {...buttonProps}
+        disabled={isDisabled}
         animate={controls}
         className={touchableClass({
           size,
@@ -200,4 +252,4 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
   }
 );
 
-Touchable.displayName = "Pressable";
+Touchable.displayName = "Touchable";

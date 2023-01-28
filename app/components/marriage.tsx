@@ -13,26 +13,30 @@ import * as rtg from "@radix-ui/react-toggle-group";
 import { cva } from "class-variance-authority";
 import { useState } from "react";
 import { Touchable } from "./touchable";
+import { MarriageType } from "~/utils/types";
 
 const rootClass = cva([
   "flex divide-x-2 divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
 ]);
 
-export function Marriage() {
-  const [value, setValue] = useState(["spades"]);
+type Props = {
+  value?: MarriageType[];
+  onChange?: (v: MarriageType[]) => void;
+};
+export function Marriage({ value, onChange }: Props) {
   return (
     <rtg.Root
       className={rootClass()}
       type="multiple"
       value={value}
       onValueChange={(value) => {
-        if (value) setValue(value);
+        if (value) onChange?.(value as MarriageType[]);
       }}
       aria-label="Text alignment"
     >
       <rtg.Item asChild value="spade" aria-label="spade">
         <Touchable color="game" aspect="square">
-          {!value.includes("spade") ? (
+          {!value?.includes("spade") ? (
             <BsSuitSpade className="h-6 w-6" />
           ) : (
             <BsSuitSpadeFill className="h-6 w-6" />
@@ -41,7 +45,7 @@ export function Marriage() {
       </rtg.Item>
       <rtg.Item asChild value="club" aria-label="club">
         <Touchable color="game" aspect="square">
-          {!value.includes("club") ? (
+          {!value?.includes("club") ? (
             <BsSuitClub className="h-6 w-6" />
           ) : (
             <BsSuitClubFill className="h-6 w-6" />
@@ -56,7 +60,7 @@ export function Marriage() {
         aria-label="diamond"
       >
         <Touchable color="game" aspect="square">
-          {!value.includes("diamond") ? (
+          {!value?.includes("diamond") ? (
             <BsSuitDiamond className="h-6 w-6" />
           ) : (
             <BsSuitDiamondFill className="h-6 w-6" />
@@ -71,7 +75,7 @@ export function Marriage() {
         aria-label="heart"
       >
         <Touchable color="red" aspect="square">
-          {!value.includes("heart") ? (
+          {!value?.includes("heart") ? (
             <BsHeart className="h-6 w-6" />
           ) : (
             <BsHeartFill className="h-6 w-6" />

@@ -1,7 +1,10 @@
 import * as rc from "@radix-ui/react-checkbox";
-import { HeartFilledIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, HeartFilledIcon } from "@radix-ui/react-icons";
+import { GiHastyGrave } from "react-icons/gi";
 import { cva } from "class-variance-authority";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useCallback } from "react";
+import type { IndeterminateBool } from "~/utils/types";
 import { Touchable } from "./touchable";
 
 const checkboxClass = cva([
@@ -17,12 +20,13 @@ const indicatorClass = cva(["text-red-9"]);
 
 const MotionHeart = motion(HeartFilledIcon, { forwardMotionProps: true });
 
-type Props = {
+type Props<T = boolean> = {
   id?: string;
   name?: string;
-  value?: boolean;
-  defaultValue?: boolean;
-  onChange?: (checked: boolean) => void;
+  value?: T;
+  defaultValue?: T;
+  onChange?: (checked: T) => void;
+  isDisabled?: boolean;
 };
 export function HeartBox({ id, name, value, defaultValue, onChange }: Props) {
   return (
@@ -37,22 +41,20 @@ export function HeartBox({ id, name, value, defaultValue, onChange }: Props) {
     >
       <Touchable border aspect="square" color="red">
         <rc.CheckboxIndicator className={indicatorClass()}>
-          <AnimatePresence>
-            <MotionHeart
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-                repeat: 100,
-                repeatType: "loop",
-                repeatDelay: 0.3,
-              }}
-              initial={{ scale: 1 }}
-              animate={{
-                scale: 1.15,
-              }}
-              className="h-7 w-7"
-            />
-          </AnimatePresence>
+          <MotionHeart
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+              repeat: 100,
+              repeatType: "loop",
+              repeatDelay: 0.3,
+            }}
+            initial={{ scale: 1 }}
+            animate={{
+              scale: 1.15,
+            }}
+            className="h-7 w-7"
+          />
         </rc.CheckboxIndicator>
       </Touchable>
     </rc.Root>
