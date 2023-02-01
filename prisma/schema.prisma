@@ -26,76 +26,116 @@ model Password {
 }
 
 model Player {
-  id     String          @id @default(cuid())
-  name   String          @unique
-  rounds PlayerInRound[]
-  games  PlayerInGame[]
+  id    String  @id @default(cuid())
+  name  String  @unique
+  games Table[]
+  Round Round[]
 }
 
-model Stake {
-  id            String @id @default(cuid())
-  game          Int
-  betterGame    Int
-  seven         Int
-  betterSeven   Int
-  hundred       Int
-  betterHundred Int
-  hundredSeven  Int
-  betl          Int
-  durch         Int
+model GameType {
+  name  String  @id
+  rate  Int
+  Round Round[]
 }
 
 model Game {
-  id        String         @id @default(cuid())
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   rounds    Round[]
-  user      User?          @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
   userId    String?
-  players   PlayerInGame[]
-  isActive  Boolean        @default(false)
+  players   Table[]
+  isActive  Boolean  @default(false)
+
+  @@map("GameSession")
 }
 
-model PlayerInGame {
-  game       Game   @relation(fields: [gameId], references: [id])
-  player     Player @relation(fields: [playerId], references: [id])
-  position   Int
-  gameId     String
-  playerId   String
-  totalScore Int    @default(0)
+model Table {
+  game     Game   @relation(fields: [gameId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
+  position Int
+  gameId   String
+  playerId String
 
   @@id([gameId, playerId])
   @@unique([gameId, playerId, position])
 }
 
-model PlayerInRound {
-  round  Round  @relation(fields: [roundId], references: [id])
-  player Player @relation(fields: [playerId], references: [id])
-
-  roundId  String
-  playerId String
-  score    Int
-
-  @@id([roundId, playerId])
-}
-
-model Result {
-  id            String @id @default(cuid())
-  game          Int
-  betterGame    Int
-  seven         Int
-  betterSeven   Int
-  hundred       Int
-  betterHundred Int
-  hundredSeven  Int
-  betl          Int
-  durch         Int
-}
-
 model Round {
-  id      String          @id @default(cuid())
-  number  Int
-  gameId  String
-  game    Game            @relation(fields: [gameId], references: [id])
-  players PlayerInRound[]
+  number   Int
+  gameId   String
+  game     Game   @relation(fields: [gameId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId String
+
+  gameType        GameType         @relation(fields: [gameTypeName], references: [name])
+  gameTypeName    String
+  ColorGameResult ColorGameResult?
+  TrickGameResult TrickGameResult?
+
+  playerScore     Int @default(0)
+  oppositionScore Int @default(0)
+
+  @@id([gameId, number])
+  @@unique([gameId, number, playerId])
+}
+
+model ColorGameResult {
+  gameId      String
+  roundNumber Int
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number])
+
+  flekCount    Int
+  gameOfHearts Boolean
+
+  seven    Seven?
+  marriage Marriage[]
+
+  points Int
+
+  @@id([gameId, roundNumber])
+  @@map("round.colorResult")
+}
+
+model Seven {
+  gameId      String
+  roundNumber Int
+  // player | opposition
+  role        String
+
+  silent          Boolean
+  won             Boolean
+  ColorGameResult ColorGameResult @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
+
+  @@id([gameId, roundNumber])
+  @@unique([gameId, roundNumber, role])
+}
+
+model Marriage {
+  gameId      String
+  roundNumber Int
+  // player | opposition
+  role        String
+
+  spade           Boolean
+  club            Boolean
+  heart           Boolean
+  diamond         Boolean
+  ColorGameResult ColorGameResult @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
+
+  @@id([gameId, roundNumber])
+  @@unique([gameId, roundNumber, role])
+}
+
+model TrickGameResult {
+  gameId      String
+  roundNumber Int
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number])
+
+  open Boolean
+  won  Boolean
+
+  @@id([gameId, roundNumber])
+  @@map("round.trickResult")
 }

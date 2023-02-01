@@ -3,8 +3,7 @@ import { forwardRef } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { MotionProps } from "framer-motion";
-import { motion, useAnimation } from "framer-motion";
-import { usePressable } from "./touchable";
+import { Touchable } from "./touchable";
 
 const buttonClass = cva(
   [
@@ -14,7 +13,7 @@ const buttonClass = cva(
     "flex flex-grow",
     "items-center",
     "justify-center",
-    "bg-game-bg-color",
+    "bg-gray-1",
   ],
   {
     variants: {
@@ -64,18 +63,17 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> &
   MotionProps;
 export const Button = forwardRef(
   (
-    { color, aspect, size, onClick, border, ...props }: Props,
+    { color, aspect, size, onClick, border, disabled, ...props }: Props,
     ref: ForwardedRef<HTMLButtonElement>
   ) => {
-    const { controls, pressProps } = usePressable({ onClick });
     return (
-      <motion.button
-        {...(pressProps as any)}
+      <Touchable
+        className="flex-end w-48"
         {...props}
-        animate={controls}
         ref={ref}
-        className={buttonClass({ color, aspect, size, border })}
-        {...props}
+        size="large"
+        border
+        color="game"
       />
     );
   }

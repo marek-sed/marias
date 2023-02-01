@@ -7,7 +7,7 @@ export type Option = { value: string; label: string };
 type Props = {
   id?: string;
   name?: string;
-  placeholder: string;
+  placeholder?: string;
   options: Option[];
   onChange?: (value: string) => void;
   value?: string;
@@ -63,7 +63,7 @@ export function Select({
                       {opt.label}
                     </rs.ItemText>
 
-                    <rs.ItemIndicator className="text-green-11">
+                    <rs.ItemIndicator className="text-grass-11">
                       <CheckIcon className="h-7 w-7" />
                     </rs.ItemIndicator>
                   </Touchable>

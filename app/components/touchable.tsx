@@ -27,6 +27,7 @@ const touchableClass = cva(
       },
       size: {
         normal: "h-11",
+        large: "h-14",
       },
       aspect: {
         square: "px-0 flex-grow-0",
@@ -34,8 +35,9 @@ const touchableClass = cva(
       color: {
         default: "text-gray-12",
         red: "text-red-9 bg-red-1",
-        green: "text-green-3",
+        green: "text-grass-3",
         game: "text-game-color hover:text-game-color-hover",
+        cta: "text-grass-12 font-semibold",
       },
       border: {
         true: "border-2 rounded",
@@ -64,6 +66,11 @@ const touchableClass = cva(
         color: "default",
         className: "border-gray-6 hover:border-gray-7",
       },
+      {
+        border: true,
+        color: "cta",
+        className: "border-grass-9 hover:border-grass-10",
+      },
     ],
     defaultVariants: {
       size: "normal",
@@ -87,6 +94,14 @@ function resolveColor(color: TouchableOptions["color"]) {
     text = "";
 
   switch (color) {
+    case "cta": {
+      active = "var(--grass5)";
+      textActive = "var(--grass11)";
+      bg = "var(--grass3)";
+      hover = "var(--grass6)";
+      text = "var(--grass11)";
+      break;
+    }
     case "red": {
       active = "var(--red5)";
       textActive = "var(--red11)";

@@ -2104,12 +2104,8 @@ select {
   margin-left: 1.25rem;
 }
 
-.mr-2 {
-  margin-right: 0.5rem;
-}
-
-.mr-1 {
-  margin-right: 0.25rem;
+.mt-48 {
+  margin-top: 12rem;
 }
 
 .block {
@@ -2176,6 +2172,10 @@ select {
   height: 2.75rem;
 }
 
+.h-14 {
+  height: 3.5rem;
+}
+
 .h-4 {
   height: 1rem;
 }
@@ -2194,6 +2194,10 @@ select {
 
 .w-12 {
   width: 3rem;
+}
+
+.w-48 {
+  width: 12rem;
 }
 
 .w-5 {
@@ -2218,10 +2222,6 @@ select {
 
 .w-4 {
   width: 1rem;
-}
-
-.w-48 {
-  width: 12rem;
 }
 
 .max-w-md {
@@ -2433,6 +2433,10 @@ select {
   border-color: var(--red6);
 }
 
+.border-grass-9 {
+  border-color: var(--grass9);
+}
+
 .border-gray-500 {
   --tw-border-opacity: 1;
   border-color: rgb(107 114 128 / var(--tw-border-opacity));
@@ -2447,8 +2451,8 @@ select {
   border-color: var(--gray4);
 }
 
-.border-green-7 {
-  border-color: var(--green7);
+.border-grass-7 {
+  border-color: var(--grass7);
 }
 
 .bg-gray-9 {
@@ -2471,10 +2475,6 @@ select {
   background-color: var(--gray2);
 }
 
-.bg-game-bg-color {
-  background-color: var(--game-bg-color);
-}
-
 .bg-game-bg-active-color {
   background-color: var(--game-bg-active-color);
 }
@@ -2483,13 +2483,17 @@ select {
   background-color: var(--red1);
 }
 
+.bg-game-bg-color {
+  background-color: var(--game-bg-color);
+}
+
 .bg-blue-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 
-.bg-green-9 {
-  background-color: var(--green9);
+.bg-grass-9 {
+  background-color: var(--grass9);
 }
 
 .bg-gray-4 {
@@ -2502,10 +2506,6 @@ select {
 
 .p-1 {
   padding: 0.25rem;
-}
-
-.p-0 {
-  padding: 0px;
 }
 
 .py-2 {
@@ -2584,24 +2584,16 @@ select {
   padding-top: 2rem;
 }
 
-.pr-0 {
-  padding-right: 0px;
+.pt-48 {
+  padding-top: 12rem;
 }
 
-.pr-2 {
-  padding-right: 0.5rem;
+.pt-12 {
+  padding-top: 3rem;
 }
 
-.pr-5 {
-  padding-right: 1.25rem;
-}
-
-.pr-4 {
-  padding-right: 1rem;
-}
-
-.pr-3 {
-  padding-right: 0.75rem;
+.pt-7 {
+  padding-top: 1.75rem;
 }
 
 .text-center {
@@ -2640,6 +2632,10 @@ select {
   font-weight: 500;
 }
 
+.font-semibold {
+  font-weight: 600;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -2652,8 +2648,8 @@ select {
   color: var(--game-color);
 }
 
-.text-green-12 {
-  color: var(--green12);
+.text-grass-12 {
+  color: var(--grass12);
 }
 
 .text-gray-11 {
@@ -2664,12 +2660,12 @@ select {
   color: var(--red9);
 }
 
-.text-green-11 {
-  color: var(--green11);
+.text-grass-11 {
+  color: var(--grass11);
 }
 
-.text-green-3 {
-  color: var(--green3);
+.text-grass-3 {
+  color: var(--grass3);
 }
 
 .text-gray-700 {
@@ -2796,8 +2792,12 @@ button {
   border-color: var(--gray7);
 }
 
-.hover\:border-green-9:hover {
-  border-color: var(--green9);
+.hover\:border-grass-10:hover {
+  border-color: var(--grass10);
+}
+
+.hover\:border-grass-9:hover {
+  border-color: var(--grass9);
 }
 
 .hover\:bg-red-2:hover {

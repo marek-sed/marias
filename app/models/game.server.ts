@@ -1,6 +1,5 @@
 import type { Player, Game } from "@prisma/client";
 import { prisma } from "~/db.server";
-import { playerPositionToRole } from "~/utils/utils.server";
 
 export async function getGames() {
   return prisma.game.findMany({
@@ -8,7 +7,6 @@ export async function getGames() {
       players: {
         select: {
           player: true,
-          totalScore: true,
         },
       },
     },
@@ -37,18 +35,9 @@ export async function getFullGame(id: Game["id"]) {
       id,
     },
     include: {
-      rounds: {
-        include: {
-          players: {
-            include: {
-              player: true,
-            },
-          },
-        },
-      },
+      rounds: true,
       players: {
         select: {
-          totalScore: true,
           player: true,
           position: true,
         },
@@ -69,11 +58,6 @@ export async function createGame(players: Array<Player["id"]>) {
     },
   }));
 
-  const roundPlayers = players.map((pId, i) => ({
-    playerId: pId,
-    score: 0,
-  }));
-
   return prisma.game.create({
     data: {
       isActive: true,
@@ -81,12 +65,7 @@ export async function createGame(players: Array<Player["id"]>) {
         create: gamePlayers,
       },
       rounds: {
-        create: {
-          number: 1,
-          players: {
-            create: roundPlayers,
-          },
-        },
+        create: [],
       },
     },
   });

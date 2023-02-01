@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { forwardRef } from "react";
 import type { Field, Option } from "~/utils/types";
 import { Checkbox } from "../checkbox";
+import { Fieldset } from "../fieldset";
 import { FormControl } from "../formControl";
 import { Select } from "../select";
 
@@ -23,10 +24,10 @@ export const TrickGame = forwardRef<HTMLDivElement, Props>(
           bounce: 0,
         }}
       >
-        <FormControl name="player" label="Hru zahlasil" {...playedBy}>
-          <Select placeholder="Kto hral sam?" options={playerOptions} />
+        <FormControl name="playedBy" label="Hru zahlasil" {...playedBy}>
+          <Select options={playerOptions} />
         </FormControl>
-        <FormControl label="Vylozeny" name="openTrickGame" defaultValue={false}>
+        <FormControl label="Vylozeny" name="open" defaultValue={false}>
           <Checkbox />
         </FormControl>
       </motion.div>
@@ -35,3 +36,13 @@ export const TrickGame = forwardRef<HTMLDivElement, Props>(
 );
 
 TrickGame.displayName = "TrickGame";
+
+export function TrickResult({ playedBy }: { playedBy?: string }) {
+  return (
+    <Fieldset animated legend={playedBy}>
+      <FormControl name="won" label="Vyhral" defaultValue={false}>
+        <Checkbox />
+      </FormControl>
+    </Fieldset>
+  );
+}

@@ -16,7 +16,7 @@ const rootClass = cva(
 );
 
 const inputClass = cva(
-  ["text-lg", "bg-game-bg-color text-green-12", "border-none", "focus:ring-0"],
+  ["text-lg", "bg-game-bg-color text-grass-12", "border-none", "focus:ring-0"],
   {
     variants: {
       type: {

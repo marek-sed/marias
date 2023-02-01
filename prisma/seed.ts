@@ -1,16 +1,12 @@
-import { PlayerInGame, PrismaClient } from "@prisma/client";
+import { PrismaClient, Table } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 const initialStakes = {
-  game: 1,
-  betterGame: 2,
+  color: 1,
   seven: 2,
-  betterSeven: 4,
   hundred: 4,
-  betterHundred: 8,
-  hundredSeven: 6,
   betl: 15,
   durch: 30,
 } as const;
@@ -24,8 +20,7 @@ async function seed() {
   });
 
   await prisma.round.deleteMany({});
-  await prisma.playerInGame.deleteMany({});
-  await prisma.playerInRound.deleteMany({});
+  await prisma.table.deleteMany({});
   await prisma.player.deleteMany({});
   await prisma.game.deleteMany({});
 
@@ -42,7 +37,9 @@ async function seed() {
     },
   });
 
-  await prisma.stake.create({ data: initialStakes });
+  for (const [name, rate] of Object.entries(initialStakes)) {
+    await prisma.gameType.create({ data: { name, rate } });
+  }
 
   const player1 = await prisma.player.create({
     data: {
@@ -71,7 +68,6 @@ async function seed() {
         create: [
           {
             position: 1,
-            totalScore: 10,
             player: {
               connect: {
                 id: player1.id,
@@ -80,7 +76,6 @@ async function seed() {
           },
           {
             position: 2,
-            totalScore: 24,
             player: {
               connect: {
                 id: player2.id,
@@ -89,7 +84,6 @@ async function seed() {
           },
           {
             position: 3,
-            totalScore: 17,
             player: {
               connect: {
                 id: player3.id,
@@ -103,117 +97,65 @@ async function seed() {
 
   const round1 = await prisma.round.create({
     data: {
+      gameType: {
+        connect: {
+          name: "color",
+        },
+      },
       number: 1,
       game: {
         connect: {
           id: game.id,
         },
       },
-      players: {
-        create: [
-          {
-            score: 10,
-            player: {
-              connect: {
-                id: player1.id,
-              },
-            },
-          },
-          {
-            score: 14,
-            player: {
-              connect: {
-                id: player2.id,
-              },
-            },
-          },
-          {
-            score: 18,
-            player: {
-              connect: {
-                id: player3.id,
-              },
-            },
-          },
-        ],
+      player: {
+        connect: {
+          id: player3.id,
+        },
       },
     },
   });
 
   const round2 = await prisma.round.create({
     data: {
+      gameType: {
+        connect: {
+          name: "hundred",
+        },
+      },
       number: 2,
       game: {
         connect: {
           id: game.id,
         },
       },
-      players: {
-        create: [
-          {
-            score: 10,
-            player: {
-              connect: {
-                id: player1.id,
-              },
-            },
-          },
-          {
-            score: 14,
-            player: {
-              connect: {
-                id: player2.id,
-              },
-            },
-          },
-          {
-            score: 18,
-            player: {
-              connect: {
-                id: player3.id,
-              },
-            },
-          },
-        ],
+      player: {
+        connect: {
+          id: player3.id,
+        },
       },
     },
   });
 
   const round3 = await prisma.round.create({
     data: {
+      gameType: {
+        connect: {
+          name: "color",
+        },
+      },
+      playerScore: 1,
+      oppositionScore: 2,
       number: 3,
       game: {
         connect: {
           id: game.id,
         },
       },
-      players: {
-        create: [
-          {
-            score: 10,
-            player: {
-              connect: {
-                id: player1.id,
-              },
-            },
-          },
-          {
-            score: 14,
-            player: {
-              connect: {
-                id: player2.id,
-              },
-            },
-          },
-          {
-            score: 18,
-            player: {
-              connect: {
-                id: player3.id,
-              },
-            },
-          },
-        ],
+      player: {
+        connect: {
+          id: player3.id,
+        },
       },
     },
   });

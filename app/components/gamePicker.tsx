@@ -34,6 +34,7 @@ type Props = {
   value?: string;
   defaultValue?: string;
   type?: "normal" | "better";
+  className?: string;
 };
 
 export function GamePicker({
@@ -44,13 +45,14 @@ export function GamePicker({
   options,
   onChange,
   type,
+  className,
 }: Props) {
   const optionCount = options.length;
   return (
     <rrg.Root
       {...{ value, defaultValue, id, name }}
       onValueChange={onChange}
-      className={rootClass()}
+      className={rootClass({ className })}
     >
       {options.map(({ value, label }, index) => (
         <rrg.Item asChild key={value} value={value} id={value}>

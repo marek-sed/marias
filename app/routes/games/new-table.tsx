@@ -80,7 +80,7 @@ export default function NewTable() {
             </label>
           ))}
           <button
-            className="self-end rounded border border-green-7 px-8 py-2"
+            className="self-end rounded border border-grass-7 px-8 py-2"
             type="submit"
           >
             Vytvorit

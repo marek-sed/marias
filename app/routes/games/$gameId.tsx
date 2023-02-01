@@ -1,26 +1,24 @@
-import type { LoaderArgs } from "@remix-run/node";
-import type { Option } from "~/components/select";
+import type { TrickGameResult } from "@prisma/client";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { useCallback, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import { getFullGame } from "~/models/game.server";
-import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
+import { z } from "zod";
+import type { toZod } from "tozod";
 
-import { useCallback, useState } from "react";
-import { FormControl } from "~/components/formControl";
-import { Select } from "~/components/select";
-import { Checkbox, IndeterminateCheckbox } from "~/components/checkbox";
-import { Input } from "~/components/input";
+import type { Option } from "~/components/select";
 import { GamePicker } from "~/components/gamePicker";
-import { AnimatePresence, motion } from "framer-motion";
+import { ColorGame, ColorResult } from "~/components/game/Color";
+import { TrickGame, TrickResult } from "~/components/game/Trick";
+import { Fieldset } from "~/components/fieldset";
 import { Button } from "~/components/button";
 import { GameContext } from "~/components/gameContext";
-import { Marriage } from "~/components/marriage";
 import { useGameTheme } from "~/utils/game";
-import { ColorGame, ColorResult } from "~/components/game/Color";
-import { TrickGame } from "~/components/game/Trick";
-import { Fieldset } from "~/components/fieldset";
-import { IndeterminateBool } from "~/utils/types";
+import { getFullGame } from "~/models/game.server";
+import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
+import { createTrickGameRound } from "~/models/round.server";
 
 export const handle = {
   title: "Hra",
@@ -47,7 +45,6 @@ export const loader = async ({ params }: LoaderArgs) => {
     value: p.id,
     label: p.name,
   }));
-  console.log("players", game.players, game.rounds);
   const lastRound = Math.max(...game.rounds.map((r) => r.number));
   const actor = game.players.find((p) =>
     isPlayerActor(p.position, lastRound, game.players.length)
@@ -58,11 +55,48 @@ export const loader = async ({ params }: LoaderArgs) => {
     )
     .map((p) => p.player);
 
-  return json({ game, playerOptions, actor, oposition, lastRound });
+  return json({ playerOptions, actor, oposition, lastRound });
+};
+
+export const action = async ({ request, params }: ActionArgs) => {
+  const { gameId } = params;
+  const form = await request.formData();
+
+  const GameTypeEnum = z.enum(["color", "hundred", "betl", "durch"]);
+  const gameType = GameTypeEnum.parse(form.get("gameType"));
+  const player = z.string().parse(form.get("player"));
+
+  switch (gameType) {
+    case "color": {
+      return null;
+    }
+    case "hundred": {
+      return null;
+    }
+    case "betl":
+    case "durch":
+      const payload = Object.fromEntries(form);
+      const trickGameSchema: toZod<TrickGameResult> = z.object({
+        gameId: z.string(),
+        open: z.boolean(),
+        won: z.boolean(),
+        roundNumber: z.number().int(),
+      });
+
+      const trickResult = trickGameSchema.parse({ gameId, ...payload });
+
+      createTrickGameRound(player, gameType, trickResult);
+
+      return null;
+    default:
+      return null;
+  }
+
+  return null;
 };
 
 const calledGameTypes = [
-  { label: "Hra", value: "game" },
+  { label: "Farba", value: "color" },
   { label: "Stovka", value: "hundred" },
   { label: "Betl", value: "betl" },
   { label: "Durch", value: "durch" },
@@ -72,12 +106,12 @@ type GameType = (typeof calledGameTypes)[number]["value"];
 
 export default function ActiveGame() {
   const [flek, setFlek] = useState(0);
-  const { game, playerOptions, actor, oposition, lastRound } =
+  const { playerOptions, actor, oposition, lastRound } =
     useLoaderData<typeof loader>();
 
   const [playedBy, setPlayedBy] = useState(actor.id);
   const [counter100, setCounter100] = useState(false);
-  const [called, setCalled] = useState<GameType>(calledGameTypes[1].value);
+  const [called, setCalled] = useState<GameType>(calledGameTypes[2].value);
 
   const onGameChanged = useCallback(
     (called: GameType) => {
@@ -86,7 +120,7 @@ export default function ActiveGame() {
         setBetter(false);
         setCounter100(false);
       }
-      if (called === "game" || called === "hundred") {
+      if (called === "color" || called === "hundred") {
         setPlayedBy(actor.id);
       }
     },
@@ -103,16 +137,14 @@ export default function ActiveGame() {
 
   const [better, setBetter] = useState<boolean>(false);
   const { rootRef } = useGameTheme(better);
-
-  const [won, setWon] = useState<boolean | "indeterminate">("indeterminate");
-  const [points, setPoints] = useState(50);
-  const isGameOfColor = called === "game" || called === "hundred";
+  const isGameOfColor = called === "color" || called === "hundred";
 
   return (
     <GameContext value={{ type: better ? "better" : "default" }}>
       <div ref={rootRef} className="mx-auto max-w-screen-sm space-y-2">
         <h1 className="text-xl">Kolo {lastRound}</h1>
         <Form className="space-y-4" method="post">
+          <input type="hidden" name="roundNumber" value={lastRound + 1} />
           <Fieldset legend="Zvolena hra">
             <div className="flex flex-col items-center space-y-2">
               <div className="flex w-full justify-between">
@@ -159,11 +191,13 @@ export default function ActiveGame() {
               player={{ label: playedLegendLabel }}
               opposition={{ label: opositioniLegendLabel }}
             />
-          ) : null}
+          ) : (
+            <TrickResult playedBy={playedLegendLabel}></TrickResult>
+          )}
 
-          <div className="flex w-full justify-end">
+          <div className="flex w-full justify-end pt-8">
             <div className="w-48">
-              <Button color="game" type="button" size="large" border>
+              <Button color="game" type="submit" size="large" border>
                 Zapisat kolo
               </Button>
             </div>

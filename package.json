@@ -50,10 +50,13 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
     "remix-typedjson": "^0.1.7",
-    "tiny-invariant": "^1.3.1"
+    "tiny-invariant": "^1.3.1",
+    "tozod": "^3.0.0",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
+    "@mermaid-js/mermaid-cli": "^9.3.0",
     "@radix-ui/colors": "^0.1.8",
     "@remix-run/dev": "^1.11.0",
     "@remix-run/eslint-config": "^1.11.0",
@@ -87,6 +90,7 @@
     "prettier": "2.8.3",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "prisma": "^4.9.0",
+    "prisma-erd-generator": "^1.2.5",
     "start-server-and-test": "^1.15.2",
     "tailwindcss": "^3.2.4",
     "ts-node": "^10.9.1",
