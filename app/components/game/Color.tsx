@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { forwardRef, useState } from "react";
-import type { Field, IndeterminateBool, MarriageType } from "~/utils/types";
+import type { Field, IndeterminateBool } from "~/utils/types";
 import { Checkbox } from "../checkbox";
 import { FormControl } from "../formControl";
 import { HeartBox } from "../heartBox";
 import { SevenBox, SevenProvider } from "./seven";
 import { Input } from "../input";
 import { Fieldset } from "../fieldset";
-import { Marriage, MarriageProvider } from "../marriage";
+import { Marriage, MarriageProvider, MarriageValue } from "../marriage";
 
 type Props = {
   called: string;
@@ -29,16 +29,16 @@ export const ColorGame = forwardRef<HTMLDivElement, Props>(
         }}
       >
         {called === "hundred" && (
-          <FormControl name="players" label="Proti" {...counter100}>
+          <FormControl name="counter" label="Proti" {...counter100}>
             <Checkbox />
           </FormControl>
         )}
 
         <div className="w-full items-center space-y-4 pt-8">
           <FormControl
+            name="gameOfHearts"
             direction="horizontal"
             label="Cerven"
-            name="better"
             {...better}
           >
             <HeartBox />
@@ -64,18 +64,18 @@ type PlayedProps = {
   legend?: string;
   seven: Field<IndeterminateBool> | undefined;
   points: Field<number>;
-  marriage: Field<MarriageType[]>;
 };
-function Player({ legend, marriage, seven, points }: PlayedProps) {
+function Player({ legend, seven, points }: PlayedProps) {
   return (
     <Fieldset animated legend={legend}>
       <div className="flex flex-col items-center space-y-4">
-        <FormControl name="actorSeven" label="Sedma" {...seven}>
-          <SevenBox playedBy="actor" />
-        </FormControl>
+        <div className="flex w-full items-center justify-between">
+          <span className="text-gray-11">Sedma</span>
+          <SevenBox playedBy="player" {...seven} />
+        </div>
 
-        <FormControl name="mariage" label="Hlasky" {...marriage}>
-          <Marriage playedBy="actor" />
+        <FormControl name="mariage" label="Hlasky">
+          <Marriage playedBy="player" />
         </FormControl>
 
         <FormControl name="points" label="Body" {...points}>
@@ -89,18 +89,18 @@ function Player({ legend, marriage, seven, points }: PlayedProps) {
 type OppositionProps = {
   legend: string;
   seven: Field<IndeterminateBool> | undefined;
-  married: MarriageType[];
   points: number;
 };
 function Opposition({ legend, seven, points }: OppositionProps) {
-  const [marriage, setMarriage] = useState<MarriageType[]>([]);
+  const [marriage, setMarriage] = useState<number>(0);
 
   return (
     <Fieldset animated legend={legend}>
       <div className="flex flex-col items-center space-y-4">
-        <FormControl name="oppositionSeven" label="Sedma" {...seven}>
-          <SevenBox playedBy="opposition" />
-        </FormControl>
+        <div className="flex w-full items-center justify-between">
+          <span className="text-gray-11">Sedma</span>
+          <SevenBox playedBy="opposition" {...seven} />
+        </div>
 
         <FormControl
           name="mariage"
@@ -134,7 +134,6 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
   const [oppositionSeven, setOppositionSeven] =
     useState<IndeterminateBool>("indeterminate");
   const [points, setPoints] = useState<number>(50);
-  const [marriage, setMarriage] = useState<MarriageType[]>([]);
 
   return (
     <MarriageProvider>
@@ -143,12 +142,10 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
           legend={player.label!}
           points={{ value: points, onChange: setPoints }}
           seven={{ value: seven, onChange: setSeven }}
-          marriage={{ value: marriage, onChange: setMarriage }}
         />
         <Opposition
           legend={opposition.label!}
           points={90 - points}
-          married={marriage}
           seven={{
             value: oppositionSeven,
             onChange: setOppositionSeven,

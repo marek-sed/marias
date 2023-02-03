@@ -78,7 +78,7 @@ export function Input({
           onClick={decrement}
           aspect="square"
         >
-          <MinusIcon className="h-8 w-8" />
+          <MinusIcon className="h-7 w-7" />
         </Touchable>
       )}
       <input
@@ -92,7 +92,7 @@ export function Input({
           onClick={increment}
           aspect="square"
         >
-          <PlusIcon className="h-8 w-8" />
+          <PlusIcon className="h-7 w-7" />
         </Touchable>
       )}
     </div>

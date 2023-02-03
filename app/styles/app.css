@@ -2071,6 +2071,10 @@ select {
   top: 0px;
 }
 
+.left-0 {
+  left: 0px;
+}
+
 .z-20 {
   z-index: 20;
 }
@@ -2102,10 +2106,6 @@ select {
 
 .ml-5 {
   margin-left: 1.25rem;
-}
-
-.mt-48 {
-  margin-top: 12rem;
 }
 
 .block {
@@ -2224,12 +2224,20 @@ select {
   width: 1rem;
 }
 
+.w-44 {
+  width: 11rem;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
 
 .max-w-screen-sm {
   max-width: 640px;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
 }
 
 .flex-shrink-0 {
@@ -2363,6 +2371,12 @@ select {
   border-left-width: calc(2px * calc(1 - var(--tw-divide-x-reverse)));
 }
 
+.divide-x > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-x-reverse: 0;
+  border-right-width: calc(1px * var(--tw-divide-x-reverse));
+  border-left-width: calc(1px * calc(1 - var(--tw-divide-x-reverse)));
+}
+
 .divide-game-border-color > :not([hidden]) ~ :not([hidden]) {
   border-color: var(--game-border-color);
 }
@@ -2373,6 +2387,10 @@ select {
 
 .overflow-scroll {
   overflow: scroll;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
 }
 
 .rounded {
@@ -2500,6 +2518,10 @@ select {
   background-color: var(--gray4);
 }
 
+.bg-game-color {
+  background-color: var(--game-color);
+}
+
 .p-2 {
   padding: 0.5rem;
 }
@@ -2582,18 +2604,6 @@ select {
 
 .pt-8 {
   padding-top: 2rem;
-}
-
-.pt-48 {
-  padding-top: 12rem;
-}
-
-.pt-12 {
-  padding-top: 3rem;
-}
-
-.pt-7 {
-  padding-top: 1.75rem;
 }
 
 .text-center {

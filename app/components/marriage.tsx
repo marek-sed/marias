@@ -1,44 +1,95 @@
-import { ReactNode, useCallback } from "react";
-import type { MarriageType } from "~/utils/types";
-import {
-  BsHeart,
-  BsHeartFill,
-  BsSuitClub,
-  BsSuitClubFill,
-  BsSuitDiamond,
-  BsSuitDiamondFill,
-  BsSuitSpade,
-  BsSuitSpadeFill,
-} from "react-icons/bs";
+import type { ReactNode } from "react";
 
-import * as rtg from "@radix-ui/react-toggle-group";
+import * as rrg from "@radix-ui/react-radio-group";
 import { cva } from "class-variance-authority";
-import { useState, createContext, useContext } from "react";
+import { useCallback, useState, createContext, useContext } from "react";
 import { Touchable } from "./touchable";
+import { motion } from "framer-motion";
 
 type MarriageContextType = {
-  actor: MarriageType[];
-  opposition: MarriageType[];
-  setActor: (v: MarriageType[]) => void;
-  setOpposition: (v: MarriageType[]) => void;
+  player: MarriageValue;
+  opposition: MarriageValue;
+  onChangePlayer: (v: MarriageValue) => void;
+  onChangeOpposition: (v: MarriageValue) => void;
+  playerEnabled: MarriageValue[];
+  oppositionEnabled: MarriageValue[];
 };
 const MarriageContext = createContext<MarriageContextType>({
-  actor: [],
-  opposition: [],
-  setActor: (v: MarriageType[]) => {},
-  setOpposition: (v: MarriageType[]) => {},
+  player: "0",
+  opposition: "0",
+  onChangePlayer: (v: MarriageValue | undefined) => {},
+  onChangeOpposition: (v: MarriageValue | undefined) => {},
+  playerEnabled: [],
+  oppositionEnabled: [],
 });
-function useMarriageContext() {
-  return useContext(MarriageContext);
+function useMarriageContext(playedBy: string) {
+  const ctx = useContext(MarriageContext);
+
+  if (playedBy === "player") {
+    return {
+      value: ctx.player,
+      onChange: ctx.onChangePlayer,
+      enabled: ctx.playerEnabled,
+    };
+  }
+  return {
+    value: ctx.opposition,
+    onChange: ctx.onChangeOpposition,
+    enabled: ctx.oppositionEnabled,
+  };
+}
+
+function getEnabledOptions(opposingMarriage: MarriageValue | undefined) {
+  let enabled: MarriageValue[] = [];
+  if (opposingMarriage) {
+    let remaining = 100 - parseInt(opposingMarriage);
+    let val = 0;
+    while (val <= remaining) {
+      enabled.push(`${val}` as MarriageValue);
+      val = val + 20;
+    }
+  }
+
+  return enabled;
 }
 
 export function MarriageProvider({ children }: { children: ReactNode }) {
-  const [actor, setActor] = useState<MarriageType[]>([]);
-  const [opposition, setOpposition] = useState<MarriageType[]>([]);
+  const [player, setPlayer] = useState<MarriageValue>("0");
+
+  const onChangePlayer = useCallback(
+    (v: MarriageValue) => {
+      setPlayer(v);
+      setOppositionEnabled(getEnabledOptions(v));
+    },
+    [setPlayer]
+  );
+
+  const [opposition, setOpposition] = useState<MarriageValue>("0");
+  const onChangeOpposition = useCallback(
+    (v: MarriageValue) => {
+      setOpposition(v);
+      setPlayerEnabled(getEnabledOptions(v));
+    },
+    [setOpposition]
+  );
+
+  const [playerEnabled, setPlayerEnabled] = useState<MarriageValue[]>(
+    getEnabledOptions(opposition)
+  );
+  const [oppositionEnabled, setOppositionEnabled] = useState<MarriageValue[]>(
+    getEnabledOptions(player)
+  );
 
   return (
     <MarriageContext.Provider
-      value={{ actor, opposition, setActor, setOpposition }}
+      value={{
+        player,
+        opposition,
+        onChangeOpposition,
+        onChangePlayer,
+        playerEnabled,
+        oppositionEnabled,
+      }}
     >
       {children}
     </MarriageContext.Provider>
@@ -46,101 +97,60 @@ export function MarriageProvider({ children }: { children: ReactNode }) {
 }
 
 const rootClass = cva([
-  "flex divide-x-2 divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
+  "flex divide-x divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
+  "overflow-x-auto w-44",
 ]);
 
+export type MarriageValue = "0" | "20" | "40" | "60" | "80" | "100";
 type Props = {
-  value?: MarriageType[];
-  onChange?: (v: MarriageType[]) => void;
+  name?: string;
   playedBy: string;
 };
-export function Marriage({ value, onChange, playedBy }: Props) {
-  const { actor, opposition, setActor, setOpposition } = useMarriageContext();
-  const disabled = playedBy === "actor" ? opposition : actor;
-  const setDisabled = useCallback(
-    (value: MarriageType[]) => {
-      if (playedBy === "actor") {
-        setActor(value);
-      } else {
-        setOpposition(value);
-      }
-    },
-    [playedBy, setActor, setOpposition]
-  );
+const marriageOptions: MarriageValue[] = ["20", "40", "60", "80", "100"];
+export function Marriage({ name, playedBy }: Props) {
+  const { value, onChange, enabled } = useMarriageContext(playedBy);
 
   return (
-    <rtg.Root
+    <rrg.Root
+      name={name}
       className={rootClass()}
-      type="multiple"
       value={value}
-      onValueChange={(value) => {
-        if (value) {
-          onChange?.(value as MarriageType[]);
-          setDisabled(value as MarriageType[]);
-        }
+      onValueChange={(v) => {
+        onChange(v as MarriageValue);
       }}
-      aria-label="Text alignment"
+      aria-label={`${playedBy}.marriage`}
     >
-      <rtg.Item
-        asChild
-        value="spade"
-        disabled={disabled.includes("spade")}
-        aria-label="spade"
-      >
-        <Touchable color="game" aspect="square">
-          {!value?.includes("spade") ? (
-            <BsSuitSpade className="h-6 w-6" />
-          ) : (
-            <BsSuitSpadeFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-      <rtg.Item
-        asChild
-        value="club"
-        disabled={disabled.includes("club")}
-        aria-label="club"
-      >
-        <Touchable color="game" aspect="square">
-          {!value?.includes("club") ? (
-            <BsSuitClub className="h-6 w-6" />
-          ) : (
-            <BsSuitClubFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
+      <rrg.Item value="0" className="hidden"></rrg.Item>
+      {marriageOptions.map((v) => (
+        <rrg.Item
+          key={v}
+          onClick={() => {
+            if (v === value) {
+              onChange("0");
+            }
+          }}
+          asChild
+          value={v}
+          aria-label={v}
+          disabled={!enabled.includes(v)}
+        >
+          <Touchable color="game" aspect="square">
+            <rrg.Indicator asChild>
+              <motion.div
+                layoutId={name}
+                transition={{
+                  ease: "easeOut",
+                  duration: 0.3,
+                }}
+                style={{ height: 48 }}
+                className="absolute top-0 left-0 z-10 w-full bg-game-bg-active-color"
+              ></motion.div>
+            </rrg.Indicator>
 
-      <rtg.Item
-        asChild
-        disabled={disabled.includes("diamond")}
-        className="ToggleGroupItem"
-        value="diamond"
-        aria-label="diamond"
-      >
-        <Touchable color="game" aspect="square">
-          {!value?.includes("diamond") ? (
-            <BsSuitDiamond className="h-6 w-6" />
-          ) : (
-            <BsSuitDiamondFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-
-      <rtg.Item
-        asChild
-        disabled={disabled.includes("heart")}
-        className="ToggleGroupItem"
-        value="heart"
-        aria-label="heart"
-      >
-        <Touchable color="red" aspect="square">
-          {!value?.includes("heart") ? (
-            <BsHeart className="h-6 w-6" />
-          ) : (
-            <BsHeartFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-    </rtg.Root>
+            <label className="relative z-10 block cursor-pointer">{v}</label>
+          </Touchable>
+        </rrg.Item>
+      ))}
+    </rrg.Root>
   );
 }

@@ -72,7 +72,6 @@ function SilentBox({
 
 export function SevenBox({
   id,
-  name,
   value,
   defaultValue,
   onChange,
@@ -102,14 +101,14 @@ export function SevenBox({
   return (
     <div className="flex space-x-2">
       <SilentBox
-        name="silent"
+        name={`${playedBy}.silent`}
         value={silent}
         onChange={setSilent}
         isDisabled={value === "indeterminate"}
       />
       <rc.Root
         id={id}
-        name={name}
+        name={`${playedBy}.seven`}
         checked={value}
         disabled={isDisabled || wasPlayedByTheOther}
         defaultChecked={defaultValue}

@@ -6,7 +6,6 @@ import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { z } from "zod";
-import type { toZod } from "tozod";
 
 import type { Option } from "~/components/select";
 import { GamePicker } from "~/components/gamePicker";
@@ -18,7 +17,10 @@ import { GameContext } from "~/components/gameContext";
 import { useGameTheme } from "~/utils/game";
 import { getFullGame } from "~/models/game.server";
 import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
-import { createTrickGameRound } from "~/models/round.server";
+import {
+  createColorGameRound,
+  createTrickGameRound,
+} from "~/models/round.server";
 
 export const handle = {
   title: "Hra",
@@ -58,16 +60,45 @@ export const loader = async ({ params }: LoaderArgs) => {
   return json({ playerOptions, actor, oposition, lastRound });
 };
 
+const GameTypeEnum = z.enum(["color", "hundred", "betl", "durch"]);
 export const action = async ({ request, params }: ActionArgs) => {
-  const { gameId } = params;
+  const gameId = z.string().parse(params.gameId);
   const form = await request.formData();
 
-  const GameTypeEnum = z.enum(["color", "hundred", "betl", "durch"]);
   const gameType = GameTypeEnum.parse(form.get("gameType"));
   const player = z.string().parse(form.get("player"));
+  const roundNumberStr = z.string().parse(form.get("roundNumber"));
+  const roundNumber = parseInt(roundNumberStr, 10);
 
   switch (gameType) {
     case "color": {
+      const gameOfHearts = Boolean(form.get("gameOfHearts"));
+      const flekCount = parseInt(form.get("flek") as string, 10);
+      const points = parseInt(form.get("points") as string, 10);
+      const marriageOpposition = 0;
+      const marriagePlayer = 0;
+
+      await createColorGameRound(
+        player,
+        gameType,
+        {
+          gameId,
+          roundNumber,
+          gameOfHearts,
+          points,
+          flekCount,
+          marriageOpposition: 0,
+          marriagePlayer: 0,
+        },
+        {
+          gameId,
+          roundNumber,
+          role: "",
+          flekCount: 0,
+          silent: false,
+          won: false,
+        }
+      );
       return null;
     }
     case "hundred": {
@@ -75,17 +106,15 @@ export const action = async ({ request, params }: ActionArgs) => {
     }
     case "betl":
     case "durch":
-      const payload = Object.fromEntries(form);
-      const trickGameSchema: toZod<TrickGameResult> = z.object({
-        gameId: z.string(),
-        open: z.boolean(),
-        won: z.boolean(),
-        roundNumber: z.number().int(),
+      const open = Boolean(form.get("open"));
+      const won = Boolean(form.get("won"));
+
+      createTrickGameRound(player, gameType, {
+        open,
+        won,
+        roundNumber,
+        gameId,
       });
-
-      const trickResult = trickGameSchema.parse({ gameId, ...payload });
-
-      createTrickGameRound(player, gameType, trickResult);
 
       return null;
     default:
@@ -95,14 +124,14 @@ export const action = async ({ request, params }: ActionArgs) => {
   return null;
 };
 
-const calledGameTypes = [
+const roundTypes = [
   { label: "Farba", value: "color" },
   { label: "Stovka", value: "hundred" },
   { label: "Betl", value: "betl" },
   { label: "Durch", value: "durch" },
 ] as const;
 
-type GameType = (typeof calledGameTypes)[number]["value"];
+type RoundType = (typeof roundTypes)[number]["value"];
 
 export default function ActiveGame() {
   const [flek, setFlek] = useState(0);
@@ -111,11 +140,11 @@ export default function ActiveGame() {
 
   const [playedBy, setPlayedBy] = useState(actor.id);
   const [counter100, setCounter100] = useState(false);
-  const [called, setCalled] = useState<GameType>(calledGameTypes[2].value);
+  const [called, setCalled] = useState<RoundType>(roundTypes[0].value);
 
   const onGameChanged = useCallback(
-    (called: GameType) => {
-      setCalled(called as GameType);
+    (called: RoundType) => {
+      setCalled(called as RoundType);
       if (called === "betl" || called === "durch") {
         setBetter(false);
         setCounter100(false);
@@ -153,7 +182,7 @@ export default function ActiveGame() {
                   name="gameType"
                   value={called}
                   onChange={onGameChanged as any}
-                  options={calledGameTypes as unknown as Option[]}
+                  options={roundTypes as unknown as Option[]}
                 />
               </div>
 

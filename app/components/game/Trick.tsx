@@ -27,7 +27,7 @@ export const TrickGame = forwardRef<HTMLDivElement, Props>(
         <FormControl name="playedBy" label="Hru zahlasil" {...playedBy}>
           <Select options={playerOptions} />
         </FormControl>
-        <FormControl label="Vylozeny" name="open" defaultValue={false}>
+        <FormControl name="open" label="Vylozeny" defaultValue={false}>
           <Checkbox />
         </FormControl>
       </motion.div>

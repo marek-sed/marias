@@ -1,4 +1,4 @@
-import { ColorGameResult, Marriage, Seven } from "@prisma/client";
+import type { ColorGameResult, TrickGameResult, Seven } from "@prisma/client";
 import { getPlayerCount } from "~/models/settings.server";
 
 export async function canStartNewGame() {
@@ -31,96 +31,77 @@ export function isPlayerOposition(
   return role === 1 || role === 2;
 }
 
-type MarriageValues = Pick<Marriage, "club" | "diamond" | "heart" | "spade">;
-export function marriageToPoints({
-  club,
-  diamond,
-  spade,
-  heart,
-}: MarriageValues) {
-  const points = [20, 20, 20, 40];
-  const m = [club, diamond, spade, heart];
-  return m.reduce((acc, el, index) => (el ? acc + points[index] : acc), 0);
-}
+export type ColorGamePayload = Pick<
+  ColorGameResult,
+  | "flekCount"
+  | "gameOfHearts"
+  | "points"
+  | "marriagePlayer"
+  | "marriageOpposition"
+>;
+export function calculateColorGamePoints(game: ColorGamePayload) {
+  const { points, marriageOpposition, marriagePlayer } = game;
+  let playerPoints = points + marriagePlayer;
+  let oppositionPoints = 90 - points + marriageOpposition;
 
-export function calculateColorGamePoints(
-  points: number,
-  marriages: Pick<Marriage, "club" | "diamond" | "heart" | "spade" | "role">[]
-) {
-  const playerMarriage = marriages.find((m) => m.role === "player");
-  const oppositionMarriage = marriages.find((m) => m.role === "opposition");
-
-  let playerPoints = points;
-  let oppositionPoints = 90 - points;
-  if (playerMarriage) {
-    playerPoints += marriageToPoints(playerMarriage);
-  }
-  if (oppositionMarriage) {
-    oppositionPoints += marriageToPoints(oppositionMarriage);
-  }
-
-  console.log("p, o", playerPoints, oppositionPoints);
   return {
     playerPoints,
     oppositionPoints,
   };
 }
 
-export function getHundredMultiplier(points: number) {
-  if (points > 100) {
-    return points / 10 - 9;
-  } else if (points < 100) {
-    return 10 - points / 10;
-  } else {
-    return 1;
+export function getColorGameCost(game: ColorGamePayload) {
+  let power = game.flekCount;
+  power = power + (game.gameOfHearts ? 1 : 0);
+
+  const { playerPoints, oppositionPoints } = calculateColorGamePoints(game);
+  if (playerPoints - 90 > 0) {
+    const pointsPower = (playerPoints - 90) / 10;
+    power = power + pointsPower;
+  } else if (oppositionPoints - 90 > 0) {
+    const pointsPower = (oppositionPoints - 90) / 10;
+    power = power + pointsPower;
   }
+
+  const won = playerPoints > oppositionPoints ? 1 : -1;
+  return Math.pow(2, power) * won;
 }
 
-export function costOfColorGame(
-  game: Pick<ColorGameResult, "flekCount" | "gameOfHearts" | "points">,
-  rates: { game: number; seven: number },
-  marriages: Pick<Marriage, "club" | "diamond" | "heart" | "spade" | "role">[],
-  seven?: Pick<Seven, "role" | "silent" | "won">
+export type SevenPayload = Pick<Seven, "flekCount" | "silent" | "won" | "role">;
+export function getSevenCost(
+  seven?: SevenPayload,
+  gameOfHearts: boolean = false
 ) {
-  const { playerPoints, oppositionPoints } = calculateColorGamePoints(
-    game.points,
-    marriages
-  );
-  let costOfGame = rates.game;
-  let costOfSeven = rates.seven;
-  if (game.gameOfHearts) {
-    costOfGame = rates.game * 2;
-    costOfSeven = rates.seven * 2;
+  if (!seven) {
+    return 0;
   }
 
-  if (seven) {
-    costOfSeven = costOfSeven / (seven.silent ? 2 : 1);
-    if (seven.role === "player") {
-      costOfSeven *= seven.won ? 1 : -1;
-    } else if (seven.role === "opposition") {
-      costOfSeven *= seven.won ? -1 : 1;
-    }
-  } else {
-    costOfSeven = 0;
+  let power = seven.flekCount + 1;
+  if (seven.silent) {
+    power = 0;
+  }
+  power = power + (gameOfHearts ? 1 : 0);
+  let won = seven.won ? 1 : -1;
+  if (seven.role === "opposition") {
+    won = won * -1;
   }
 
-  if (game.flekCount === 0) {
-    return costOfGame + costOfSeven;
-  }
+  return Math.pow(2, power) * won;
+}
 
-  costOfGame *= game.flekCount * 2;
+export function costOfColorGame(game: ColorGamePayload, seven?: SevenPayload) {
+  return getColorGameCost(game) + getSevenCost(seven, game.gameOfHearts);
+}
 
-  // silent hundred
-  if (playerPoints >= 100) {
-    costOfGame = costOfGame * getHundredMultiplier(playerPoints) + costOfSeven;
-  } else if (oppositionPoints >= 100) {
-    costOfGame =
-      costOfGame * getHundredMultiplier(oppositionPoints) + costOfSeven;
-  } else if (playerPoints > oppositionPoints) {
-    costOfGame = costOfGame + costOfSeven;
-  } else if (playerPoints < oppositionPoints) {
-    return costOfGame * -1 + costOfSeven;
-  }
-
-  return costOfGame;
+const trickRates: Record<"betl" | "durch", number> = {
+  betl: 15,
+  durch: 30,
+};
+export function costOfTrickGame(
+  type: "betl" | "durch",
+  game: Pick<TrickGameResult, "open" | "won">
+) {
+  let rate = trickRates[type];
+  rate = game.open ? rate * 2 : rate;
+  return game.won ? rate : rate * -1;
 }

@@ -97,6 +97,7 @@ async function seed() {
 
   const round1 = await prisma.round.create({
     data: {
+      cost: 2,
       gameType: {
         connect: {
           name: "color",
@@ -118,6 +119,7 @@ async function seed() {
 
   const round2 = await prisma.round.create({
     data: {
+      cost: 3,
       gameType: {
         connect: {
           name: "hundred",
@@ -139,13 +141,12 @@ async function seed() {
 
   const round3 = await prisma.round.create({
     data: {
+      cost: -3,
       gameType: {
         connect: {
           name: "color",
         },
       },
-      playerScore: 1,
-      oppositionScore: 2,
       number: 3,
       game: {
         connect: {
