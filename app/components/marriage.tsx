@@ -98,7 +98,7 @@ export function MarriageProvider({ children }: { children: ReactNode }) {
 
 const rootClass = cva([
   "flex divide-x divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
-  "overflow-x-auto w-44",
+  "",
 ]);
 
 export type MarriageValue = "0" | "20" | "40" | "60" | "80" | "100";
@@ -142,7 +142,7 @@ export function Marriage({ name, playedBy }: Props) {
                   ease: "easeOut",
                   duration: 0.3,
                 }}
-                style={{ height: 48 }}
+                style={{ height: 44 }}
                 className="absolute top-0 left-0 z-10 w-full bg-game-bg-active-color"
               ></motion.div>
             </rrg.Indicator>

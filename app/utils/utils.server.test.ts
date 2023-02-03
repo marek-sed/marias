@@ -1,5 +1,3 @@
-import { Seven } from "@prisma/client";
-import { MarriageType } from "./types";
 import {
   playerPositionToRole,
   getColorGameCost,
@@ -117,8 +115,6 @@ describe("seven cost", () => {
     expect(getSevenCost(s(4, true, true))).toBe(1);
     expect(getSevenCost(s(5, true, true))).toBe(1);
   });
-
-  test("silent game respects game of hearts", () => {});
 
   test("player - normal game", () => {
     expect(getSevenCost(s(0, true, true))).toBe(1);

@@ -4,6 +4,7 @@ import * as rc from "@radix-ui/react-checkbox";
 import { useCallback, createContext, useContext, useState } from "react";
 import { GiSpeaker, GiSpeakerOff } from "react-icons/gi";
 import { Touchable } from "../touchable";
+import { AnimatePresence, motion } from "framer-motion";
 
 type SevenContextType = {
   playedBy: null | string;
@@ -117,13 +118,29 @@ export function SevenBox({
       >
         <Touchable border aspect="square" color="game">
           <rc.CheckboxIndicator forceMount>
-            {value === false ? (
-              <div className="-rotate-45 scale-110 text-2xl font-medium">
-                RIP
-              </div>
-            ) : value === true ? (
-              <div className="scale-125 text-2xl font-medium">7</div>
-            ) : null}
+            <AnimatePresence>
+              {value === false ? (
+                <motion.div
+                  className="text-2xl font-medium"
+                  initial={{ transform: "rotate(90deg)" }}
+                  animate={{ transform: "rotate(-45deg)" }}
+                  exit={{ transform: "rotate(-360deg)" }}
+                  transition={{
+                    bounce: 1,
+                  }}
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1.1 }}
+                    exit={{ scale: 0, transition: { delay: 0.1 } }}
+                  >
+                    RIP
+                  </motion.div>
+                </motion.div>
+              ) : value === true ? (
+                <div className="scale-125 text-2xl font-medium">7</div>
+              ) : null}
+            </AnimatePresence>
           </rc.CheckboxIndicator>
         </Touchable>
       </rc.Root>

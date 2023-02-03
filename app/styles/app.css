@@ -2228,6 +2228,22 @@ select {
   width: 11rem;
 }
 
+.w-56 {
+  width: 14rem;
+}
+
+.w-36 {
+  width: 9rem;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-\[36\] {
+  width: 36;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
@@ -2266,6 +2282,10 @@ select {
 .scale-125 {
   --tw-scale-x: 1.25;
   --tw-scale-y: 1.25;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -2391,6 +2411,10 @@ select {
 
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-x-scroll {
+  overflow-x: scroll;
 }
 
 .rounded {
@@ -2874,6 +2898,14 @@ button {
 @media (min-width: 640px) {
   .sm\:w-1\/2 {
     width: 50%;
+  }
+
+  .sm\:w-full {
+    width: 100%;
+  }
+
+  .sm\:w-56 {
+    width: 14rem;
   }
 
   .sm\:grid-cols-2 {
