@@ -4,7 +4,7 @@ import type { Field, IndeterminateBool } from "~/utils/types";
 import { Checkbox } from "../checkbox";
 import { FormControl } from "../formControl";
 import { HeartBox } from "../heartBox";
-import { Seven, SevenBox, SevenProvider } from "./seven";
+import { Seven, SevenProvider } from "./seven";
 import { Input } from "../input";
 import { Fieldset } from "../fieldset";
 import { Marriage, MarriageProvider } from "../marriage";
@@ -62,14 +62,13 @@ ColorGame.displayName = "ColorGame";
 
 type PlayedProps = {
   legend?: string;
-  seven: Field<IndeterminateBool> | undefined;
   points: Field<number>;
 };
-function Player({ legend, seven, points }: PlayedProps) {
+function Player({ legend, points }: PlayedProps) {
   return (
     <Fieldset animated legend={legend}>
       <div className="flex flex-col items-center space-y-4">
-        <Seven playedBy="player" seven={seven} />
+        <Seven playedBy="player" />
 
         <FormControl name="mariage" label="Hlasky">
           <Marriage playedBy="player" />
@@ -85,14 +84,13 @@ function Player({ legend, seven, points }: PlayedProps) {
 
 type OppositionProps = {
   legend: string;
-  seven: Field<IndeterminateBool> | undefined;
   points: number;
 };
-function Opposition({ legend, seven, points }: OppositionProps) {
+function Opposition({ legend, points }: OppositionProps) {
   return (
     <Fieldset animated legend={legend}>
       <div className="flex flex-col items-center space-y-4">
-        <Seven playedBy="opposition" seven={seven} />
+        <Seven playedBy="opposition" />
 
         <FormControl name="mariage" label="Hlasky">
           <Marriage playedBy="opposition" />
@@ -117,9 +115,6 @@ type ColorResultProps = {
   };
 };
 export function ColorResult({ player, opposition }: ColorResultProps) {
-  const [seven, setSeven] = useState<IndeterminateBool>("indeterminate");
-  const [oppositionSeven, setOppositionSeven] =
-    useState<IndeterminateBool>("indeterminate");
   const [points, setPoints] = useState<number>(50);
 
   return (
@@ -128,16 +123,8 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
         <Player
           legend={player.label!}
           points={{ value: points, onChange: setPoints }}
-          seven={{ value: seven, onChange: setSeven }}
         />
-        <Opposition
-          legend={opposition.label!}
-          points={90 - points}
-          seven={{
-            value: oppositionSeven,
-            onChange: setOppositionSeven,
-          }}
-        />
+        <Opposition legend={opposition.label!} points={90 - points} />
       </SevenProvider>
     </MarriageProvider>
   );

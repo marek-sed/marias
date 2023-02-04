@@ -9,32 +9,81 @@ import { FormControl, Label } from "../formControl";
 import { Input } from "../input";
 
 type SevenContextType = {
-  playedBy: null | string;
-  setPlayedBy: any;
-  silent: boolean;
-  setSilent: (v: boolean) => void;
+  seven: Field<IndeterminateBool>;
+  oppositionSeven: Field<IndeterminateBool>;
+  silent: Field<boolean>;
+  oppositionSilent: Field<boolean>;
 };
 
 const SevenContext = createContext<SevenContextType>({
-  playedBy: null,
-  setPlayedBy: () => {},
-  silent: true,
-  setSilent: (v: boolean) => {},
+  seven: {
+    value: "indeterminate",
+    onChange: () => {},
+  },
+  oppositionSeven: {
+    value: "indeterminate",
+    onChange: () => {},
+  },
+  silent: {
+    value: true,
+    onChange: () => {},
+  },
+  oppositionSilent: {
+    value: true,
+    onChange: () => {},
+  },
 });
 
-function useSevenContext() {
-  return useContext(SevenContext);
-}
-
 export function SevenProvider({ children }: { children: ReactNode }) {
-  const [playedBy, setPlayedBy] = useState<SevenContextType["playedBy"]>(null);
+  const [seven, setSeven] = useState<IndeterminateBool>("indeterminate");
+  const [oppositionSeven, setOppositionSeven] =
+    useState<IndeterminateBool>("indeterminate");
   const [silent, setSilent] = useState<boolean>(true);
+  const [oppositionSilent, setOppositionSilent] = useState<boolean>(true);
 
   return (
-    <SevenContext.Provider value={{ playedBy, setPlayedBy, silent, setSilent }}>
+    <SevenContext.Provider
+      value={{
+        seven: {
+          value: seven,
+          onChange: setSeven,
+        },
+        oppositionSeven: {
+          value: oppositionSeven,
+          onChange: setOppositionSeven,
+        },
+        silent: {
+          value: silent,
+          onChange: setSilent,
+        },
+        oppositionSilent: {
+          value: oppositionSilent,
+          onChange: setOppositionSilent,
+        },
+      }}
+    >
       {children}
     </SevenContext.Provider>
   );
+}
+
+function useSevenContext(playedBy: string | undefined) {
+  const ctx = useContext(SevenContext);
+
+  if (playedBy === "opposition") {
+    return {
+      ...ctx.oppositionSeven,
+      silent: ctx.oppositionSilent,
+      disabled: ctx.seven.value !== "indeterminate",
+    };
+  }
+
+  return {
+    value: ctx.seven.value,
+    onChange: ctx.seven.onChange,
+    silent: ctx.silent,
+    disabled: ctx.oppositionSeven.value !== "indeterminate",
+  };
 }
 
 type Props<T = boolean> = {
@@ -80,45 +129,36 @@ function SilentBox({
 
 export function SevenBox({
   id,
-  value,
   defaultValue,
-  onChange,
   isDisabled,
   playedBy,
 }: Props<IndeterminateBool>) {
-  const ctx = useSevenContext();
-  const onCheckedChange = useCallback(
-    (checked: boolean | "indeterminate") => {
-      if (value === "indeterminate") {
-        onChange?.(true);
-        ctx.setSilent(true);
-        ctx.setPlayedBy(playedBy);
-      } else if (value === false) {
-        onChange?.("indeterminate");
-        ctx.setPlayedBy(null);
-      } else {
-        onChange?.(false);
-        ctx.setPlayedBy(playedBy);
-      }
-    },
-    [value, onChange, playedBy, ctx]
-  );
-  const wasPlayedByTheOther =
-    ctx.playedBy !== null && ctx.playedBy !== playedBy;
+  const ctx = useSevenContext(playedBy);
+  const onCheckedChange = useCallback(() => {
+    if (ctx.value === "indeterminate") {
+      ctx.onChange(true);
+      ctx.silent.onChange(true);
+    } else if (ctx.value === false) {
+      ctx.onChange?.("indeterminate");
+      ctx.silent.onChange(true);
+    } else {
+      ctx.onChange?.(false);
+    }
+  }, [ctx]);
 
   return (
     <div className="flex space-x-2">
       <SilentBox
         name={`seven.${playedBy}.silent`}
-        value={ctx.silent}
-        onChange={ctx.setSilent}
-        isDisabled={value === "indeterminate"}
+        value={ctx.silent.value}
+        onChange={ctx.silent.onChange}
+        isDisabled={ctx.value === "indeterminate"}
       />
       <rc.Root
         id={id}
         name={`seven.${playedBy}.won`}
-        checked={value}
-        disabled={isDisabled || wasPlayedByTheOther}
+        checked={ctx.value}
+        disabled={isDisabled}
         defaultChecked={defaultValue}
         onCheckedChange={onCheckedChange}
         asChild
@@ -126,7 +166,7 @@ export function SevenBox({
         <Touchable border aspect="square" color="game">
           <rc.CheckboxIndicator forceMount>
             <AnimatePresence initial={false}>
-              {value === false ? (
+              {ctx.value === false ? (
                 <motion.div
                   className="text-2xl font-medium"
                   initial={{ transform: "rotate(90deg)" }}
@@ -141,7 +181,7 @@ export function SevenBox({
                     RIP
                   </motion.div>
                 </motion.div>
-              ) : value === true ? (
+              ) : ctx.value === true ? (
                 <div className="scale-125 text-2xl font-medium">7</div>
               ) : null}
             </AnimatePresence>
@@ -152,31 +192,18 @@ export function SevenBox({
   );
 }
 
-export function Seven({
-  seven,
-  playedBy,
-  disabled = false,
-}: {
-  seven: Field<IndeterminateBool> | undefined;
-  playedBy: string;
-  disabled?: boolean;
-}) {
-  const ctx = useSevenContext();
+export function Seven({ playedBy }: { playedBy: string }) {
+  const ctx = useSevenContext(playedBy);
+  const [flek, setFlek] = useState<number>(0);
 
-  const wasPlayedByTheOther =
-    ctx.playedBy !== null && ctx.playedBy !== playedBy;
   return (
     <motion.div className="w-full" layout>
       <motion.div layout className="flex w-full items-center justify-between">
         <span className="text-gray-11">Sedma</span>
-        <SevenBox
-          isDisabled={wasPlayedByTheOther}
-          playedBy={playedBy}
-          {...seven}
-        />
+        <SevenBox isDisabled={ctx.disabled} playedBy={playedBy} />
       </motion.div>
       <AnimatePresence>
-        {!wasPlayedByTheOther && ctx.silent === false && (
+        {!ctx.disabled && ctx.silent.value === false && (
           <motion.div
             className="w-full"
             transition={{ duration: 0.15 }}
@@ -193,9 +220,10 @@ export function Seven({
             <FormControl
               label="Flek"
               name={`seven.${playedBy}.flekCount`}
-              value={0}
+              value={flek}
+              onChange={setFlek}
             >
-              <Input type="number" />
+              <Input type="number" step={1} min={1} max={9} />
             </FormControl>
           </motion.div>
         )}
