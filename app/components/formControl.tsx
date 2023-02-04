@@ -3,6 +3,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { Children, cloneElement, isValidElement } from "react";
 import * as rl from "@radix-ui/react-label";
+import { motion } from "framer-motion";
 
 type Props<T> = VariantProps<typeof formControlClass> & {
   name: string;

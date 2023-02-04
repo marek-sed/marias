@@ -1,19 +1,25 @@
 import type { ReactNode } from "react";
-import type { IndeterminateBool } from "~/utils/types";
+import type { Field, IndeterminateBool } from "~/utils/types";
 import * as rc from "@radix-ui/react-checkbox";
 import { useCallback, createContext, useContext, useState } from "react";
 import { GiSpeaker, GiSpeakerOff } from "react-icons/gi";
 import { Touchable } from "../touchable";
 import { AnimatePresence, motion } from "framer-motion";
+import { FormControl, Label } from "../formControl";
+import { Input } from "../input";
 
 type SevenContextType = {
   playedBy: null | string;
   setPlayedBy: any;
+  silent: boolean;
+  setSilent: (v: boolean) => void;
 };
 
 const SevenContext = createContext<SevenContextType>({
   playedBy: null,
   setPlayedBy: () => {},
+  silent: true,
+  setSilent: (v: boolean) => {},
 });
 
 function useSevenContext() {
@@ -22,9 +28,10 @@ function useSevenContext() {
 
 export function SevenProvider({ children }: { children: ReactNode }) {
   const [playedBy, setPlayedBy] = useState<SevenContextType["playedBy"]>(null);
+  const [silent, setSilent] = useState<boolean>(true);
 
   return (
-    <SevenContext.Provider value={{ playedBy, setPlayedBy }}>
+    <SevenContext.Provider value={{ playedBy, setPlayedBy, silent, setSilent }}>
       {children}
     </SevenContext.Provider>
   );
@@ -61,9 +68,9 @@ function SilentBox({
       <Touchable color="default" aspect="square">
         <rc.CheckboxIndicator forceMount>
           {value === true ? (
-            <GiSpeaker className="h-8 w-8" />
+            <GiSpeakerOff className="h-8 w-8 text-gray-11" />
           ) : (
-            <GiSpeakerOff className="h-8 w-8" />
+            <GiSpeaker className=" h-8 w-8" />
           )}
         </rc.CheckboxIndicator>
       </Touchable>
@@ -80,11 +87,11 @@ export function SevenBox({
   playedBy,
 }: Props<IndeterminateBool>) {
   const ctx = useSevenContext();
-  const [silent, setSilent] = useState<boolean>(false);
   const onCheckedChange = useCallback(
     (checked: boolean | "indeterminate") => {
       if (value === "indeterminate") {
         onChange?.(true);
+        ctx.setSilent(true);
         ctx.setPlayedBy(playedBy);
       } else if (value === false) {
         onChange?.("indeterminate");
@@ -102,14 +109,14 @@ export function SevenBox({
   return (
     <div className="flex space-x-2">
       <SilentBox
-        name={`${playedBy}.silent`}
-        value={silent}
-        onChange={setSilent}
+        name={`seven.${playedBy}.silent`}
+        value={ctx.silent}
+        onChange={ctx.setSilent}
         isDisabled={value === "indeterminate"}
       />
       <rc.Root
         id={id}
-        name={`${playedBy}.seven`}
+        name={`seven.${playedBy}.won`}
         checked={value}
         disabled={isDisabled || wasPlayedByTheOther}
         defaultChecked={defaultValue}
@@ -118,16 +125,13 @@ export function SevenBox({
       >
         <Touchable border aspect="square" color="game">
           <rc.CheckboxIndicator forceMount>
-            <AnimatePresence>
+            <AnimatePresence initial={false}>
               {value === false ? (
                 <motion.div
                   className="text-2xl font-medium"
                   initial={{ transform: "rotate(90deg)" }}
                   animate={{ transform: "rotate(-45deg)" }}
                   exit={{ transform: "rotate(-360deg)" }}
-                  transition={{
-                    bounce: 1,
-                  }}
                 >
                   <motion.div
                     initial={{ scale: 0 }}
@@ -145,5 +149,57 @@ export function SevenBox({
         </Touchable>
       </rc.Root>
     </div>
+  );
+}
+
+export function Seven({
+  seven,
+  playedBy,
+  disabled = false,
+}: {
+  seven: Field<IndeterminateBool> | undefined;
+  playedBy: string;
+  disabled?: boolean;
+}) {
+  const ctx = useSevenContext();
+
+  const wasPlayedByTheOther =
+    ctx.playedBy !== null && ctx.playedBy !== playedBy;
+  return (
+    <motion.div className="w-full" layout>
+      <motion.div layout className="flex w-full items-center justify-between">
+        <span className="text-gray-11">Sedma</span>
+        <SevenBox
+          isDisabled={wasPlayedByTheOther}
+          playedBy={playedBy}
+          {...seven}
+        />
+      </motion.div>
+      <AnimatePresence>
+        {!wasPlayedByTheOther && ctx.silent === false && (
+          <motion.div
+            className="w-full"
+            transition={{ duration: 0.15 }}
+            initial={{ opacity: 0, paddingTop: 0, y: -30, height: 0 }}
+            animate={{ opacity: 1, y: 0, paddingTop: 4, height: "auto" }}
+            exit={{
+              paddingTop: 0,
+              opacity: 0,
+              height: 0,
+              y: -20,
+              transition: { duration: 0.2 },
+            }}
+          >
+            <FormControl
+              label="Flek"
+              name={`seven.${playedBy}.flekCount`}
+              value={0}
+            >
+              <Input type="number" />
+            </FormControl>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

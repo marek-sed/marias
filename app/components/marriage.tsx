@@ -118,7 +118,7 @@ export function Marriage({ name, playedBy }: Props) {
       onValueChange={(v) => {
         onChange(v as MarriageValue);
       }}
-      aria-label={`${playedBy}.marriage`}
+      aria-label={`marriage.${playedBy}`}
     >
       <rrg.Item value="0" className="hidden"></rrg.Item>
       {marriageOptions.map((v) => (

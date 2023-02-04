@@ -4,10 +4,10 @@ import type { Field, IndeterminateBool } from "~/utils/types";
 import { Checkbox } from "../checkbox";
 import { FormControl } from "../formControl";
 import { HeartBox } from "../heartBox";
-import { SevenBox, SevenProvider } from "./seven";
+import { Seven, SevenBox, SevenProvider } from "./seven";
 import { Input } from "../input";
 import { Fieldset } from "../fieldset";
-import { Marriage, MarriageProvider, MarriageValue } from "../marriage";
+import { Marriage, MarriageProvider } from "../marriage";
 
 type Props = {
   called: string;
@@ -69,10 +69,7 @@ function Player({ legend, seven, points }: PlayedProps) {
   return (
     <Fieldset animated legend={legend}>
       <div className="flex flex-col items-center space-y-4">
-        <div className="flex w-full items-center justify-between">
-          <span className="text-gray-11">Sedma</span>
-          <SevenBox playedBy="player" {...seven} />
-        </div>
+        <Seven playedBy="player" seven={seven} />
 
         <FormControl name="mariage" label="Hlasky">
           <Marriage playedBy="player" />
@@ -92,22 +89,12 @@ type OppositionProps = {
   points: number;
 };
 function Opposition({ legend, seven, points }: OppositionProps) {
-  const [marriage, setMarriage] = useState<number>(0);
-
   return (
     <Fieldset animated legend={legend}>
       <div className="flex flex-col items-center space-y-4">
-        <div className="flex w-full items-center justify-between">
-          <span className="text-gray-11">Sedma</span>
-          <SevenBox playedBy="opposition" {...seven} />
-        </div>
+        <Seven playedBy="opposition" seven={seven} />
 
-        <FormControl
-          name="mariage"
-          label="Hlasky"
-          value={marriage}
-          onChange={setMarriage}
-        >
+        <FormControl name="mariage" label="Hlasky">
           <Marriage playedBy="opposition" />
         </FormControl>
 

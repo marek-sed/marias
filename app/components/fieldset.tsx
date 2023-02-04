@@ -13,8 +13,17 @@ type Props = {
 export function Fieldset({ children, legend, animated = false }: Props) {
   if (animated) {
     return (
-      <motion.fieldset layout className={fieldsetClass}>
+      <motion.fieldset
+        layout
+        transition={{
+          layout: {
+            type: "just",
+          },
+        }}
+        className={fieldsetClass}
+      >
         <motion.legend
+          layout
           key={legend}
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

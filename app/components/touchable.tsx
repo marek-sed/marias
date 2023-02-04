@@ -16,7 +16,7 @@ const touchableClass = cva(
     "bg-game-bg-color",
     "transition-colors",
     "duration-400",
-    "disabled:cursor-not-allowed disabled:opacity-40 disabled:border-gray-5 disabled:text-gray-11",
+    "disabled:cursor-not-allowed disabled:opacity-60 disabled:border-gray-5 disabled:text-gray-11",
   ],
   {
     variants: {
@@ -31,6 +31,7 @@ const touchableClass = cva(
       },
       aspect: {
         square: "px-0 flex-grow-0",
+        "11/12": "",
       },
       color: {
         default: "text-gray-12",
@@ -48,7 +49,12 @@ const touchableClass = cva(
       {
         aspect: "square",
         size: "normal",
-        className: "w-11",
+        className: "w-12",
+      },
+      {
+        aspect: "11/12",
+        size: "normal",
+        className: "w-12",
       },
       {
         border: true,
@@ -120,10 +126,10 @@ function resolveColor(color: TouchableOptions["color"]) {
     }
     case "default": {
       active = "var(--gray5)";
-      textActive = "var(--gray11)";
+      textActive = "var(--gray12)";
       bg = "var(--gray3)";
       hover = "var(--gray4)";
-      text = "var(--gray11)";
+      text = "var(--gray12)";
     }
   }
 
