@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useState } from "react";
 import type { Field } from "~/utils/types";
 import { Checkbox } from "../checkbox";
@@ -29,16 +29,6 @@ export const ColorGame = forwardRef<HTMLDivElement, Props>(
           bounce: 0,
         }}
       >
-        {called === "hundred" && (
-          <FormControl name="counter" label="Proti" {...counter100}>
-            <Checkbox />
-          </FormControl>
-        )}
-        {/* {counter100.value ? (
-          <input type="hidden" name="playedBy" value="opposition" />
-        ) : (
-          <input type="hidden" name="playedBy" value="player" />
-        )} */}
         <input type="hidden" name="playedBy" value={playedBy} />
 
         <div className="w-full items-center space-y-4 pt-8">
@@ -51,14 +41,39 @@ export const ColorGame = forwardRef<HTMLDivElement, Props>(
             <HeartBox />
           </FormControl>
 
-          <FormControl
-            direction="horizontal"
-            name="flek"
-            label="Flek"
-            {...flek}
-          >
-            <Input color="game" step={1} max={10} type="number" />
-          </FormControl>
+          <AnimatePresence mode="wait" initial={false}>
+            {called === "color" ? (
+              <motion.div
+                key="color"
+                exit={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: -24 }}
+                transition={{ duration: 0.2 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <FormControl
+                  direction="horizontal"
+                  name="flek"
+                  label="Flek"
+                  {...flek}
+                >
+                  <Input color="game" step={1} max={10} type="number" />
+                </FormControl>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="hundred"
+                exit={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: -24 }}
+                transition={{ duration: 0.2 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="py-0.5"
+              >
+                <FormControl name="contra" label="Proti" {...counter100}>
+                  <Checkbox />
+                </FormControl>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     );

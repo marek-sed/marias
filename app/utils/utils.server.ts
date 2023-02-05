@@ -1,4 +1,9 @@
-import type { ColorGameResult, TrickGameResult, Seven } from "@prisma/client";
+import type {
+  ColorGameResult,
+  TrickGameResult,
+  Seven,
+  HundredGameResult,
+} from "@prisma/client";
 import { getPlayerCount } from "~/models/settings.server";
 
 export async function canStartNewGame() {
@@ -39,7 +44,9 @@ export type ColorGamePayload = Pick<
   | "marriagePlayer"
   | "marriageOpposition"
 >;
-export function calculateColorGamePoints(game: ColorGamePayload) {
+export function calculateColorGamePoints(
+  game: Omit<ColorGamePayload, "flekCount">
+) {
   const { points, marriageOpposition, marriagePlayer } = game;
   let playerPoints = points + marriagePlayer;
   let oppositionPoints = 90 - points + marriageOpposition;
@@ -89,8 +96,29 @@ export function getSevenCost(
   return Math.pow(2, power) * won;
 }
 
+type HundredGamePayload = Pick<
+  HundredGameResult,
+  "contra" | "gameOfHearts" | "marriageOpposition" | "marriagePlayer" | "points"
+>;
+
 export function costOfColorGame(game: ColorGamePayload, seven?: SevenPayload) {
   return getColorGameCost(game) + getSevenCost(seven, game.gameOfHearts);
+}
+
+export function costOfHundredGame(
+  game: HundredGameResult,
+  seven: SevenPayload | undefined
+) {
+  let hundredGameCost = getColorGameCost({
+    ...game,
+    flekCount: 2,
+  });
+
+  if (game.contra) {
+    hundredGameCost = hundredGameCost * -1;
+  }
+
+  return hundredGameCost + getSevenCost(seven, game.gameOfHearts);
 }
 
 const trickRates: Record<"betl" | "durch", number> = {

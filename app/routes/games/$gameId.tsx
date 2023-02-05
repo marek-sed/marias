@@ -1,7 +1,6 @@
-import type { TrickGameResult } from "@prisma/client";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { useCallback, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
@@ -19,8 +18,11 @@ import { getFullGame } from "~/models/game.server";
 import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
 import {
   createColorGameRound,
+  createHundredGameRound,
   createTrickGameRound,
 } from "~/models/round.server";
+import { parseSevenFormData } from "~/components/game/seven";
+import { parseMarriageFormData } from "~/components/marriage";
 
 export const handle = {
   title: "Hra",
@@ -76,62 +78,42 @@ export const action = async ({ request, params }: ActionArgs) => {
       const flekCount = parseInt(form.get("flek") as string, 10);
       const points = parseInt(form.get("points") as string, 10);
 
-      const seven = form.getAll("seven.player");
-      const oppositionSeven = form.getAll("seven.opposition");
-      const sevenRole = seven.length
-        ? "player"
-        : oppositionSeven.length
-        ? "opposition"
-        : null;
-
-      let sevenPayload;
-      if (sevenRole) {
-        const silent = seven.includes("silent");
-        const won = seven.includes("won");
-        if (silent) {
-          sevenPayload = {
-            silent,
-            won,
-            role: sevenRole,
-            flekCount: 0,
-          };
-        } else {
-          const flekCount = parseInt(seven[1] as string, 10);
-          sevenPayload = {
-            silent,
-            won: seven.includes("won"),
-            flekCount,
-            role: sevenRole,
-          };
-        }
-      }
-
-      const marriageOpposition = parseInt(
-        form.get("marriage.opposition") as string,
-        10
-      );
-      const marriagePlayer = parseInt(
-        form.get("marriage.player") as string,
-        10
-      );
+      const marriages = parseMarriageFormData(form);
+      const seven = parseSevenFormData(form);
 
       await createColorGameRound(
         player,
-        gameType,
         {
           gameId,
           roundNumber,
           gameOfHearts,
           points,
           flekCount,
-          marriageOpposition,
-          marriagePlayer,
+          ...marriages,
         },
-        sevenPayload
+        seven
       );
       return null;
     }
     case "hundred": {
+      const contra = Boolean(form.get("contra"));
+      const gameOfHearts = Boolean(form.get("gameOfHearts"));
+      const points = parseInt(form.get("points") as string, 10);
+      const marriages = parseMarriageFormData(form);
+      const seven = parseSevenFormData(form);
+
+      await createHundredGameRound(
+        player,
+        {
+          gameId,
+          roundNumber,
+          gameOfHearts,
+          points,
+          contra,
+          ...marriages,
+        },
+        seven
+      );
       return null;
     }
     case "betl":
@@ -170,7 +152,7 @@ export default function ActiveGame() {
 
   const [playedBy, setPlayedBy] = useState(actor.id);
   const [counter100, setCounter100] = useState(false);
-  const [called, setCalled] = useState<RoundType>(roundTypes[0].value);
+  const [called, setCalled] = useState<RoundType>(roundTypes[1].value);
 
   const onGameChanged = useCallback(
     (called: RoundType) => {
@@ -223,26 +205,24 @@ export default function ActiveGame() {
                   duration: 0.3,
                 }}
               >
-                <AnimatePresence mode="popLayout">
-                  {isGameOfColor ? (
-                    <ColorGame
-                      playedBy={playedBy}
-                      called={called}
-                      better={{ value: better, onChange: setBetter }}
-                      flek={{ value: flek, onChange: setFlek }}
-                      counter100={{
-                        value: counter100,
-                        onChange: setCounter100,
-                      }}
-                    />
-                  ) : (
-                    // BETL DURCH
-                    <TrickGame
-                      playedBy={{ value: playedBy, onChange: setPlayedBy }}
-                      playerOptions={playerOptions}
-                    />
-                  )}
-                </AnimatePresence>
+                {isGameOfColor ? (
+                  <ColorGame
+                    playedBy={playedBy}
+                    called={called}
+                    better={{ value: better, onChange: setBetter }}
+                    flek={{ value: flek, onChange: setFlek }}
+                    counter100={{
+                      value: counter100,
+                      onChange: setCounter100,
+                    }}
+                  />
+                ) : (
+                  // BETL DURCH
+                  <TrickGame
+                    playedBy={{ value: playedBy, onChange: setPlayedBy }}
+                    playerOptions={playerOptions}
+                  />
+                )}
               </motion.div>
             </div>
           </Fieldset>

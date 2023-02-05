@@ -1,7 +1,16 @@
-import type { ColorGameResult, Seven, TrickGameResult } from "@prisma/client";
+import type {
+  ColorGameResult,
+  HundredGameResult,
+  Seven,
+  TrickGameResult,
+} from "@prisma/client";
 import { prisma } from "~/db.server";
 
-import { costOfColorGame, costOfTrickGame } from "~/utils/utils.server";
+import {
+  costOfColorGame,
+  costOfHundredGame,
+  costOfTrickGame,
+} from "~/utils/utils.server";
 
 export async function createTrickGameRound(
   playerId: string,
@@ -13,7 +22,7 @@ export async function createTrickGameRound(
   return prisma.round.create({
     data: {
       playerId,
-      gameTypeName: gameType,
+      gameType: gameType,
       gameId: result.gameId,
       cost,
       number: result.roundNumber,
@@ -29,16 +38,17 @@ export async function createTrickGameRound(
 
 export async function createColorGameRound(
   playerId: string,
-  gameType: "color" | "hundred",
   result: ColorGameResult,
   seven?: Omit<Seven, "gameId" | "roundNumber">
 ) {
   const cost = costOfColorGame(result, seven);
 
+  console.log("submit color", playerId, result, seven);
+
   return prisma.round.create({
     data: {
       playerId,
-      gameTypeName: gameType,
+      gameType: "color",
       gameId: result.gameId,
       cost,
       number: result.roundNumber,
@@ -46,6 +56,40 @@ export async function createColorGameRound(
         create: {
           points: result.points,
           flekCount: result.flekCount,
+          gameOfHearts: result.gameOfHearts,
+          marriageOpposition: result.marriageOpposition,
+          marriagePlayer: result.marriagePlayer,
+          seven: seven
+            ? {
+                create: {
+                  ...seven,
+                },
+              }
+            : undefined,
+        },
+      },
+    },
+  });
+}
+
+export async function createHundredGameRound(
+  playerId: string,
+  result: HundredGameResult,
+  seven?: Omit<Seven, "gameId" | "roundNumber">
+) {
+  const cost = costOfHundredGame(result, seven);
+
+  return prisma.round.create({
+    data: {
+      playerId,
+      gameType: "hundred",
+      gameId: result.gameId,
+      cost,
+      number: result.roundNumber,
+      HundredGameResult: {
+        create: {
+          points: result.points,
+          contra: result.contra,
           gameOfHearts: result.gameOfHearts,
           marriageOpposition: result.marriageOpposition,
           marriagePlayer: result.marriagePlayer,

@@ -19,7 +19,6 @@ async function seed() {
     // no worries if it doesn't exist yet
   });
 
-  await prisma.gameType.deleteMany({});
   await prisma.trickGameResult.deleteMany({});
   await prisma.round.deleteMany({});
   await prisma.table.deleteMany({});
@@ -38,10 +37,6 @@ async function seed() {
       },
     },
   });
-
-  for (const [name, rate] of Object.entries(initialStakes)) {
-    await prisma.gameType.create({ data: { name, rate } });
-  }
 
   const player1 = await prisma.player.create({
     data: {
@@ -100,11 +95,7 @@ async function seed() {
   const round1 = await prisma.round.create({
     data: {
       cost: 2,
-      gameType: {
-        connect: {
-          name: "color",
-        },
-      },
+      gameType: "color",
       number: 1,
       game: {
         connect: {
@@ -122,11 +113,7 @@ async function seed() {
   const round2 = await prisma.round.create({
     data: {
       cost: 3,
-      gameType: {
-        connect: {
-          name: "hundred",
-        },
-      },
+      gameType: "hundred",
       number: 2,
       game: {
         connect: {
@@ -144,11 +131,7 @@ async function seed() {
   const round3 = await prisma.round.create({
     data: {
       cost: -3,
-      gameType: {
-        connect: {
-          name: "color",
-        },
-      },
+      gameType: "color",
       number: 3,
       game: {
         connect: {

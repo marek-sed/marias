@@ -32,12 +32,6 @@ model Player {
   Round Round[]
 }
 
-model GameType {
-  name  String  @id
-  rate  Int
-  Round Round[]
-}
-
 model Game {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -69,10 +63,10 @@ model Round {
   player   Player @relation(fields: [playerId], references: [id])
   playerId String
 
-  gameType        GameType         @relation(fields: [gameTypeName], references: [name])
-  gameTypeName    String
-  ColorGameResult ColorGameResult?
-  TrickGameResult TrickGameResult?
+  gameType          String
+  ColorGameResult   ColorGameResult?
+  HundredGameResult HundredGameResult?
+  TrickGameResult   TrickGameResult?
 
   cost Int
 
@@ -83,7 +77,7 @@ model Round {
 model ColorGameResult {
   gameId      String
   roundNumber Int
-  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number])
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
 
   flekCount    Int
   gameOfHearts Boolean
@@ -98,16 +92,34 @@ model ColorGameResult {
   @@map("round.colorResult")
 }
 
+model HundredGameResult {
+  gameId      String
+  roundNumber Int
+  round       Round? @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
+
+  contra             Boolean
+  gameOfHearts       Boolean
+  seven              Seven?
+  marriagePlayer     Int     @default(0)
+  marriageOpposition Int     @default(0)
+
+  points Int
+
+  @@id([gameId, roundNumber])
+  @@map("round.hundredResult")
+}
+
 model Seven {
   gameId          String
   roundNumber     Int
   ColorGameResult ColorGameResult @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
 
-  won       Boolean
-  flekCount Int     @default(1)
-  silent    Boolean
+  won               Boolean
+  flekCount         Int               @default(1)
+  silent            Boolean
   // player | opposition
-  role      String
+  role              String
+  HundredGameResult HundredGameResult @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
 
   @@id([gameId, roundNumber])
   @@unique([gameId, roundNumber, role])
@@ -116,7 +128,7 @@ model Seven {
 model TrickGameResult {
   gameId      String
   roundNumber Int
-  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number])
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
 
   open Boolean
   won  Boolean
