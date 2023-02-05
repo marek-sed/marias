@@ -34,11 +34,12 @@ export function Select({
         <Touchable
           className="flex flex-grow-0 gap-8 pl-3 pr-1 text-lg"
           color="game"
+          selected
           border
         >
           <rs.Value placeholder={placeholder} />
           <rs.Icon>
-            <ChevronDownIcon className="h-7 w-7" />
+            <ChevronDownIcon className="h-7 w-7 text-game-color" />
           </rs.Icon>
         </Touchable>
       </rs.Trigger>

@@ -30,47 +30,32 @@ export async function createTrickGameRound(
 export async function createColorGameRound(
   playerId: string,
   gameType: "color" | "hundred",
-  {
-    gameId,
-    roundNumber,
-    gameOfHearts,
-    points,
-    flekCount,
-    marriageOpposition,
-    marriagePlayer,
-  }: ColorGameResult,
-  seven: Seven
+  result: ColorGameResult,
+  seven?: Omit<Seven, "gameId" | "roundNumber">
 ) {
-  const cost = costOfColorGame(
-    {
-      flekCount,
-      gameOfHearts,
-      points,
-      marriagePlayer,
-      marriageOpposition,
-    },
-    seven
-  );
+  const cost = costOfColorGame(result, seven);
 
   return prisma.round.create({
     data: {
-      gameId,
-      number: roundNumber,
       playerId,
       gameTypeName: gameType,
+      gameId: result.gameId,
       cost,
+      number: result.roundNumber,
       ColorGameResult: {
         create: {
-          points,
-          flekCount,
-          gameOfHearts,
-          seven: {
-            create: {
-              won: false,
-              silent: true,
-              role: "player",
-            },
-          },
+          points: result.points,
+          flekCount: result.flekCount,
+          gameOfHearts: result.gameOfHearts,
+          marriageOpposition: result.marriageOpposition,
+          marriagePlayer: result.marriagePlayer,
+          seven: seven
+            ? {
+                create: {
+                  ...seven,
+                },
+              }
+            : undefined,
         },
       },
     },

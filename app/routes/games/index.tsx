@@ -2,7 +2,6 @@ import { ArrowLeftIcon, PlusIcon } from "@radix-ui/react-icons";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { createGame, getActiveGame, getGames } from "~/models/game.server";
-import { createRound } from "~/models/round.server";
 import { getPlayers } from "~/models/settings.server";
 
 export const handle = {
@@ -45,13 +44,12 @@ export default function GamesIndex() {
                   {new Date(game.createdAt).toLocaleString()}
                 </header>
                 <div>
-                  {game.players.map(({ player, totalScore }) => (
+                  {game.players.map(({ player }) => (
                     <div
                       key={player.id}
                       className="grid-row-1 grid w-full grid-cols-2 sm:w-1/2"
                     >
                       <span>{player.name}:</span>
-                      <span>{totalScore}</span>
                     </div>
                   ))}
                 </div>

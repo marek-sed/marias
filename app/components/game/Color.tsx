@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { forwardRef, useState } from "react";
-import type { Field, IndeterminateBool } from "~/utils/types";
+import type { Field } from "~/utils/types";
 import { Checkbox } from "../checkbox";
 import { FormControl } from "../formControl";
 import { HeartBox } from "../heartBox";
@@ -10,13 +10,14 @@ import { Fieldset } from "../fieldset";
 import { Marriage, MarriageProvider } from "../marriage";
 
 type Props = {
+  playedBy: string;
   called: string;
   counter100: Field<boolean>;
   better: Field<boolean>;
   flek: Field<number>;
 };
 export const ColorGame = forwardRef<HTMLDivElement, Props>(
-  ({ called, counter100, better, flek }: Props, ref) => {
+  ({ called, playedBy, counter100, better, flek }: Props, ref) => {
     return (
       <motion.div
         ref={ref}
@@ -33,6 +34,12 @@ export const ColorGame = forwardRef<HTMLDivElement, Props>(
             <Checkbox />
           </FormControl>
         )}
+        {/* {counter100.value ? (
+          <input type="hidden" name="playedBy" value="opposition" />
+        ) : (
+          <input type="hidden" name="playedBy" value="player" />
+        )} */}
+        <input type="hidden" name="playedBy" value={playedBy} />
 
         <div className="w-full items-center space-y-4 pt-8">
           <FormControl
@@ -70,7 +77,7 @@ function Player({ legend, points }: PlayedProps) {
       <div className="flex flex-col items-center space-y-4">
         <Seven playedBy="player" />
 
-        <FormControl name="mariage" label="Hlasky">
+        <FormControl name="mariage.player" label="Hlasky">
           <Marriage playedBy="player" />
         </FormControl>
 
@@ -92,7 +99,7 @@ function Opposition({ legend, points }: OppositionProps) {
       <div className="flex flex-col items-center space-y-4">
         <Seven playedBy="opposition" />
 
-        <FormControl name="mariage" label="Hlasky">
+        <FormControl name="mariage.opposition" label="Hlasky">
           <Marriage playedBy="opposition" />
         </FormControl>
 

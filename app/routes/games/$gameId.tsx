@@ -66,7 +66,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   const form = await request.formData();
 
   const gameType = GameTypeEnum.parse(form.get("gameType"));
-  const player = z.string().parse(form.get("player"));
+  const player = z.string().parse(form.get("playedBy"));
   const roundNumberStr = z.string().parse(form.get("roundNumber"));
   const roundNumber = parseInt(roundNumberStr, 10);
 
@@ -75,8 +75,45 @@ export const action = async ({ request, params }: ActionArgs) => {
       const gameOfHearts = Boolean(form.get("gameOfHearts"));
       const flekCount = parseInt(form.get("flek") as string, 10);
       const points = parseInt(form.get("points") as string, 10);
-      const marriageOpposition = 0;
-      const marriagePlayer = 0;
+
+      const seven = form.getAll("seven.player");
+      const oppositionSeven = form.getAll("seven.opposition");
+      const sevenRole = seven.length
+        ? "player"
+        : oppositionSeven.length
+        ? "opposition"
+        : null;
+
+      let sevenPayload;
+      if (sevenRole) {
+        const silent = seven.includes("silent");
+        const won = seven.includes("won");
+        if (silent) {
+          sevenPayload = {
+            silent,
+            won,
+            role: sevenRole,
+            flekCount: 0,
+          };
+        } else {
+          const flekCount = parseInt(seven[1] as string, 10);
+          sevenPayload = {
+            silent,
+            won: seven.includes("won"),
+            flekCount,
+            role: sevenRole,
+          };
+        }
+      }
+
+      const marriageOpposition = parseInt(
+        form.get("marriage.opposition") as string,
+        10
+      );
+      const marriagePlayer = parseInt(
+        form.get("marriage.player") as string,
+        10
+      );
 
       await createColorGameRound(
         player,
@@ -87,17 +124,10 @@ export const action = async ({ request, params }: ActionArgs) => {
           gameOfHearts,
           points,
           flekCount,
-          marriageOpposition: 0,
-          marriagePlayer: 0,
+          marriageOpposition,
+          marriagePlayer,
         },
-        {
-          gameId,
-          roundNumber,
-          role: "",
-          flekCount: 0,
-          silent: false,
-          won: false,
-        }
+        sevenPayload
       );
       return null;
     }
@@ -196,6 +226,7 @@ export default function ActiveGame() {
                 <AnimatePresence mode="popLayout">
                   {isGameOfColor ? (
                     <ColorGame
+                      playedBy={playedBy}
                       called={called}
                       better={{ value: better, onChange: setBetter }}
                       flek={{ value: flek, onChange: setFlek }}
@@ -226,7 +257,7 @@ export default function ActiveGame() {
 
           <div className="flex w-full justify-end pt-8">
             <div className="w-48">
-              <Button color="game" type="submit" size="large" border>
+              <Button type="submit" size="large" border>
                 Zapisat kolo
               </Button>
             </div>

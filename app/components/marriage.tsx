@@ -112,7 +112,7 @@ export function Marriage({ name, playedBy }: Props) {
 
   return (
     <rrg.Root
-      name={name}
+      name={`marriage.${playedBy}`}
       className={rootClass()}
       value={value}
       onValueChange={(v) => {
@@ -134,7 +134,7 @@ export function Marriage({ name, playedBy }: Props) {
           aria-label={v}
           disabled={!enabled.includes(v)}
         >
-          <Touchable color="game" aspect="square">
+          <Touchable color="game" selected={v === value} aspect="11/12">
             <rrg.Indicator asChild>
               <motion.div
                 layoutId={name}

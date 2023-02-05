@@ -19,6 +19,8 @@ async function seed() {
     // no worries if it doesn't exist yet
   });
 
+  await prisma.gameType.deleteMany({});
+  await prisma.trickGameResult.deleteMany({});
   await prisma.round.deleteMany({});
   await prisma.table.deleteMany({});
   await prisma.player.deleteMany({});

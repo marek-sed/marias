@@ -31,14 +31,13 @@ const touchableClass = cva(
       },
       aspect: {
         square: "px-0 flex-grow-0",
-        "11/12": "",
+        "11/12": "px-0 flex-grow-0",
       },
       color: {
         default: "text-gray-12",
         red: "text-red-9 bg-red-1",
         green: "text-grass-3",
         game: "text-game-color hover:text-game-color-hover",
-        cta: "text-grass-12 font-semibold",
       },
       border: {
         true: "border-2 rounded",
@@ -49,7 +48,7 @@ const touchableClass = cva(
       {
         aspect: "square",
         size: "normal",
-        className: "w-12",
+        className: "w-11",
       },
       {
         aspect: "11/12",
@@ -72,11 +71,6 @@ const touchableClass = cva(
         color: "default",
         className: "border-gray-6 hover:border-gray-7",
       },
-      {
-        border: true,
-        color: "cta",
-        className: "border-grass-9 hover:border-grass-10",
-      },
     ],
     defaultVariants: {
       size: "normal",
@@ -88,6 +82,7 @@ const touchableClass = cva(
 type TouchableVariantProps = VariantProps<typeof touchableClass>;
 type TouchableOptions = TouchableVariantProps & {
   disabled?: boolean;
+  selected?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   color: TouchableVariantProps["color"];
 };
@@ -100,14 +95,6 @@ function resolveColor(color: TouchableOptions["color"]) {
     text = "";
 
   switch (color) {
-    case "cta": {
-      active = "var(--grass5)";
-      textActive = "var(--grass11)";
-      bg = "var(--grass3)";
-      hover = "var(--grass6)";
-      text = "var(--grass11)";
-      break;
-    }
     case "red": {
       active = "var(--red5)";
       textActive = "var(--red11)";
@@ -140,12 +127,13 @@ export function usePressable({
   onClick,
   color,
   disabled: isDisabled,
+  selected,
 }: TouchableOptions) {
   const controls = useAnimation();
   const { active, bg, hover, text, textActive } = resolveColor(color);
 
   useEffect(() => {
-    const { bg, textActive } = resolveColor(color);
+    const { bg, text, textActive } = resolveColor(color);
     if (isDisabled) {
       controls.start({
         background: "var(--gray4)",
@@ -157,7 +145,7 @@ export function usePressable({
     } else {
       controls.start({
         background: bg,
-        color: textActive,
+        color: selected ? textActive : text,
         transition: {
           duration: 0,
         },
@@ -166,7 +154,7 @@ export function usePressable({
     return () => {
       controls.stop();
     };
-  }, [isDisabled, controls, color]);
+  }, [isDisabled, selected, controls, color]);
 
   const { pressProps } = usePress({
     isDisabled,
@@ -174,7 +162,7 @@ export function usePressable({
       controls.stop();
       controls.set({
         background: active,
-        color: text,
+        color: selected ? textActive : text,
         transition: {
           duration: 0.3,
         },
@@ -186,7 +174,7 @@ export function usePressable({
     onPressEnd: (e) => {
       controls.start({
         background: bg,
-        color: textActive,
+        color: selected ? textActive : text,
         transition: {
           duration: 0.2,
         },
@@ -200,7 +188,7 @@ export function usePressable({
       controls.stop();
       controls.set({
         background: hover,
-        color: text,
+        color: selected ? textActive : text,
         transition: {
           duration: 0.2,
         },
@@ -209,7 +197,7 @@ export function usePressable({
     onHoverEnd: (e) => {
       controls.start({
         background: bg,
-        color: textActive,
+        color: selected ? textActive : text,
         transition: {
           duration: 0.1,
         },
@@ -228,7 +216,8 @@ type Props = TouchableOptions & ButtonHTMLAttributes<HTMLButtonElement>;
 export const Touchable = forwardRef<HTMLButtonElement, Props>(
   (
     {
-      disabled: isDisabled = false,
+      disabled = false,
+      selected = false,
       children,
       aspect,
       size,
@@ -242,7 +231,8 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
     ref
   ) => {
     const { pressProps, hoverProps, controls } = usePressable({
-      disabled: isDisabled,
+      selected,
+      disabled,
       onClick,
       color,
     });
@@ -256,7 +246,7 @@ export const Touchable = forwardRef<HTMLButtonElement, Props>(
         {...(pressProps as any)}
         {...(hoverProps as any)}
         {...buttonProps}
-        disabled={isDisabled}
+        disabled={disabled}
         animate={controls}
         className={touchableClass({
           size,

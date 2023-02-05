@@ -54,9 +54,9 @@ export function GamePicker({
       onValueChange={onChange}
       className={rootClass({ className })}
     >
-      {options.map(({ value, label }, index) => (
-        <rrg.Item asChild key={value} value={value} id={value}>
-          <Touchable key={type} color="game">
+      {options.map(({ value: v, label }, index) => (
+        <rrg.Item asChild key={v} value={v} id={v}>
+          <Touchable key={type} selected={v === value} color="game">
             <rrg.Indicator asChild>
               <motion.div
                 layoutId={name}

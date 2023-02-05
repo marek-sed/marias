@@ -6,7 +6,7 @@ export function useGameTheme(better: boolean) {
   useEffect(() => {
     rootRef.current?.style.setProperty(
       "--game-color",
-      better ? "var(--bronze11)" : "var(--grass9)"
+      better ? "var(--bronze11)" : "var(--grass11)"
     );
 
     rootRef.current?.style.setProperty(
@@ -16,7 +16,7 @@ export function useGameTheme(better: boolean) {
 
     rootRef.current?.style.setProperty(
       "--game-color-active",
-      better ? "var(--bronze11)" : "var(--grass10)"
+      better ? "var(--bronze11)" : "var(--grass12)"
     );
 
     rootRef.current?.style.setProperty(

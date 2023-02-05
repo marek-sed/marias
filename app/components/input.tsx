@@ -76,7 +76,7 @@ export function Input({
           color="game"
           tabIndex={-1}
           onClick={decrement}
-          aspect="square"
+          aspect="11/12"
         >
           <MinusIcon className="h-7 w-7" />
         </Touchable>
@@ -90,7 +90,7 @@ export function Input({
           color="game"
           tabIndex={-1}
           onClick={increment}
-          aspect="square"
+          aspect="11/12"
         >
           <PlusIcon className="h-7 w-7" />
         </Touchable>
