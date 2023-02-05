@@ -96,11 +96,6 @@ export function getSevenCost(
   return Math.pow(2, power) * won;
 }
 
-type HundredGamePayload = Pick<
-  HundredGameResult,
-  "contra" | "gameOfHearts" | "marriageOpposition" | "marriagePlayer" | "points"
->;
-
 export function costOfColorGame(game: ColorGamePayload, seven?: SevenPayload) {
   return getColorGameCost(game) + getSevenCost(seven, game.gameOfHearts);
 }

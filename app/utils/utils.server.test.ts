@@ -3,6 +3,7 @@ import {
   getColorGameCost,
   costOfTrickGame,
   getSevenCost,
+  costOfHundredGame,
 } from "./utils.server";
 
 test("position 0 to role in rounds", () => {
@@ -162,6 +163,76 @@ describe("seven cost", () => {
 
     expect(getSevenCost(s(3, false, true, "opposition"), true)).toBe(2);
     expect(getSevenCost(s(3, false, false, "opposition"), false)).toBe(16);
+  });
+});
+
+describe("hundred round cost", () => {
+  test("hundred", () => {
+    expect(
+      costOfHundredGame(
+        {
+          contra: false,
+          gameOfHearts: false,
+          marriageOpposition: 20,
+          marriagePlayer: 60,
+          points: 40,
+          gameId: "",
+          roundNumber: 1,
+        },
+        undefined
+      )
+    ).toBe(8);
+  });
+
+  test("hundred hearts", () => {
+    expect(
+      costOfHundredGame(
+        {
+          contra: false,
+          gameOfHearts: true,
+          marriageOpposition: 20,
+          marriagePlayer: 60,
+          points: 40,
+          gameId: "",
+          roundNumber: 1,
+        },
+        undefined
+      )
+    ).toBe(16);
+  });
+
+  test("hundred contra", () => {
+    expect(
+      costOfHundredGame(
+        {
+          contra: true,
+          gameOfHearts: false,
+          marriageOpposition: 20,
+          marriagePlayer: 60,
+          points: 40,
+          gameId: "",
+          roundNumber: 1,
+        },
+        undefined
+      )
+    ).toBe(-8);
+  });
+
+  test("hundred overflow", () => {
+    expect(
+      costOfHundredGame(
+        {
+          contra: false,
+          gameOfHearts: false,
+          marriageOpposition: 20,
+          marriagePlayer: 80,
+          points: 40,
+          gameId: "",
+          roundNumber: 1,
+        },
+        undefined
+      )
+    ).toBe(32);
   });
 });
 
