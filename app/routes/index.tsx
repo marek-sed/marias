@@ -28,7 +28,7 @@ function NewTable() {
   );
 }
 
-export default function GamesIndex() {
+export default function Index() {
   const { games } = useLoaderData<typeof loader>();
   return (
     <div className="">
@@ -39,7 +39,7 @@ export default function GamesIndex() {
               className="cursor-pointer rounded border border-gray-7 px-4 py-2 transition ease-in-out hover:scale-105 hover:border-2 hover:border-grass-9"
               key={game.id}
             >
-              <Link to={game.id}>
+              <Link to={`games/${game.id}`}>
                 <header className="text-xl font-bold">
                   {new Date(game.createdAt).toLocaleString()}
                 </header>

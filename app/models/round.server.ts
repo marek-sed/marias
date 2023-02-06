@@ -12,6 +12,37 @@ import {
   costOfTrickGame,
 } from "~/utils/utils.server";
 
+export async function getRoundsForGame(gameId: string) {
+  return prisma.round.findMany({
+    where: {
+      gameId,
+    },
+    select: {
+      playerId: true,
+      gameType: true,
+      cost: true,
+      number: true,
+      gameId: true,
+      player: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      HundredGameResult: {
+        select: {
+          gameOfHearts: true,
+        },
+      },
+      ColorGameResult: {
+        select: {
+          gameOfHearts: true,
+        },
+      },
+    },
+  });
+}
+
 export async function createTrickGameRound(
   playerId: string,
   gameType: "betl" | "durch",
