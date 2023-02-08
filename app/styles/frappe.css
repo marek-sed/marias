@@ -1,0 +1,15 @@
+.frappe-chart .chart-legend {
+  transform: translate(10px, 280px);
+}
+
+@media only screen and (min-width: 360px) {
+  .frappe-chart .chart-legend {
+    transform: translate(20px, 280px);
+  }
+}
+
+@media only screen and (min-width: 390px) {
+  .frappe-chart .chart-legend {
+    transform: translate(30px, 280px);
+  }
+}

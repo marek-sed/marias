@@ -1,6 +1,10 @@
 import type { LinksFunction, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  ShouldRevalidateFunction,
+  useLoaderData,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getPlayersAtTable } from "~/models/player.server";
@@ -9,6 +13,8 @@ import { calculateCostsPerRound } from "~/utils/game";
 import { RoundBody, RoundHeader } from "~/components/round";
 import { GameResult } from "~/components/game/Result";
 import { GameChart } from "~/components/game/Chart";
+
+import frapeCss from "~/styles/frappe.css";
 
 export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.gameId, "game id not found");
@@ -27,7 +33,7 @@ export const links: LinksFunction = () => {
   return [
     {
       rel: "stylesheet",
-      href: "https://unpkg.com/charts.css/dist/charts.min.css",
+      href: frapeCss,
     },
   ];
 };
@@ -65,3 +71,16 @@ export default function Rounds() {
     </div>
   );
 }
+
+export const shouldRevalidate: ShouldRevalidateFunction = ({
+  currentParams,
+  nextParams,
+  formMethod,
+  defaultShouldRevalidate,
+}) => {
+  if (currentParams.gameId === nextParams.gameId) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+};
