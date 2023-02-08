@@ -81,7 +81,6 @@ export function RoundBody({ round, players, costPerPlayer }: RoundBodyProps) {
                 {p.name}
               </th>
             ))}
-            <th className="py-1 px-2 text-center text-gray-11">Mirka</th>
           </tr>
         </thead>
         <tbody>
