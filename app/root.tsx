@@ -13,7 +13,7 @@ import {
 
 import { getUser } from "./session.server";
 import appCss from "~/styles/app.css";
-import { GearIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 export const links: LinksFunction = () => {

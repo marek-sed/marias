@@ -4,7 +4,6 @@ import type {
   Seven,
   HundredGameResult,
   Round,
-  Table,
   Player,
 } from "@prisma/client";
 import { getPlayerCount } from "~/models/settings.server";
@@ -131,25 +130,3 @@ export function costOfTrickGame(
   rate = game.open ? rate * 2 : rate;
   return game.won ? rate : rate * -1;
 }
-
-export function calculateCosts(rounds: Round[], players: Player[]) {
-  const costs: Record<string, number> = players.reduce(
-    (acc, el) => ({
-      ...acc,
-      [el.id]: 0,
-    }),
-    {}
-  );
-
-  for (const r of rounds) {
-    costs[r.playerId] += r.cost;
-    for (const p of players) {
-      if (p.id === r.playerId) continue;
-      costs[p.id] += r.cost * -1;
-    }
-  }
-
-  return costs;
-}
-
-export function calculateCostPerRound(rounds: Round[], players: Player[]) {}

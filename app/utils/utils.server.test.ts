@@ -5,7 +5,6 @@ import {
   costOfTrickGame,
   getSevenCost,
   costOfHundredGame,
-  calculateCosts,
 } from "./utils.server";
 
 test("position 0 to role in rounds", () => {
@@ -291,99 +290,5 @@ describe("trick round cost", () => {
         won: false,
       })
     ).toBe(-20);
-  });
-});
-
-describe("calculate current cost", () => {
-  const players = Array(4)
-    .fill(null)
-    .map((_, i) => ({ id: `${i + 1}`, name: "" }));
-  test("no rounds played", () => {
-    const rounds: Round[] = [];
-
-    expect(calculateCosts(rounds, players)).toEqual({
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-    });
-  });
-
-  test("one round played", () => {
-    const rounds: Round[] = [
-      {
-        cost: 2,
-        playerId: "1",
-        number: 1,
-        gameId: "dummyId",
-        gameType: "color",
-      },
-    ];
-
-    expect(calculateCosts(rounds, players)).toEqual({
-      "1": 2,
-      "2": -2,
-      "3": -2,
-      "4": -2,
-    });
-  });
-
-  test("two rounds played", () => {
-    const rounds: Round[] = [
-      {
-        cost: 2,
-        playerId: "1",
-        number: 1,
-        gameId: "dummyId",
-        gameType: "color",
-      },
-      {
-        cost: -10,
-        playerId: "3",
-        number: 2,
-        gameId: "dummyId",
-        gameType: "durch",
-      },
-    ];
-
-    expect(calculateCosts(rounds, players)).toEqual({
-      "1": 12,
-      "2": 8,
-      "3": -12,
-      "4": 8,
-    });
-  });
-
-  test("three rounds played", () => {
-    const rounds: Round[] = [
-      {
-        cost: 2,
-        playerId: "1",
-        number: 1,
-        gameId: "dummyId",
-        gameType: "color",
-      },
-      {
-        cost: -10,
-        playerId: "3",
-        number: 2,
-        gameId: "dummyId",
-        gameType: "durch",
-      },
-      {
-        cost: 8,
-        playerId: "4",
-        number: 2,
-        gameId: "dummyId",
-        gameType: "hundred",
-      },
-    ];
-
-    expect(calculateCosts(rounds, players)).toEqual({
-      "1": 4,
-      "2": 0,
-      "3": -20,
-      "4": 16,
-    });
   });
 });
