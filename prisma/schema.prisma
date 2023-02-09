@@ -26,26 +26,24 @@ model Password {
 }
 
 model Player {
-  id    String  @id @default(cuid())
-  name  String  @unique
-  games Table[]
+  id    String      @id @default(cuid())
+  name  String      @unique
+  games GameTable[]
   Round Round[]
 }
 
 model Game {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   rounds    Round[]
-  user      User?    @relation(fields: [userId], references: [id])
+  user      User?       @relation(fields: [userId], references: [id])
   userId    String?
-  players   Table[]
-  isActive  Boolean  @default(false)
-
-  @@map("GameSession")
+  players   GameTable[]
+  isActive  Boolean     @default(false)
 }
 
-model Table {
+model GameTable {
   game     Game   @relation(fields: [gameId], references: [id])
   player   Player @relation(fields: [playerId], references: [id])
   position Int
@@ -64,9 +62,10 @@ model Round {
   playerId String
 
   gameType          String
-  ColorGameResult   ColorGameResult?
-  HundredGameResult HundredGameResult?
-  TrickGameResult   TrickGameResult?
+  colorGameResult   ColorGameResult?
+  hundredGameResult HundredGameResult?
+  trickGameResult   TrickGameResult?
+  seven             Seven?
 
   cost Int
 
@@ -82,11 +81,12 @@ model ColorGameResult {
   flekCount    Int
   gameOfHearts Boolean
 
-  seven              Seven?
-  marriagePlayer     Int    @default(0)
-  marriageOpposition Int    @default(0)
+  marriagePlayer     Int @default(0)
+  marriageOpposition Int @default(0)
 
-  points Int
+  points           Int
+  sevenGameId      String?
+  sevenRoundNumber Int?
 
   @@id([gameId, roundNumber])
   @@map("round.colorResult")
@@ -95,34 +95,47 @@ model ColorGameResult {
 model HundredGameResult {
   gameId      String
   roundNumber Int
-  round       Round? @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
 
-  contra             Boolean
-  gameOfHearts       Boolean
-  seven              Seven?
-  marriagePlayer     Int     @default(0)
-  marriageOpposition Int     @default(0)
+  contra       Boolean
+  gameOfHearts Boolean
 
-  points Int
+  points   Int
+  Marriage Marriage[]
 
   @@id([gameId, roundNumber])
   @@map("round.hundredResult")
 }
 
 model Seven {
-  gameId          String
-  roundNumber     Int
-  ColorGameResult ColorGameResult @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
+  gameId      String
+  roundNumber Int
 
-  won               Boolean
-  flekCount         Int               @default(1)
-  silent            Boolean
+  round     Round   @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
+  won       Boolean
+  flekCount Int     @default(0)
+  silent    Boolean
   // player | opposition
-  role              String
-  HundredGameResult HundredGameResult @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
+  role      String
 
   @@id([gameId, roundNumber])
   @@unique([gameId, roundNumber, role])
+  @@map("round.seven")
+}
+
+model Marriage {
+  gameId      String
+  roundNumber Int
+
+  HundredGameResult HundredGameResult? @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
+
+  spade   Boolean @default(false)
+  diamond Boolean @default(false)
+  club    Boolean @default(false)
+  heart   Boolean @default(false)
+
+  @@id([gameId, roundNumber])
+  @@map("round.hundredResult.marriage")
 }
 
 model TrickGameResult {

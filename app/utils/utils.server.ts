@@ -78,7 +78,7 @@ export function getColorGameCost(game: ColorGamePayload) {
 
 export type SevenPayload = Pick<Seven, "flekCount" | "silent" | "won" | "role">;
 export function getSevenCost(
-  seven?: SevenPayload,
+  seven?: SevenPayload | null,
   gameOfHearts: boolean = false
 ) {
   if (!seven) {
@@ -98,13 +98,16 @@ export function getSevenCost(
   return Math.pow(2, power) * won;
 }
 
-export function costOfColorGame(game: ColorGamePayload, seven?: SevenPayload) {
+export function costOfColorGame(
+  game: ColorGamePayload,
+  seven?: SevenPayload | null
+) {
   return getColorGameCost(game) + getSevenCost(seven, game.gameOfHearts);
 }
 
 export function costOfHundredGame(
-  game: HundredGameResult,
-  seven: SevenPayload | undefined
+  game: Omit<HundredGameResult, "gameId" | "roundNumber">,
+  seven: SevenPayload | undefined | null
 ) {
   let hundredGameCost = getColorGameCost({
     ...game,

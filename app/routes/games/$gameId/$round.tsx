@@ -1,10 +1,10 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { GameType } from "~/utils/round";
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
-import { z } from "zod";
 
 import type { Option } from "~/components/select";
 import { GamePicker } from "~/components/gamePicker";
@@ -17,12 +17,13 @@ import { useGameTheme } from "~/utils/game";
 import { getFullGame } from "~/models/game.server";
 import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
 import {
-  createColorGameRound,
+  upsertColorGameRound,
   createHundredGameRound,
   createTrickGameRound,
+  getRound,
 } from "~/models/round.server";
-import { parseSevenFormData } from "~/components/game/seven";
-import { parseMarriageFormData } from "~/components/marriage";
+import { getRoundInitialValues, parseRoundFormData } from "~/utils/round";
+import invariant from "tiny-invariant";
 
 export const handle = {
   title: "Hra",
@@ -34,7 +35,7 @@ export const handle = {
 };
 
 export const loader = async ({ params }: LoaderArgs) => {
-  const { gameId } = params;
+  const { gameId, round: roundId } = params;
   if (!gameId) {
     throw new Response("Not found", { status: 401 });
   }
@@ -49,91 +50,61 @@ export const loader = async ({ params }: LoaderArgs) => {
     value: p.id,
     label: p.name,
   }));
-  const lastRound = Math.max(...game.rounds.map((r) => r.number));
+  let currentRound = Math.max(...game.rounds.map((r) => r.number)) + 1;
+
   const actor = game.players.find((p) =>
-    isPlayerActor(p.position, lastRound, game.players.length)
+    isPlayerActor(p.position, currentRound, game.players.length)
   )!.player;
+
+  let round = undefined;
+  let initialValues = undefined;
+  if (roundId !== "new" && typeof roundId === "string") {
+    const roundNumber = parseInt(roundId, 10);
+    round = await getRound(gameId, roundNumber);
+  }
+  initialValues = getRoundInitialValues(round, {
+    nextRoundNUmber: currentRound,
+    actorId: actor.id,
+  });
+
   const oposition = game.players
     .filter((p) =>
-      isPlayerOposition(p.position, lastRound, game.players.length)
+      isPlayerOposition(p.position, currentRound, game.players.length)
     )
     .map((p) => p.player);
 
-  return json({ playerOptions, actor, oposition, lastRound });
+  return json({
+    playerOptions,
+    actor,
+    oposition,
+    round,
+    initialValues,
+  });
 };
 
-const GameTypeEnum = z.enum(["color", "hundred", "betl", "durch"]);
 export const action = async ({ request, params }: ActionArgs) => {
-  const gameId = z.string().parse(params.gameId);
+  invariant(params.gameId, "invalid game id");
+  const { gameId } = params;
   const form = await request.formData();
 
-  const gameType = GameTypeEnum.parse(form.get("gameType"));
-  const player = z.string().parse(form.get("playedBy"));
-  const roundNumberStr = z.string().parse(form.get("roundNumber"));
-  const roundNumber = parseInt(roundNumberStr, 10);
+  const round = parseRoundFormData(form);
 
-  switch (gameType) {
+  switch (round.gameType) {
     case "color": {
-      const gameOfHearts = Boolean(form.get("gameOfHearts"));
-      const flekCount = parseInt(form.get("flek") as string, 10);
-      const points = parseInt(form.get("points") as string, 10);
-
-      const marriages = parseMarriageFormData(form);
-      const seven = parseSevenFormData(form);
-
-      await createColorGameRound(
-        player,
-        {
-          gameId,
-          roundNumber,
-          gameOfHearts,
-          points,
-          flekCount,
-          ...marriages,
-        },
-        seven
-      );
+      await upsertColorGameRound(gameId, round);
       return null;
     }
     case "hundred": {
-      const contra = Boolean(form.get("contra"));
-      const gameOfHearts = Boolean(form.get("gameOfHearts"));
-      const points = parseInt(form.get("points") as string, 10);
-      const marriages = parseMarriageFormData(form);
-      const seven = parseSevenFormData(form);
-
-      await createHundredGameRound(
-        player,
-        {
-          gameId,
-          roundNumber,
-          gameOfHearts,
-          points,
-          contra,
-          ...marriages,
-        },
-        seven
-      );
+      await createHundredGameRound(gameId, round);
       return null;
     }
     case "betl":
     case "durch":
-      const open = Boolean(form.get("open"));
-      const won = Boolean(form.get("won"));
-
-      createTrickGameRound(player, gameType, {
-        open,
-        won,
-        roundNumber,
-        gameId,
-      });
-
+      createTrickGameRound(gameId, round);
       return null;
     default:
       return null;
   }
-
-  return null;
 };
 
 const roundTypes = [
@@ -143,20 +114,18 @@ const roundTypes = [
   { label: "Durch", value: "durch" },
 ] as const;
 
-type RoundType = (typeof roundTypes)[number]["value"];
-
-export default function ActiveGame() {
+export default function Round() {
   const [flek, setFlek] = useState(0);
-  const { playerOptions, actor, oposition, lastRound } =
+  const { playerOptions, actor, oposition, initialValues } =
     useLoaderData<typeof loader>();
 
-  const [playedBy, setPlayedBy] = useState(actor.id);
-  const [counter100, setCounter100] = useState(false);
-  const [called, setCalled] = useState<RoundType>(roundTypes[1].value);
+  const [playedBy, setPlayedBy] = useState(initialValues.playerId);
+  const [counter100, setCounter100] = useState(initialValues.contra);
+  const [called, setCalled] = useState<GameType>(initialValues.gameType);
 
   const onGameChanged = useCallback(
-    (called: RoundType) => {
-      setCalled(called as RoundType);
+    (called: GameType) => {
+      setCalled(called as GameType);
       if (called === "betl" || called === "durch") {
         setBetter(false);
         setCounter100(false);
@@ -177,15 +146,21 @@ export default function ActiveGame() {
     : playerOptions.find((opt) => opt.value === playedBy)?.label;
 
   const [better, setBetter] = useState<boolean>(false);
-  const { rootRef } = useGameTheme(better);
   const isGameOfColor = called === "color" || called === "hundred";
 
+  const { rootRef } = useGameTheme(better);
   return (
     <GameContext value={{ type: better ? "better" : "default" }}>
       <div ref={rootRef} className="space-y-2">
-        <h1 className="text-xl">Kolo {lastRound}</h1>
+        <h1 className="text-xl">Kolo {initialValues.roundNumber}</h1>
         <Form className="space-y-4" method="post">
-          <input type="hidden" name="roundNumber" value={lastRound + 1} />
+          <input
+            type="hidden"
+            name="roundNumber"
+            value={initialValues.roundNumber}
+          />
+          <input type="hidden" name="playedBy" value={playedBy} />
+
           <Fieldset legend="Zvolena hra">
             <div className="flex flex-col items-center space-y-2">
               <div className="flex w-full justify-between">
@@ -207,7 +182,6 @@ export default function ActiveGame() {
               >
                 {isGameOfColor ? (
                   <ColorGame
-                    playedBy={playedBy}
                     called={called}
                     better={{ value: better, onChange: setBetter }}
                     flek={{ value: flek, onChange: setFlek }}
@@ -228,8 +202,15 @@ export default function ActiveGame() {
           </Fieldset>
           {isGameOfColor ? (
             <ColorResult
-              player={{ label: playedLegendLabel }}
-              opposition={{ label: opositioniLegendLabel }}
+              player={{
+                label: playedLegendLabel,
+                marriage: initialValues.marriagePlayer,
+                points: initialValues.points,
+              }}
+              opposition={{
+                label: opositioniLegendLabel,
+                marriage: initialValues.marriageOpposition,
+              }}
             />
           ) : (
             <TrickResult playedBy={playedLegendLabel}></TrickResult>

@@ -10,14 +10,13 @@ import { Fieldset } from "../fieldset";
 import { Marriage, MarriageProvider } from "../marriage";
 
 type Props = {
-  playedBy: string;
   called: string;
   counter100: Field<boolean>;
   better: Field<boolean>;
   flek: Field<number>;
 };
 export const ColorGame = forwardRef<HTMLDivElement, Props>(
-  ({ called, playedBy, counter100, better, flek }: Props, ref) => {
+  ({ called, counter100, better, flek }: Props, ref) => {
     return (
       <motion.div
         ref={ref}
@@ -29,8 +28,6 @@ export const ColorGame = forwardRef<HTMLDivElement, Props>(
           bounce: 0,
         }}
       >
-        <input type="hidden" name="playedBy" value={playedBy} />
-
         <div className="w-full items-center space-y-4 pt-8">
           <FormControl
             name="gameOfHearts"
@@ -131,16 +128,24 @@ function Opposition({ legend, points }: OppositionProps) {
 type ColorResultProps = {
   player: {
     label: string | undefined;
+    marriage: number;
+    points: number;
   };
   opposition: {
     label: string | undefined;
+    marriage: number;
   };
 };
 export function ColorResult({ player, opposition }: ColorResultProps) {
-  const [points, setPoints] = useState<number>(50);
+  const [points, setPoints] = useState<number>(player.points);
 
   return (
-    <MarriageProvider>
+    <MarriageProvider
+      initialValues={{
+        player: player.marriage,
+        opposition: opposition.marriage,
+      }}
+    >
       <SevenProvider>
         <Player
           legend={player.label!}

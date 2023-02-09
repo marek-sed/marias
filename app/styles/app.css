@@ -2236,10 +2236,6 @@ select {
   max-width: 640px;
 }
 
-.flex-1 {
-  flex: 1 1 0%;
-}
-
 .flex-shrink-0 {
   flex-shrink: 0;
 }
@@ -2280,10 +2276,6 @@ select {
 
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.grid-rows-2 {
-  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .flex-row-reverse {
@@ -2332,10 +2324,6 @@ select {
 
 .gap-4 {
   gap: 1rem;
-}
-
-.gap-2 {
-  gap: 0.5rem;
 }
 
 .space-y-4 > :not([hidden]) ~ :not([hidden]) {
@@ -2533,22 +2521,6 @@ select {
 
 .bg-gray-4 {
   background-color: var(--gray4);
-}
-
-.bg-violet-3 {
-  background-color: var(--violet3);
-}
-
-.bg-grass-4 {
-  background-color: var(--grass4);
-}
-
-.bg-grass-3 {
-  background-color: var(--grass3);
-}
-
-.bg-grass-5 {
-  background-color: var(--grass5);
 }
 
 .p-2 {
@@ -2774,14 +2746,6 @@ select {
   color: var(--gold11);
 }
 
-.text-red-12 {
-  color: var(--red12);
-}
-
-.text-green-12 {
-  color: var(--green12);
-}
-
 .underline {
   text-decoration-line: underline;
 }
@@ -2882,22 +2846,6 @@ button {
 .hover\:bg-blue-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-4:hover {
-  background-color: var(--gray4);
-}
-
-.hover\:bg-gray-5:hover {
-  background-color: var(--gray5);
-}
-
-.hover\:bg-grass-5:hover {
-  background-color: var(--grass5);
-}
-
-.hover\:bg-grass-4:hover {
-  background-color: var(--grass4);
 }
 
 .hover\:text-game-color-hover:hover {

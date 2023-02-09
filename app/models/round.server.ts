@@ -1,16 +1,53 @@
 import type {
   ColorGameResult,
   HundredGameResult,
+  Round as PrismaRound,
   Seven,
   TrickGameResult,
 } from "@prisma/client";
-import { prisma } from "~/db.server";
+import type {
+  BetlGameRound,
+  ColorGameRound,
+  DurchGameRound,
+  HundredGameRound,
+} from "~/utils/round";
 
 import {
   costOfColorGame,
   costOfHundredGame,
   costOfTrickGame,
 } from "~/utils/utils.server";
+import { prisma } from "~/db.server";
+
+export async function getRound(gameId: string, roundNumber: number) {
+  const round = await prisma.round.findUnique({
+    where: {
+      gameId_number: {
+        gameId,
+        number: roundNumber,
+      },
+    },
+    include: {
+      ColorGameResult: {
+        include: {
+          seven: true,
+        },
+      },
+      HundredGameResult: {
+        include: {
+          seven: true,
+        },
+      },
+      TrickGameResult: true,
+    },
+  });
+
+  return round as PrismaRound & {
+    ColorGameResult?: ColorGameResult & { seven?: Seven | null };
+    HundredGameResult?: HundredGameResult & { seven?: Seven | null };
+    TrickGameResult?: TrickGameResult;
+  };
+}
 
 export async function getRoundsForGame(gameId: string) {
   return prisma.round.findMany({
@@ -44,56 +81,51 @@ export async function getRoundsForGame(gameId: string) {
 }
 
 export async function createTrickGameRound(
-  playerId: string,
-  gameType: "betl" | "durch",
-  result: TrickGameResult
+  gameId: string,
+  payload: BetlGameRound | DurchGameRound
 ) {
-  const cost = costOfTrickGame(gameType, result);
+  const cost = costOfTrickGame(payload.gameType, payload.TrickGameResult);
 
   return prisma.round.create({
     data: {
-      playerId,
-      gameType: gameType,
-      gameId: result.gameId,
+      playerId: payload.playerId,
+      gameType: payload.gameType,
+      gameId: gameId,
       cost,
-      number: result.roundNumber,
+      number: payload.number,
       TrickGameResult: {
         create: {
-          open: result.open,
-          won: result.won,
+          open: payload.TrickGameResult.open,
+          won: payload.TrickGameResult.won,
         },
       },
     },
   });
 }
 
-export async function createColorGameRound(
-  playerId: string,
-  result: ColorGameResult,
-  seven?: Omit<Seven, "gameId" | "roundNumber">
+export async function upsertColorGameRound(
+  gameId: string,
+  payload: ColorGameRound
 ) {
-  const cost = costOfColorGame(result, seven);
-
-  console.log("submit color", playerId, result, seven);
+  const cost = costOfColorGame(
+    payload.ColorGameResult,
+    payload.ColorGameResult.seven
+  );
 
   return prisma.round.create({
     data: {
-      playerId,
+      gameId,
+      number: payload.number,
+      playerId: payload.playerId,
       gameType: "color",
-      gameId: result.gameId,
       cost,
-      number: result.roundNumber,
       ColorGameResult: {
         create: {
-          points: result.points,
-          flekCount: result.flekCount,
-          gameOfHearts: result.gameOfHearts,
-          marriageOpposition: result.marriageOpposition,
-          marriagePlayer: result.marriagePlayer,
-          seven: seven
+          ...payload.ColorGameResult,
+          seven: payload.ColorGameResult.seven
             ? {
                 create: {
-                  ...seven,
+                  ...payload.ColorGameResult.seven,
                 },
               }
             : undefined,
@@ -104,30 +136,28 @@ export async function createColorGameRound(
 }
 
 export async function createHundredGameRound(
-  playerId: string,
-  result: HundredGameResult,
-  seven?: Omit<Seven, "gameId" | "roundNumber">
+  gameId: string,
+  payload: HundredGameRound
 ) {
-  const cost = costOfHundredGame(result, seven);
+  const cost = costOfHundredGame(
+    payload.HundredGameResult,
+    payload.HundredGameResult.seven
+  );
 
   return prisma.round.create({
     data: {
-      playerId,
+      gameId: gameId,
+      number: payload.number,
+      playerId: payload.playerId,
       gameType: "hundred",
-      gameId: result.gameId,
       cost,
-      number: result.roundNumber,
       HundredGameResult: {
         create: {
-          points: result.points,
-          contra: result.contra,
-          gameOfHearts: result.gameOfHearts,
-          marriageOpposition: result.marriageOpposition,
-          marriagePlayer: result.marriagePlayer,
-          seven: seven
+          ...payload.HundredGameResult,
+          seven: payload.HundredGameResult.seven
             ? {
                 create: {
-                  ...seven,
+                  ...payload.HundredGameResult.seven,
                 },
               }
             : undefined,

@@ -199,41 +199,6 @@ export function SevenBox({
   );
 }
 
-export function parseSevenFormData(form: FormData) {
-  const seven = form.getAll("seven.player");
-  const oppositionSeven = form.getAll("seven.opposition");
-
-  const sevenRole = seven.length
-    ? "player"
-    : oppositionSeven.length
-    ? "opposition"
-    : null;
-
-  if (sevenRole === "player") {
-    const silent = seven.includes("silent");
-    const won = seven.includes("won");
-    const flekCount = silent ? 0 : parseInt(seven[1] as string, 10);
-    return {
-      silent,
-      won,
-      role: sevenRole,
-      flekCount,
-    };
-  } else if (sevenRole === "opposition") {
-    const silent = oppositionSeven.includes("silent");
-    const won = oppositionSeven.includes("won");
-    const flekCount = silent ? 0 : parseInt(oppositionSeven[1] as string, 10);
-    return {
-      silent,
-      won,
-      role: sevenRole,
-      flekCount,
-    };
-  }
-
-  return undefined;
-}
-
 export function Seven({ playedBy }: { playedBy: string }) {
   const ctx = useSevenContext(playedBy);
   const [flek, setFlek] = useState<number>(0);

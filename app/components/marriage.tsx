@@ -53,8 +53,19 @@ function getEnabledOptions(opposingMarriage: MarriageValue | undefined) {
   return enabled;
 }
 
-export function MarriageProvider({ children }: { children: ReactNode }) {
-  const [player, setPlayer] = useState<MarriageValue>("0");
+export function MarriageProvider({
+  children,
+  initialValues,
+}: {
+  initialValues: {
+    player: number;
+    opposition: number;
+  };
+  children: ReactNode;
+}) {
+  const [player, setPlayer] = useState<MarriageValue>(
+    `${initialValues.player}` as MarriageValue
+  );
 
   const onChangePlayer = useCallback(
     (v: MarriageValue) => {
@@ -64,7 +75,9 @@ export function MarriageProvider({ children }: { children: ReactNode }) {
     [setPlayer]
   );
 
-  const [opposition, setOpposition] = useState<MarriageValue>("0");
+  const [opposition, setOpposition] = useState<MarriageValue>(
+    `${initialValues.opposition}` as MarriageValue
+  );
   const onChangeOpposition = useCallback(
     (v: MarriageValue) => {
       setOpposition(v);
@@ -108,18 +121,6 @@ type Props = {
 };
 const marriageOptions: MarriageValue[] = ["20", "40", "60", "80", "100"];
 
-export function parseMarriageFormData(form: FormData) {
-  const marriageOpposition = parseInt(
-    form.get("marriage.opposition") as string,
-    10
-  );
-  const marriagePlayer = parseInt(form.get("marriage.player") as string, 10);
-
-  return {
-    marriageOpposition,
-    marriagePlayer,
-  };
-}
 export function Marriage({ name, playedBy }: Props) {
   const { value, onChange, enabled } = useMarriageContext(playedBy);
 
