@@ -1,5 +1,5 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import type { GameType } from "~/utils/round";
+import type { GameType } from "~/models/round.server";
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
@@ -115,37 +115,39 @@ const roundTypes = [
 ] as const;
 
 export default function Round() {
-  const [flek, setFlek] = useState(0);
   const { playerOptions, actor, oposition, initialValues } =
     useLoaderData<typeof loader>();
 
+  console.log(initialValues);
+
   const [playedBy, setPlayedBy] = useState(initialValues.playerId);
-  const [counter100, setCounter100] = useState(initialValues.contra);
+  const [contra100, setContra100] = useState(initialValues.contra);
   const [called, setCalled] = useState<GameType>(initialValues.gameType);
+  const [flek, setFlek] = useState(initialValues.flek);
 
   const onGameChanged = useCallback(
     (called: GameType) => {
       setCalled(called as GameType);
       if (called === "betl" || called === "durch") {
         setBetter(false);
-        setCounter100(false);
+        setContra100(false);
       }
       if (called === "color" || called === "hundred") {
         setPlayedBy(actor.id);
       }
     },
-    [setCalled, actor.id, setCounter100]
+    [setCalled, actor.id, setContra100]
   );
 
-  const playedLegendLabel = counter100
+  const playedLegendLabel = contra100
     ? oposition.map((p) => p.name).join(", ")
     : playerOptions.find((opt) => opt.value === playedBy)?.label;
 
-  const opositioniLegendLabel = !counter100
+  const opositioniLegendLabel = !contra100
     ? oposition.map((p) => p.name).join(", ")
     : playerOptions.find((opt) => opt.value === playedBy)?.label;
 
-  const [better, setBetter] = useState<boolean>(false);
+  const [better, setBetter] = useState<boolean>(initialValues.gameOfHearts);
   const isGameOfColor = called === "color" || called === "hundred";
 
   const { rootRef } = useGameTheme(better);
@@ -186,8 +188,8 @@ export default function Round() {
                     better={{ value: better, onChange: setBetter }}
                     flek={{ value: flek, onChange: setFlek }}
                     counter100={{
-                      value: counter100,
-                      onChange: setCounter100,
+                      value: contra100,
+                      onChange: setContra100,
                     }}
                   />
                 ) : (
@@ -195,6 +197,7 @@ export default function Round() {
                   <TrickGame
                     playedBy={{ value: playedBy, onChange: setPlayedBy }}
                     playerOptions={playerOptions}
+                    open={initialValues.open}
                   />
                 )}
               </motion.div>
@@ -206,14 +209,22 @@ export default function Round() {
                 label: playedLegendLabel,
                 marriage: initialValues.marriagePlayer,
                 points: initialValues.points,
+                seven:
+                  initialValues.seven?.role === "player"
+                    ? initialValues.seven
+                    : undefined,
               }}
               opposition={{
                 label: opositioniLegendLabel,
                 marriage: initialValues.marriageOpposition,
+                seven:
+                  initialValues.seven?.role === "opposition"
+                    ? initialValues.seven
+                    : undefined,
               }}
             />
           ) : (
-            <TrickResult playedBy={playedLegendLabel}></TrickResult>
+            <TrickResult playedBy={playedLegendLabel} won={initialValues.won} />
           )}
 
           <div className="flex w-full justify-end pt-8">

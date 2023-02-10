@@ -1,11 +1,10 @@
-import type { Round } from "@prisma/client";
+import type { Round, GameType } from "~/models/round.server";
 import type { VariantProps } from "class-variance-authority";
 import { cx } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { GiTwoCoins } from "react-icons/gi";
 
 import { translateGameType } from "~/utils/translations";
-import { GameType } from "~/utils/types";
 
 type Props = {
   round: Pick<Round, "playerId" | "number" | "cost" | "gameType">;
@@ -90,8 +89,6 @@ export function RoundBody({ round, players, costPerPlayer }: RoundBodyProps) {
                 {costPerPlayer[pId]}
               </td>
             ))}
-
-            <td className="text-center text-gray-11">49</td>
           </tr>
         </tbody>
       </table>

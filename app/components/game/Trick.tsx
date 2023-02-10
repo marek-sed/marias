@@ -9,9 +9,10 @@ import { Select } from "../select";
 type Props = {
   playedBy: Field<string>;
   playerOptions: Option[];
+  open: boolean;
 };
 export const TrickGame = forwardRef<HTMLDivElement, Props>(
-  ({ playedBy, playerOptions }, ref) => {
+  ({ playedBy, open, playerOptions }, ref) => {
     return (
       <motion.div
         ref={ref}
@@ -27,7 +28,7 @@ export const TrickGame = forwardRef<HTMLDivElement, Props>(
         <FormControl name="playedBy" label="Hru zahlasil" {...playedBy}>
           <Select options={playerOptions} />
         </FormControl>
-        <FormControl name="open" label="Vylozeny" defaultValue={false}>
+        <FormControl name="open" label="Vylozeny" defaultValue={open}>
           <Checkbox />
         </FormControl>
       </motion.div>
@@ -37,10 +38,16 @@ export const TrickGame = forwardRef<HTMLDivElement, Props>(
 
 TrickGame.displayName = "TrickGame";
 
-export function TrickResult({ playedBy }: { playedBy?: string }) {
+export function TrickResult({
+  playedBy,
+  won,
+}: {
+  playedBy?: string;
+  won: boolean;
+}) {
   return (
     <Fieldset animated legend={playedBy}>
-      <FormControl name="won" label="Vyhral" defaultValue={false}>
+      <FormControl name="won" label="Vyhral" defaultValue={won}>
         <Checkbox />
       </FormControl>
     </Fieldset>

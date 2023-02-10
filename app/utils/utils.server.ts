@@ -1,11 +1,9 @@
 import type {
   ColorGameResult,
-  TrickGameResult,
-  Seven,
   HundredGameResult,
-  Round,
-  Player,
-} from "@prisma/client";
+  Seven,
+  TrickGameResult,
+} from "~/models/round.server";
 import { getPlayerCount } from "~/models/settings.server";
 
 export async function canStartNewGame() {
@@ -111,6 +109,8 @@ export function costOfHundredGame(
 ) {
   let hundredGameCost = getColorGameCost({
     ...game,
+    marriagePlayer: 0,
+    marriageOpposition: 0,
     flekCount: 2,
   });
 

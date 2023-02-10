@@ -1,6 +1,7 @@
+import type { Field } from "~/utils/types";
+import type { Seven as SevenType } from "~/models/round.server";
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef, useState } from "react";
-import type { Field } from "~/utils/types";
 import { Checkbox } from "../checkbox";
 import { FormControl } from "../formControl";
 import { HeartBox } from "../heartBox";
@@ -13,6 +14,7 @@ type Props = {
   called: string;
   counter100: Field<boolean>;
   better: Field<boolean>;
+  seven?: SevenType | null;
   flek: Field<number>;
 };
 export const ColorGame = forwardRef<HTMLDivElement, Props>(
@@ -82,6 +84,7 @@ ColorGame.displayName = "ColorGame";
 type PlayedProps = {
   legend?: string;
   points: Field<number>;
+  seven?: SevenType;
 };
 function Player({ legend, points }: PlayedProps) {
   return (
@@ -104,6 +107,7 @@ function Player({ legend, points }: PlayedProps) {
 type OppositionProps = {
   legend: string;
   points: number;
+  seven?: SevenType;
 };
 function Opposition({ legend, points }: OppositionProps) {
   return (
@@ -128,11 +132,13 @@ function Opposition({ legend, points }: OppositionProps) {
 type ColorResultProps = {
   player: {
     label: string | undefined;
+    seven?: SevenType;
     marriage: number;
     points: number;
   };
   opposition: {
     label: string | undefined;
+    seven?: SevenType;
     marriage: number;
   };
 };
@@ -146,12 +152,25 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
         opposition: opposition.marriage,
       }}
     >
-      <SevenProvider>
+      <SevenProvider
+        initialValues={{
+          player: player.seven?.role === "player" ? player.seven : undefined,
+          opposition:
+            opposition.seven?.role === "opposition"
+              ? opposition.seven
+              : undefined,
+        }}
+      >
         <Player
           legend={player.label!}
           points={{ value: points, onChange: setPoints }}
+          seven={player.seven}
         />
-        <Opposition legend={opposition.label!} points={90 - points} />
+        <Opposition
+          legend={opposition.label!}
+          points={90 - points}
+          seven={player.seven}
+        />
       </SevenProvider>
     </MarriageProvider>
   );

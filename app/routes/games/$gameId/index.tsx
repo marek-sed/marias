@@ -1,10 +1,8 @@
 import type { LinksFunction, LoaderArgs } from "@remix-run/node";
+import type { ShouldRevalidateFunction } from "@remix-run/react";
+
 import { json } from "@remix-run/node";
-import {
-  Link,
-  ShouldRevalidateFunction,
-  useLoaderData,
-} from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getPlayersAtTable } from "~/models/player.server";
@@ -15,6 +13,15 @@ import { GameResult } from "~/components/game/Result";
 import { GameChart } from "~/components/game/Chart";
 
 import frapeCss from "~/styles/frappe.css";
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "stylesheet",
+      href: frapeCss,
+    },
+  ];
+};
 
 export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.gameId, "game id not found");
@@ -27,15 +34,6 @@ export const loader = async ({ params }: LoaderArgs) => {
   const costsPerRound = calculateCostsPerRound(rounds, players);
 
   return json({ rounds, players, costsPerRound });
-};
-
-export const links: LinksFunction = () => {
-  return [
-    {
-      rel: "stylesheet",
-      href: frapeCss,
-    },
-  ];
 };
 
 export default function Rounds() {
@@ -56,8 +54,8 @@ export default function Rounds() {
                 <RoundHeader
                   round={round}
                   gameOfHearts={
-                    !!round.ColorGameResult?.gameOfHearts ||
-                    !!round.HundredGameResult?.gameOfHearts
+                    !!round.colorGameResult?.gameOfHearts ||
+                    !!round.hundredGameResult?.gameOfHearts
                   }
                 />
                 <RoundBody

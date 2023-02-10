@@ -1,16 +1,12 @@
 import type {
-  ColorGameResult,
-  HundredGameResult,
+  Prisma,
   Round as PrismaRound,
-  Seven,
-  TrickGameResult,
+  ColorGameResult as PrismaColorGameResult,
+  HundredGameResult as PrismaHundredGameResult,
+  TrickGameResult as PrismaTrickGameResult,
+  Seven as PrismaSeven,
+  Marriage as PrismaMarriage,
 } from "@prisma/client";
-import type {
-  BetlGameRound,
-  ColorGameRound,
-  DurchGameRound,
-  HundredGameRound,
-} from "~/utils/round";
 
 import {
   costOfColorGame,
@@ -28,17 +24,10 @@ export async function getRound(gameId: string, roundNumber: number) {
       },
     },
     include: {
-      ColorGameResult: {
-        include: {
-          seven: true,
-        },
-      },
-      HundredGameResult: {
-        include: {
-          seven: true,
-        },
-      },
-      TrickGameResult: true,
+      colorGameResult: true,
+      hundredGameResult: true,
+      trickGameResult: true,
+      seven: true,
     },
   });
 
@@ -50,41 +39,51 @@ export async function getRound(gameId: string, roundNumber: number) {
 }
 
 export async function getRoundsForGame(gameId: string) {
-  return prisma.round.findMany({
-    where: {
-      gameId,
-    },
-    select: {
-      playerId: true,
-      gameType: true,
-      cost: true,
-      number: true,
-      gameId: true,
-      player: {
-        select: {
-          id: true,
-          name: true,
+  const getRounds = (gameId: string) =>
+    prisma.round.findMany({
+      where: {
+        gameId,
+      },
+      select: {
+        playerId: true,
+        gameType: true,
+        cost: true,
+        number: true,
+        gameId: true,
+        player: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        hundredGameResult: {
+          select: {
+            gameOfHearts: true,
+          },
+        },
+        colorGameResult: {
+          select: {
+            gameOfHearts: true,
+          },
         },
       },
-      HundredGameResult: {
-        select: {
-          gameOfHearts: true,
-        },
-      },
-      ColorGameResult: {
-        select: {
-          gameOfHearts: true,
-        },
-      },
-    },
-  });
+    });
+
+  type R = Omit<
+    Prisma.PromiseReturnType<typeof getRounds>[number],
+    "gameType"
+  > & {
+    gameType: GameType;
+  };
+
+  return getRounds(gameId) as Prisma.PrismaPromise<R[]>;
 }
 
 export async function createTrickGameRound(
   gameId: string,
   payload: BetlGameRound | DurchGameRound
 ) {
-  const cost = costOfTrickGame(payload.gameType, payload.TrickGameResult);
+  const cost = costOfTrickGame(payload.gameType, payload.trickGameResult);
 
   return prisma.round.create({
     data: {
@@ -93,10 +92,10 @@ export async function createTrickGameRound(
       gameId: gameId,
       cost,
       number: payload.number,
-      TrickGameResult: {
+      trickGameResult: {
         create: {
-          open: payload.TrickGameResult.open,
-          won: payload.TrickGameResult.won,
+          open: payload.trickGameResult.open,
+          won: payload.trickGameResult.won,
         },
       },
     },
@@ -107,10 +106,7 @@ export async function upsertColorGameRound(
   gameId: string,
   payload: ColorGameRound
 ) {
-  const cost = costOfColorGame(
-    payload.ColorGameResult,
-    payload.ColorGameResult.seven
-  );
+  const cost = costOfColorGame(payload.colorGameResult, payload.seven);
 
   return prisma.round.create({
     data: {
@@ -119,18 +115,18 @@ export async function upsertColorGameRound(
       playerId: payload.playerId,
       gameType: "color",
       cost,
-      ColorGameResult: {
+      colorGameResult: {
         create: {
-          ...payload.ColorGameResult,
-          seven: payload.ColorGameResult.seven
-            ? {
-                create: {
-                  ...payload.ColorGameResult.seven,
-                },
-              }
-            : undefined,
+          ...payload.colorGameResult,
         },
       },
+      seven: payload.seven
+        ? {
+            create: {
+              ...payload.seven,
+            },
+          }
+        : undefined,
     },
   });
 }
@@ -139,10 +135,7 @@ export async function createHundredGameRound(
   gameId: string,
   payload: HundredGameRound
 ) {
-  const cost = costOfHundredGame(
-    payload.HundredGameResult,
-    payload.HundredGameResult.seven
-  );
+  const cost = costOfHundredGame(payload.hundredGameResult, payload.seven);
 
   return prisma.round.create({
     data: {
@@ -151,18 +144,71 @@ export async function createHundredGameRound(
       playerId: payload.playerId,
       gameType: "hundred",
       cost,
-      HundredGameResult: {
+      hundredGameResult: {
         create: {
-          ...payload.HundredGameResult,
-          seven: payload.HundredGameResult.seven
-            ? {
-                create: {
-                  ...payload.HundredGameResult.seven,
-                },
-              }
-            : undefined,
+          ...payload.hundredGameResult,
         },
       },
+      seven: payload.seven
+        ? {
+            create: {
+              ...payload.seven,
+            },
+          }
+        : undefined,
     },
   });
 }
+
+export type PrismaFullRound = PrismaRound & {
+  colorGameResult?: PrismaColorGameResult & { seven?: PrismaSeven | null };
+  hundredGameResult?: PrismaHundredGameResult & { seven?: PrismaSeven | null };
+  trickGameResult?: PrismaTrickGameResult;
+  seven?: Seven;
+};
+
+export type ColorGameResult = Omit<
+  PrismaColorGameResult,
+  "gameId" | "roundNumber"
+>;
+export type Marriage = Omit<PrismaMarriage, "gameId" | "roundNumber">;
+export type HundredGameResult = Omit<
+  PrismaHundredGameResult,
+  "gameId" | "roundNumber"
+> & {
+  marriages: Marriage[];
+};
+
+export type TrickGameResult = Omit<
+  PrismaTrickGameResult,
+  "gameId" | "roundNumber"
+>;
+
+export type Seven = Omit<PrismaSeven, "gameId" | "roundNumber">;
+export type GameType = "color" | "hundred" | "betl" | "durch";
+export type RoundBase = Omit<PrismaRound, "gameId">;
+
+export type ColorGameRound = RoundBase & {
+  gameType: "color";
+  colorGameResult: ColorGameResult;
+  seven?: Seven;
+};
+export type HundredGameRound = RoundBase & {
+  gameType: "hundred";
+  hundredGameResult: HundredGameResult;
+  seven?: Seven;
+};
+export type BetlGameRound = RoundBase & {
+  gameType: "betl";
+  trickGameResult: TrickGameResult;
+};
+export type DurchGameRound = RoundBase & {
+  gameType: "durch";
+  trickGameResult: TrickGameResult;
+};
+
+export type Round =
+  | ColorGameRound
+  | HundredGameRound
+  | BetlGameRound
+  | DurchGameRound;

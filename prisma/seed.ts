@@ -1,15 +1,7 @@
-import { PrismaClient, Table } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
-
-const initialStakes = {
-  color: 1,
-  seven: 2,
-  hundred: 4,
-  betl: 15,
-  durch: 30,
-} as const;
 
 async function seed() {
   const email = "rachel@remix.run";
@@ -21,7 +13,7 @@ async function seed() {
 
   await prisma.trickGameResult.deleteMany({});
   await prisma.round.deleteMany({});
-  await prisma.table.deleteMany({});
+  await prisma.gameTable.deleteMany({});
   await prisma.player.deleteMany({});
   await prisma.game.deleteMany({});
 
@@ -92,7 +84,7 @@ async function seed() {
     },
   });
 
-  const round1 = await prisma.round.create({
+  await prisma.round.create({
     data: {
       cost: 2,
       gameType: "color",
@@ -110,7 +102,7 @@ async function seed() {
     },
   });
 
-  const round2 = await prisma.round.create({
+  await prisma.round.create({
     data: {
       cost: 3,
       gameType: "hundred",
@@ -128,7 +120,7 @@ async function seed() {
     },
   });
 
-  const round3 = await prisma.round.create({
+  await prisma.round.create({
     data: {
       cost: -3,
       gameType: "color",

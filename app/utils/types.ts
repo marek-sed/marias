@@ -1,4 +1,3 @@
-export type GameType = "color" | "hundred" | "betl" | "durch";
 export type Field<T> = {
   value: T;
   onChange: (v: T) => void;

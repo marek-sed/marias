@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Field, IndeterminateBool } from "~/utils/types";
+import type { Seven as SevenType } from "~/models/round.server";
 import * as rc from "@radix-ui/react-checkbox";
 import { useCallback, createContext, useContext, useState } from "react";
 import { GiSpeaker, GiSpeakerOff } from "react-icons/gi";
@@ -9,8 +10,8 @@ import { FormControl } from "../formControl";
 import { Input } from "../input";
 
 type SevenContextType = {
-  seven: Field<boolean>;
-  oppositionSeven: Field<boolean>;
+  seven: Field<boolean | undefined>;
+  oppositionSeven: Field<boolean | undefined>;
   silent: Field<boolean>;
   oppositionSilent: Field<boolean>;
 };
@@ -34,11 +35,29 @@ const SevenContext = createContext<SevenContextType>({
   },
 });
 
-export function SevenProvider({ children }: { children: ReactNode }) {
-  const [seven, setSeven] = useState<boolean>(false);
-  const [oppositionSeven, setOppositionSeven] = useState<boolean>(false);
-  const [silent, setSilent] = useState<boolean>(true);
-  const [oppositionSilent, setOppositionSilent] = useState<boolean>(true);
+export function SevenProvider({
+  children,
+  initialValues,
+}: {
+  children: ReactNode;
+  initialValues?: {
+    player: SevenType | undefined;
+    opposition: SevenType | undefined;
+  };
+}) {
+  const [seven, setSeven] = useState<boolean | undefined>(
+    initialValues?.player?.won
+  );
+  const [silent, setSilent] = useState<boolean>(
+    initialValues?.player?.silent ?? true
+  );
+
+  const [oppositionSeven, setOppositionSeven] = useState<boolean | undefined>(
+    initialValues?.opposition?.won
+  );
+  const [oppositionSilent, setOppositionSilent] = useState<boolean>(
+    initialValues?.opposition?.silent ?? true
+  );
 
   return (
     <SevenContext.Provider
@@ -132,10 +151,10 @@ export function SevenBox({
   isDisabled,
   playedBy,
 }: Props<IndeterminateBool>) {
-  const [value, setValue] = useState<"won" | "loss" | "not-played">(
-    "not-played"
-  );
   const ctx = useSevenContext(playedBy);
+  const [value, setValue] = useState<"won" | "loss" | "not-played">(
+    ctx.value === undefined ? "not-played" : ctx.value ? "won" : "loss"
+  );
   const onCheckedChange = useCallback(
     (checked: boolean) => {
       if (value === "won") {

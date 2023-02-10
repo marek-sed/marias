@@ -29,7 +29,7 @@ model Player {
   id    String      @id @default(cuid())
   name  String      @unique
   games GameTable[]
-  Round Round[]
+  round Round[]
 }
 
 model Game {
@@ -84,9 +84,7 @@ model ColorGameResult {
   marriagePlayer     Int @default(0)
   marriageOpposition Int @default(0)
 
-  points           Int
-  sevenGameId      String?
-  sevenRoundNumber Int?
+  points Int
 
   @@id([gameId, roundNumber])
   @@map("round.colorResult")
@@ -101,7 +99,7 @@ model HundredGameResult {
   gameOfHearts Boolean
 
   points   Int
-  Marriage Marriage[]
+  marriage Marriage[]
 
   @@id([gameId, roundNumber])
   @@map("round.hundredResult")
@@ -127,7 +125,7 @@ model Marriage {
   gameId      String
   roundNumber Int
 
-  HundredGameResult HundredGameResult? @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
+  hundredGameResult HundredGameResult? @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber])
 
   spade   Boolean @default(false)
   diamond Boolean @default(false)

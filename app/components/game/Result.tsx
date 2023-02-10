@@ -15,8 +15,6 @@ export function GameResult({ players, result }: Props) {
                 {p.name}
               </th>
             ))}
-
-            <th className="py-2 px-4 font-bold text-gray-11">Mirka</th>
           </tr>
         </thead>
         <tbody>
@@ -27,7 +25,6 @@ export function GameResult({ players, result }: Props) {
                   {result[pId]}
                 </td>
               ))}
-              <td className="pb-2 text-center">49</td>
             </tr>
           ) : (
             <tr>
