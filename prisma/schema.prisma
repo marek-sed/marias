@@ -76,7 +76,7 @@ model Round {
 model ColorGameResult {
   gameId      String
   roundNumber Int
-  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade, onUpdate: Cascade)
 
   flekCount    Int
   gameOfHearts Boolean
@@ -93,7 +93,7 @@ model ColorGameResult {
 model HundredGameResult {
   gameId      String
   roundNumber Int
-  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade, onUpdate: Cascade)
 
   contra       Boolean
   gameOfHearts Boolean
@@ -139,7 +139,7 @@ model Marriage {
 model TrickGameResult {
   gameId      String
   roundNumber Int
-  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade)
+  round       Round  @relation(fields: [gameId, roundNumber], references: [gameId, number], onDelete: Cascade, onUpdate: Cascade)
 
   open Boolean
   won  Boolean

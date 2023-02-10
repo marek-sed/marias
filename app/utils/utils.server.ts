@@ -71,6 +71,7 @@ export function getColorGameCost(game: ColorGamePayload) {
   }
 
   const won = playerPoints > oppositionPoints ? 1 : -1;
+  console.log("getcost", won, power, playerPoints, oppositionPoints);
   return Math.pow(2, power) * won;
 }
 

@@ -79,83 +79,126 @@ export async function getRoundsForGame(gameId: string) {
   return getRounds(gameId) as Prisma.PrismaPromise<R[]>;
 }
 
-export async function createTrickGameRound(
-  gameId: string,
-  payload: BetlGameRound | DurchGameRound
-) {
-  const cost = costOfTrickGame(payload.gameType, payload.trickGameResult);
+export async function upsertRound(gameId: string, payload: Round) {
+  let cost;
+  switch (payload.gameType) {
+    case "color":
+      cost = costOfColorGame(payload.colorGameResult, payload.seven);
+      break;
+    case "hundred":
+      cost = costOfHundredGame(payload.hundredGameResult, payload.seven);
+      break;
+    case "betl":
+    case "durch":
+      cost = costOfTrickGame(payload.gameType, payload.trickGameResult);
+      break;
+  }
+  console.log("cost is", cost);
 
-  return prisma.round.create({
-    data: {
-      playerId: payload.playerId,
-      gameType: payload.gameType,
-      gameId: gameId,
-      cost,
-      number: payload.number,
-      trickGameResult: {
-        create: {
-          open: payload.trickGameResult.open,
-          won: payload.trickGameResult.won,
-        },
+  return prisma.round.upsert({
+    where: {
+      gameId_number: {
+        gameId,
+        number: payload.number,
       },
     },
-  });
-}
-
-export async function upsertColorGameRound(
-  gameId: string,
-  payload: ColorGameRound
-) {
-  const cost = costOfColorGame(payload.colorGameResult, payload.seven);
-
-  return prisma.round.create({
-    data: {
+    update: {
+      playerId: payload.playerId,
+      gameType: payload.gameType,
+      cost,
+      colorGameResult:
+        payload.gameType === "color"
+          ? {
+              upsert: {
+                create: {
+                  ...payload.colorGameResult,
+                },
+                update: {
+                  ...payload.colorGameResult,
+                },
+              },
+            }
+          : undefined,
+      hundredGameResult:
+        payload.gameType === "hundred"
+          ? {
+              upsert: {
+                create: {
+                  ...payload.hundredGameResult,
+                },
+                update: {
+                  ...payload.hundredGameResult,
+                },
+              },
+            }
+          : undefined,
+      trickGameResult:
+        payload.gameType === "betl" || payload.gameType === "durch"
+          ? {
+              upsert: {
+                create: {
+                  ...payload.trickGameResult,
+                },
+                update: {
+                  ...payload.trickGameResult,
+                },
+              },
+            }
+          : undefined,
+      seven:
+        (payload.gameType === "color" || payload.gameType === "hundred") &&
+        payload.seven
+          ? {
+              upsert: {
+                create: {
+                  ...payload.seven,
+                },
+                update: {
+                  ...payload.seven,
+                },
+              },
+            }
+          : undefined,
+    },
+    create: {
       gameId,
       number: payload.number,
       playerId: payload.playerId,
       gameType: "color",
       cost,
-      colorGameResult: {
-        create: {
-          ...payload.colorGameResult,
-        },
-      },
-      seven: payload.seven
-        ? {
-            create: {
-              ...payload.seven,
-            },
-          }
-        : undefined,
-    },
-  });
-}
-
-export async function createHundredGameRound(
-  gameId: string,
-  payload: HundredGameRound
-) {
-  const cost = costOfHundredGame(payload.hundredGameResult, payload.seven);
-
-  return prisma.round.create({
-    data: {
-      gameId: gameId,
-      number: payload.number,
-      playerId: payload.playerId,
-      gameType: "hundred",
-      cost,
-      hundredGameResult: {
-        create: {
-          ...payload.hundredGameResult,
-        },
-      },
-      seven: payload.seven
-        ? {
-            create: {
-              ...payload.seven,
-            },
-          }
-        : undefined,
+      colorGameResult:
+        payload.gameType === "color"
+          ? {
+              create: {
+                ...payload.colorGameResult,
+              },
+            }
+          : undefined,
+      hundredGameResult:
+        payload.gameType === "hundred"
+          ? {
+              create: {
+                ...payload.hundredGameResult,
+              },
+            }
+          : undefined,
+      trickGameResult:
+        payload.gameType === "betl" || payload.gameType === "durch"
+          ? {
+              create: {
+                ...payload.trickGameResult,
+              },
+            }
+          : undefined,
+      seven:
+        (payload.gameType === "color" || payload.gameType === "hundred") &&
+        payload.seven
+          ? {
+              create: {
+                ...payload.seven,
+              },
+            }
+          : undefined,
     },
   });
 }

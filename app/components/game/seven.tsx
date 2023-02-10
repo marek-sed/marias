@@ -14,6 +14,7 @@ type SevenContextType = {
   oppositionSeven: Field<boolean | undefined>;
   silent: Field<boolean>;
   oppositionSilent: Field<boolean>;
+  flekCount: number;
 };
 
 const SevenContext = createContext<SevenContextType>({
@@ -33,6 +34,7 @@ const SevenContext = createContext<SevenContextType>({
     value: true,
     onChange: () => {},
   },
+  flekCount: 0,
 });
 
 export function SevenProvider({
@@ -62,6 +64,10 @@ export function SevenProvider({
   return (
     <SevenContext.Provider
       value={{
+        flekCount:
+          initialValues?.player?.flekCount ??
+          initialValues?.opposition?.flekCount ??
+          0,
         seven: {
           value: seven,
           onChange: setSeven,
@@ -93,6 +99,7 @@ function useSevenContext(playedBy: string | undefined) {
       ...ctx.oppositionSeven,
       silent: ctx.oppositionSilent,
       disabled: ctx.seven.value,
+      flekCount: ctx.flekCount,
     };
   }
 
@@ -101,6 +108,7 @@ function useSevenContext(playedBy: string | undefined) {
     onChange: ctx.seven.onChange,
     silent: ctx.silent,
     disabled: ctx.oppositionSeven.value,
+    flekCount: ctx.flekCount,
   };
 }
 
@@ -178,12 +186,12 @@ export function SevenBox({
         name={`seven.${playedBy}`}
         value={ctx.silent.value}
         onChange={ctx.silent.onChange}
-        isDisabled={!ctx.value}
+        isDisabled={value === "not-played"}
       />
       <rc.Root
         id={id}
         name={`seven.${playedBy}`}
-        checked={ctx.value}
+        checked={value === "won" || value === "loss"}
         value={value}
         disabled={isDisabled}
         onCheckedChange={onCheckedChange}
@@ -220,7 +228,7 @@ export function SevenBox({
 
 export function Seven({ playedBy }: { playedBy: string }) {
   const ctx = useSevenContext(playedBy);
-  const [flek, setFlek] = useState<number>(0);
+  const [flek, setFlek] = useState<number>(ctx.flekCount);
 
   return (
     <motion.div className="w-full" layout>

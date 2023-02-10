@@ -118,6 +118,9 @@ export function parseSevenFormData(form: FormData) {
   const seven = form.getAll("seven.player");
   const oppositionSeven = form.getAll("seven.opposition");
 
+  console.log(seven);
+  console.log(oppositionSeven);
+
   const sevenRole = seven.length
     ? "player"
     : oppositionSeven.length

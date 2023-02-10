@@ -16,14 +16,10 @@ import { GameContext } from "~/components/gameContext";
 import { useGameTheme } from "~/utils/game";
 import { getFullGame } from "~/models/game.server";
 import { isPlayerActor, isPlayerOposition } from "~/utils/utils.server";
-import {
-  upsertColorGameRound,
-  createHundredGameRound,
-  createTrickGameRound,
-  getRound,
-} from "~/models/round.server";
+import { upsertRound, getRound } from "~/models/round.server";
 import { getRoundInitialValues, parseRoundFormData } from "~/utils/round";
 import invariant from "tiny-invariant";
+import { redirect } from "remix-typedjson";
 
 export const handle = {
   title: "Hra",
@@ -86,39 +82,24 @@ export const action = async ({ request, params }: ActionArgs) => {
   invariant(params.gameId, "invalid game id");
   const { gameId } = params;
   const form = await request.formData();
-
   const round = parseRoundFormData(form);
+  console.log("parsed", round);
 
-  switch (round.gameType) {
-    case "color": {
-      await upsertColorGameRound(gameId, round);
-      return null;
-    }
-    case "hundred": {
-      await createHundredGameRound(gameId, round);
-      return null;
-    }
-    case "betl":
-    case "durch":
-      createTrickGameRound(gameId, round);
-      return null;
-    default:
-      return null;
-  }
+  await upsertRound(gameId, round);
+
+  return redirect("..");
 };
 
-const roundTypes = [
+const roundTypes: Array<{ label: string; value: GameType }> = [
   { label: "Farba", value: "color" },
   { label: "Stovka", value: "hundred" },
   { label: "Betl", value: "betl" },
   { label: "Durch", value: "durch" },
-] as const;
+];
 
 export default function Round() {
   const { playerOptions, actor, oposition, initialValues } =
     useLoaderData<typeof loader>();
-
-  console.log(initialValues);
 
   const [playedBy, setPlayedBy] = useState(initialValues.playerId);
   const [contra100, setContra100] = useState(initialValues.contra);
