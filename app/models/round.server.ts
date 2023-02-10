@@ -14,6 +14,7 @@ import {
   costOfTrickGame,
 } from "~/utils/utils.server";
 import { prisma } from "~/db.server";
+import { insertIf } from "~/utils";
 
 export async function getRound(gameId: string, roundNumber: number) {
   const round = await prisma.round.findUnique({
@@ -95,112 +96,145 @@ export async function upsertRound(gameId: string, payload: Round) {
   }
   console.log("cost is", cost);
 
-  return prisma.round.upsert({
-    where: {
-      gameId_number: {
+  const shouldDeleteSeven =
+    (payload.gameType === "color" || payload.gameType === "hundred") &&
+    payload.seven === undefined;
+
+  return prisma.$transaction([
+    prisma.round.upsert({
+      where: {
+        gameId_number: {
+          gameId,
+          number: payload.number,
+        },
+      },
+      update: {
+        playerId: payload.playerId,
+        gameType: payload.gameType,
+        cost,
+        colorGameResult:
+          payload.gameType === "color"
+            ? {
+                upsert: {
+                  create: {
+                    ...payload.colorGameResult,
+                  },
+                  update: {
+                    ...payload.colorGameResult,
+                  },
+                },
+              }
+            : undefined,
+        hundredGameResult:
+          payload.gameType === "hundred"
+            ? {
+                upsert: {
+                  create: {
+                    ...payload.hundredGameResult,
+                  },
+                  update: {
+                    ...payload.hundredGameResult,
+                  },
+                },
+              }
+            : undefined,
+        trickGameResult:
+          payload.gameType === "betl" || payload.gameType === "durch"
+            ? {
+                upsert: {
+                  create: {
+                    ...payload.trickGameResult,
+                  },
+                  update: {
+                    ...payload.trickGameResult,
+                  },
+                },
+              }
+            : undefined,
+        seven:
+          (payload.gameType === "color" || payload.gameType === "hundred") &&
+          payload.seven
+            ? {
+                upsert: {
+                  create: {
+                    ...payload.seven,
+                  },
+                  update: {
+                    ...payload.seven,
+                  },
+                },
+              }
+            : undefined,
+      },
+      create: {
         gameId,
         number: payload.number,
+        playerId: payload.playerId,
+        gameType: "color",
+        cost,
+        colorGameResult:
+          payload.gameType === "color"
+            ? {
+                create: {
+                  ...payload.colorGameResult,
+                },
+              }
+            : undefined,
+        hundredGameResult:
+          payload.gameType === "hundred"
+            ? {
+                create: {
+                  ...payload.hundredGameResult,
+                },
+              }
+            : undefined,
+        trickGameResult:
+          payload.gameType === "betl" || payload.gameType === "durch"
+            ? {
+                create: {
+                  ...payload.trickGameResult,
+                },
+              }
+            : undefined,
+        seven:
+          (payload.gameType === "color" || payload.gameType === "hundred") &&
+          payload.seven
+            ? {
+                create: {
+                  ...payload.seven,
+                },
+              }
+            : undefined,
       },
-    },
-    update: {
-      playerId: payload.playerId,
-      gameType: payload.gameType,
-      cost,
-      colorGameResult:
-        payload.gameType === "color"
-          ? {
-              upsert: {
-                create: {
-                  ...payload.colorGameResult,
-                },
-                update: {
-                  ...payload.colorGameResult,
-                },
-              },
-            }
-          : undefined,
-      hundredGameResult:
-        payload.gameType === "hundred"
-          ? {
-              upsert: {
-                create: {
-                  ...payload.hundredGameResult,
-                },
-                update: {
-                  ...payload.hundredGameResult,
-                },
-              },
-            }
-          : undefined,
-      trickGameResult:
-        payload.gameType === "betl" || payload.gameType === "durch"
-          ? {
-              upsert: {
-                create: {
-                  ...payload.trickGameResult,
-                },
-                update: {
-                  ...payload.trickGameResult,
-                },
-              },
-            }
-          : undefined,
-      seven:
-        (payload.gameType === "color" || payload.gameType === "hundred") &&
-        payload.seven
-          ? {
-              upsert: {
-                create: {
-                  ...payload.seven,
-                },
-                update: {
-                  ...payload.seven,
-                },
-              },
-            }
-          : undefined,
-    },
-    create: {
-      gameId,
-      number: payload.number,
-      playerId: payload.playerId,
-      gameType: "color",
-      cost,
-      colorGameResult:
-        payload.gameType === "color"
-          ? {
-              create: {
-                ...payload.colorGameResult,
-              },
-            }
-          : undefined,
-      hundredGameResult:
-        payload.gameType === "hundred"
-          ? {
-              create: {
-                ...payload.hundredGameResult,
-              },
-            }
-          : undefined,
-      trickGameResult:
-        payload.gameType === "betl" || payload.gameType === "durch"
-          ? {
-              create: {
-                ...payload.trickGameResult,
-              },
-            }
-          : undefined,
-      seven:
-        (payload.gameType === "color" || payload.gameType === "hundred") &&
-        payload.seven
-          ? {
-              create: {
-                ...payload.seven,
-              },
-            }
-          : undefined,
-    },
-  });
+    }),
+    ...insertIf(
+      shouldDeleteSeven,
+      prisma.seven.deleteMany({
+        where: {
+          gameId,
+          roundNumber: payload.number,
+        },
+      })
+    ),
+    ...insertIf(
+      payload.gameType !== "color",
+      prisma.colorGameResult.deleteMany({
+        where: { gameId, roundNumber: payload.number },
+      })
+    ),
+    ...insertIf(
+      payload.gameType !== "hundred",
+      prisma.hundredGameResult.deleteMany({
+        where: { gameId, roundNumber: payload.number },
+      })
+    ),
+    ...insertIf(
+      payload.gameType !== "betl" && payload.gameType !== "durch",
+      prisma.trickGameResult.deleteMany({
+        where: { gameId, roundNumber: payload.number },
+      })
+    ),
+  ]);
 }
 
 export type PrismaFullRound = PrismaRound & {
