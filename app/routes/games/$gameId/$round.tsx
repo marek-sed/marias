@@ -2,8 +2,7 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import type { GameType } from "~/models/round.server";
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import { json } from "@remix-run/node";
 
 import type { Option } from "~/components/select";
@@ -20,14 +19,10 @@ import { upsertRound, getRound } from "~/models/round.server";
 import { getRoundInitialValues, parseRoundFormData } from "~/utils/round";
 import invariant from "tiny-invariant";
 import { redirect } from "remix-typedjson";
+import { useAnimatedLoaderData } from "~/utils";
 
 export const handle = {
-  title: "Hra",
-  backLink: (
-    <Link className="btn" to="/games">
-      <ArrowLeftIcon />
-    </Link>
-  ),
+  title: "Kolo",
 };
 
 export const loader = async ({ params }: LoaderArgs) => {
@@ -99,7 +94,7 @@ const roundTypes: Array<{ label: string; value: GameType }> = [
 
 export default function Round() {
   const { playerOptions, actor, oposition, initialValues } =
-    useLoaderData<typeof loader>();
+    useAnimatedLoaderData<typeof loader>();
 
   const [playedBy, setPlayedBy] = useState(initialValues.playerId);
   const [contra100, setContra100] = useState(initialValues.contra);

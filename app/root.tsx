@@ -9,13 +9,29 @@ import {
   Scripts,
   ScrollRestoration,
   useMatches,
+  useNavigationType,
+  useNavigate,
+  useLocation,
+  useNavigation,
+  useTransition,
+  useOutlet,
 } from "@remix-run/react";
 
 import { getUser } from "./session.server";
 import appCss from "~/styles/app.css";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { CaretLeftIcon } from "@radix-ui/react-icons";
+import { AnimatePresence, motion } from "framer-motion";
+import { useNavigationAnimation } from "./utils";
 
+const useGoBack = () => {
+  const navigate = useNavigate();
+  return () =>
+    navigate(-1 as any, {
+      state: {
+        direction: "LEFT",
+      },
+    });
+};
 export const links: LinksFunction = () => {
   return [
     {
@@ -37,56 +53,68 @@ export async function loader({ request }: LoaderArgs) {
   });
 }
 
-function Menu() {
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger className="rounded bg-gray-9 p-2">
-        <HamburgerMenuIcon />
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className="space-y-4 rounded-lg  border border-gray-6 bg-gray-3 py-2 text-end text-gray-12 shadow-xl">
-          <DropdownMenu.Item className="px-4">
-            <Link className="inline-flex items-center space-x-2" to="/games">
-              <span>Hry</span>
-            </Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item className="px-4">
-            <Link className="inline-flex items-center space-x-2" to="/settings">
-              <span>Settings</span>
-            </Link>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator className="m-0 h-0.5 bg-gray-7" />
-          <DropdownMenu.Item className="px-4">Odhlasit</DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
-  );
-}
-
 export default function App() {
   const matches = useMatches();
+  const goBack = useGoBack();
   const currentMatch = matches[matches.length - 1];
-  const action = currentMatch.handle?.action;
+  console.log("matches", matches);
+  let parentPath;
+  if (matches.length > 1) {
+    if (currentMatch.id.endsWith("index")) {
+      parentPath = matches[matches.length - 3]?.pathname;
+    } else {
+      parentPath = matches[matches.length - 2]?.pathname;
+    }
+  }
+
+  const outlet = useOutlet();
+  const { x } = useNavigationAnimation();
 
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-screen">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="relative flex h-screen flex-col overflow-scroll bg-gray-1">
-        <header className="sticky top-0 z-20 flex h-16 justify-between space-x-4  border-gray-6 bg-gray-2 py-4 px-6 text-2xl text-gray-12 shadow-sm shadow-gray-6">
-          <div className="flex items-center space-x-4">
+      <body className="relative bg-gray-1">
+        <header className="sticky top-0 z-20 flex h-12 border-gray-6 bg-gray-2 px-6 text-xl text-gray-12 shadow-sm shadow-gray-6">
+          <div className="flex items-center space-x-1 text-xl ">
+            {parentPath && (
+              <div className="-ml-4 py-2 text-gray-11">
+                <Link
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goBack();
+                  }}
+                  to={parentPath}
+                >
+                  <CaretLeftIcon className="h-8 w-8" />
+                </Link>
+              </div>
+            )}
             <h1 className="app-title">{currentMatch.handle?.title}</h1>
-          </div>
-          <div className="flex items-center space-x-2">
-            {action}
-            <Menu />
           </div>
         </header>
         <main className="py-8 px-6 text-gray-12">
-          <Outlet />
+          <AnimatePresence initial={false} mode="wait">
+            <motion.div
+              key={currentMatch.id}
+              initial={{ x: x[0], opacity: 0 }}
+              animate={{
+                x: 0,
+                opacity: 1,
+                transition: {
+                  delay: 0.1,
+                  ease: "easeInOut",
+                  duration: 0.25,
+                },
+              }}
+              exit={{ x: x[1], opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {outlet}
+            </motion.div>
+          </AnimatePresence>
         </main>
         <ScrollRestoration />
         <Scripts />

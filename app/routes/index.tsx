@@ -1,37 +1,23 @@
-import { ArrowLeftIcon, PlusIcon } from "@radix-ui/react-icons";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
-import { createGame, getActiveGame, getGames } from "~/models/game.server";
-import { getPlayers } from "~/models/settings.server";
+import { PlusIcon } from "@radix-ui/react-icons";
+import { json } from "@remix-run/node";
+import { Link } from "@remix-run/react";
+import { getGames } from "~/models/game.server";
+import { useAnimatedLoaderData } from "~/utils";
 
 export const handle = {
   title: "Hry",
-  action: <NewTable />,
 };
 
 export const loader = async () => {
   const games = await getGames();
-  const activeGame = await getActiveGame();
 
-  return json({ games, activeGame });
+  return json({ games });
 };
 
-function NewTable() {
-  const { activeGame } = useLoaderData<typeof loader>();
-  if (activeGame) {
-    return <span>nope</span>;
-  }
-  return (
-    <Link className="rounded bg-grass-9 p-2 text-gray-12" to="/games/new-table">
-      <PlusIcon />
-    </Link>
-  );
-}
-
 export default function Index() {
-  const { games } = useLoaderData<typeof loader>();
+  const { games } = useAnimatedLoaderData<typeof loader>();
   return (
-    <div className="">
+    <div className="relative">
       <div className="grid grid-cols-1 gap-6 py-5 sm:grid-cols-2">
         {games.map((game) => {
           return (
@@ -57,6 +43,14 @@ export default function Index() {
             </article>
           );
         })}
+      </div>
+      <div className="fixed bottom-8 right-6">
+        <Link
+          className="block  rounded-full bg-grass-9 p-2.5 text-gray-12"
+          to="/games/new-table"
+        >
+          <PlusIcon className="h-7 w-7" />
+        </Link>
       </div>
     </div>
   );

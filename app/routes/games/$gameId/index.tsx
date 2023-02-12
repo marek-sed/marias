@@ -2,7 +2,7 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/node";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
 
 import { json } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getPlayersAtTable } from "~/models/player.server";
@@ -13,6 +13,13 @@ import { GameResult } from "~/components/game/Result";
 import { GameChart } from "~/components/game/Chart";
 
 import frapeCss from "~/styles/frappe.css";
+import { useIsPresent } from "framer-motion";
+import { useAnimatedLoaderData } from "~/utils";
+
+export const handle = {
+  title: "Hra",
+  parent: ".",
+};
 
 export const links: LinksFunction = () => {
   return [
@@ -37,13 +44,15 @@ export const loader = async ({ params }: LoaderArgs) => {
 };
 
 export default function Rounds() {
-  const { rounds, players, costsPerRound } = useLoaderData<typeof loader>();
+  const data = useAnimatedLoaderData<typeof loader>();
+
+  const { rounds, players, costsPerRound } = data;
   const result = costsPerRound.length
     ? costsPerRound[costsPerRound.length - 1]
     : undefined;
 
   return (
-    <div className="mx-auto max-w-screen-sm space-y-8">
+    <div className="relative mx-auto max-w-screen-sm space-y-8">
       <GameResult {...{ players, result }} />
       <GameChart {...{ players, rounds }} />
       <ul className="grid gap-4 sm:grid-cols-2">

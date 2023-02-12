@@ -1,5 +1,6 @@
-import { useMatches } from "@remix-run/react";
-import { useMemo } from "react";
+import { Location, useNavigation, useNavigationType } from "@remix-run/react";
+import { useLoaderData, useLocation, useMatches } from "@remix-run/react";
+import { useEffect, useMemo, useRef } from "react";
 
 import type { User } from "~/models/user.server";
 
@@ -72,4 +73,40 @@ export function validateEmail(email: unknown): email is string {
 
 export function insertIf(condition: boolean, expression: any) {
   return condition ? [expression] : [];
+}
+
+export function useAnimatedLoaderData<T>() {
+  const data = useLoaderData<T>();
+  const previous = useRef<typeof data>();
+
+  useEffect(() => {
+    if (data) previous.current = data;
+  }, [data]);
+
+  return data || previous.current!;
+}
+
+type NavigationDirection = "LEFT" | "RIGHT";
+export function useNavigationAnimation(): {
+  x: [string, string];
+} {
+  const xRef = useRef<{ x: [string, string] }>({ x: ["20%", "-30%"] });
+  const { location: toLocation } = useNavigation();
+  const location = useLocation();
+
+  if (!toLocation) {
+    return xRef.current;
+  }
+
+  xRef.current = { x: ["20%", "-30%"] };
+
+  const toDepth = [...toLocation.pathname].filter((c) => c === "/").length;
+  const fromDepth = [...location.pathname].filter((c) => c === "/").length;
+
+  const direction = toDepth > fromDepth ? "RIGHT" : "LEFT";
+  if (direction === "LEFT") {
+    xRef.current.x = ["-30%", "20%"];
+  }
+
+  return xRef.current;
 }

@@ -48,7 +48,6 @@ export function GameChart({ rounds, players }: Props) {
         },
         lineOptions: {
           hideDots: true,
-          spline: true,
         },
         tooltipOptions: {
           valuesOverPoints: 1,
@@ -62,8 +61,6 @@ export function GameChart({ rounds, players }: Props) {
         type: "line",
         colors: [c1, c2, c3, c4],
       });
-
-      console.log(chart);
     }
 
     return () => {
