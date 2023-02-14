@@ -13,12 +13,12 @@ import { GameResult } from "~/components/game/Result";
 import { GameChart } from "~/components/game/Chart";
 
 import frapeCss from "~/styles/frappe.css";
-import { useIsPresent } from "framer-motion";
 import { useAnimatedLoaderData } from "~/utils";
+import { FAB } from "~/components/fab";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 export const handle = {
   title: "Hra",
-  parent: ".",
 };
 
 export const links: LinksFunction = () => {
@@ -52,9 +52,15 @@ export default function Rounds() {
     : undefined;
 
   return (
-    <div className="relative mx-auto max-w-screen-sm space-y-8">
+    <div className="mx-auto flex w-full max-w-screen-sm flex-col space-y-8">
       <GameResult {...{ players, result }} />
       <GameChart {...{ players, rounds }} />
+
+      <FAB to="new" className="self-end">
+        <PlusIcon className="h-8 w-8" />
+        <span>Nove kolo</span>
+      </FAB>
+
       <ul className="grid gap-4 sm:grid-cols-2">
         {rounds.map((round, i) => (
           <li key={round.number}>

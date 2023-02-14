@@ -7,21 +7,19 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
-  useMatches,
-  useNavigationType,
-  useNavigate,
   useLocation,
-  useNavigation,
-  useTransition,
+  useMatches,
+  useNavigate,
   useOutlet,
 } from "@remix-run/react";
 
 import { getUser } from "./session.server";
 import appCss from "~/styles/app.css";
-import { CaretLeftIcon } from "@radix-ui/react-icons";
+import { CaretLeftIcon, PlusIcon } from "@radix-ui/react-icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigationAnimation } from "./utils";
+import { FAB } from "./components/fab";
+import { AnimatedOutlet } from "./components/animatedOutlet";
 
 const useGoBack = () => {
   const navigate = useNavigate();
@@ -55,9 +53,10 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function App() {
   const matches = useMatches();
+  const { pathname } = useLocation();
   const goBack = useGoBack();
   const currentMatch = matches[matches.length - 1];
-  console.log("matches", matches);
+  console.log("matches", currentMatch.handle?.FAB);
   let parentPath;
   if (matches.length > 1) {
     if (currentMatch.id.endsWith("index")) {
@@ -66,9 +65,6 @@ export default function App() {
       parentPath = matches[matches.length - 2]?.pathname;
     }
   }
-
-  const outlet = useOutlet();
-  const { x } = useNavigationAnimation();
 
   return (
     <html lang="en" className="h-screen">
@@ -81,13 +77,7 @@ export default function App() {
           <div className="flex items-center space-x-1 text-xl ">
             {parentPath && (
               <div className="-ml-4 py-2 text-gray-11">
-                <Link
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goBack();
-                  }}
-                  to={parentPath}
-                >
+                <Link to={parentPath}>
                   <CaretLeftIcon className="h-8 w-8" />
                 </Link>
               </div>
@@ -95,28 +85,11 @@ export default function App() {
             <h1 className="app-title">{currentMatch.handle?.title}</h1>
           </div>
         </header>
-        <main className="py-8 px-6 text-gray-12">
-          <AnimatePresence initial={false} mode="wait">
-            <motion.div
-              key={currentMatch.id}
-              initial={{ x: x[0], opacity: 0 }}
-              animate={{
-                x: 0,
-                opacity: 1,
-                transition: {
-                  delay: 0.1,
-                  ease: "easeInOut",
-                  duration: 0.25,
-                },
-              }}
-              exit={{ x: x[1], opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {outlet}
-            </motion.div>
-          </AnimatePresence>
+        <main className="mx-auto max-w-screen-sm py-8 px-6 text-gray-12">
+          <AnimatedOutlet />
         </main>
-        <ScrollRestoration />
+
+        {/* <ScrollRestoration /> */}
         <Scripts />
         <LiveReload />
       </body>

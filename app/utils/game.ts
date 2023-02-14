@@ -69,7 +69,10 @@ export function calculateCosts(rounds: Round[], players: Player[]) {
   return costs;
 }
 
-export function calculateCostsPerRound(rounds: Round[], players: Player[]) {
+export function calculateCostsPerRound(
+  rounds: Pick<Round, "cost" | "playerId">[],
+  players: Pick<Player, "id">[]
+) {
   const costs: Record<string, number> = players.reduce(
     (acc, el) => ({
       ...acc,
@@ -91,7 +94,19 @@ export function calculateCostsPerRound(rounds: Round[], players: Player[]) {
   return costsPerRound;
 }
 
-export function getGraphData(rounds: Round[], players: Player[]) {
+export function getGameResult(
+  rounds: Pick<Round, "cost" | "playerId">[],
+  players: Pick<Player, "id">[]
+) {
+  const costsPerRound = calculateCostsPerRound(rounds, players);
+
+  return costsPerRound[costsPerRound.length - 1];
+}
+
+export function getGraphData(
+  rounds: Pick<Round, "cost" | "playerId">[],
+  players: Player[]
+) {
   const costsPerRound = calculateCostsPerRound(rounds, players);
 
   const scores = costsPerRound.map((costs) => {

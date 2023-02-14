@@ -3,10 +3,24 @@ import { prisma } from "~/db.server";
 
 export async function getGames() {
   return prisma.game.findMany({
+    orderBy: {
+      createdAt: "asc",
+    },
     include: {
+      rounds: {
+        select: {
+          cost: true,
+          playerId: true,
+        },
+      },
       players: {
         select: {
-          player: true,
+          player: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
