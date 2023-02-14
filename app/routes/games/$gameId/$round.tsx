@@ -78,7 +78,6 @@ export const action = async ({ request, params }: ActionArgs) => {
   const { gameId } = params;
   const form = await request.formData();
   const round = parseRoundFormData(form);
-  console.log("parsed", round);
 
   await upsertRound(gameId, round);
 
