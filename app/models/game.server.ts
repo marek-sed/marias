@@ -95,3 +95,11 @@ export async function finishGame(gameId: Game["id"]) {
     },
   });
 }
+
+export async function deleteGame(gameId: Game["id"]) {
+  return prisma.game.delete({
+    where: {
+      id: gameId,
+    },
+  });
+}

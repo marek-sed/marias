@@ -1,18 +1,25 @@
-import type { Variants } from "framer-motion";
-import { useMatches, useNavigationType, useOutlet } from "@remix-run/react";
+import type { Variant, Variants } from "framer-motion";
+import {
+  useMatches,
+  useLocation,
+  useNavigationType,
+  useOutlet,
+} from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigationAnimation } from "~/utils";
 
-const variants: Variants = {
-  PUSH: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      delay: 0.1,
-      ease: "easeInOut",
-      duration: 0.25,
-    },
+const PUSH_REPLACE: Variant = {
+  x: 0,
+  opacity: 1,
+  transition: {
+    delay: 0.1,
+    ease: "easeInOut",
+    duration: 0.25,
   },
+};
+const variants: Variants = {
+  PUSH: PUSH_REPLACE,
+  REPLACE: PUSH_REPLACE,
   POP: {
     x: 0,
     opacity: 1,
@@ -23,9 +30,7 @@ const variants: Variants = {
 };
 export function AnimatedOutlet() {
   const navType = useNavigationType();
-  console.log("navType", navType);
-  const matches = useMatches();
-  const currentMatch = matches[matches.length - 1];
+  const pathname = useLocation().pathname;
 
   const { x } = useNavigationAnimation();
 
@@ -34,7 +39,7 @@ export function AnimatedOutlet() {
   return (
     <AnimatePresence initial={false} mode="wait">
       <motion.div
-        key={currentMatch.id}
+        key={pathname}
         initial={{ x: x[0], opacity: 0 }}
         variants={variants}
         animate={navType}

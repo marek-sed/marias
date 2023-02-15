@@ -52,9 +52,11 @@ export function GameResult({ players, result, type }: Props) {
               ))}
             </tr>
           ) : (
-            <tr>
+            <tr className={trClass({ type })}>
               {players.map((p) => (
-                <td key={p.id}>0</td>
+                <td className="pb-2 text-center" key={p.id}>
+                  0
+                </td>
               ))}
             </tr>
           )}

@@ -40,11 +40,11 @@ model Game {
   user      User?       @relation(fields: [userId], references: [id])
   userId    String?
   players   GameTable[]
-  isActive  Boolean     @default(false)
+  isActive  Boolean     @default(true)
 }
 
 model GameTable {
-  game     Game   @relation(fields: [gameId], references: [id])
+  game     Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   player   Player @relation(fields: [playerId], references: [id])
   position Int
   gameId   String
@@ -57,7 +57,7 @@ model GameTable {
 model Round {
   number   Int
   gameId   String
-  game     Game   @relation(fields: [gameId], references: [id])
+  game     Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
   player   Player @relation(fields: [playerId], references: [id])
   playerId String
 

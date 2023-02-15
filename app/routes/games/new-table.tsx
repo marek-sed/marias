@@ -3,6 +3,7 @@ import { Form, useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { getPlayers } from "~/models/settings.server";
 import { createGame } from "~/models/game.server";
+import { useAnimatedLoaderData } from "~/utils";
 
 export const handle = {
   title: "Nova hra",
@@ -20,11 +21,11 @@ export const action = async ({ request }: ActionArgs) => {
   const playerIds = form.getAll("position") as string[];
   const game = await createGame(playerIds);
 
-  return redirect(`../${game.id}`);
+  return redirect(`../games/${game.id}`);
 };
 
 export default function NewTable() {
-  const { players } = useLoaderData<typeof loader>();
+  const { players } = useAnimatedLoaderData<typeof loader>();
   const chairs = Array(3)
     .fill(null)
     .map((_, i) => i);

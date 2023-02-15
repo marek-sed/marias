@@ -37,11 +37,15 @@ export const loader = async ({ params }: LoaderArgs) => {
     throw new Response("Not found", { status: 401 });
   }
 
+  console.log("game is", game);
+
   const playerOptions = game.players.map(({ player: p }) => ({
     value: p.id,
     label: p.name,
   }));
-  let currentRound = Math.max(...game.rounds.map((r) => r.number)) + 1;
+  let currentRound = game.rounds.length
+    ? Math.max(...game.rounds.map((r) => r.number)) + 1
+    : 1;
 
   const actor = game.players.find((p) =>
     isPlayerActor(p.position, currentRound, game.players.length)

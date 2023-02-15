@@ -54,7 +54,7 @@ export default function Rounds() {
   return (
     <div className="mx-auto flex w-full max-w-screen-sm flex-col space-y-8">
       <GameResult {...{ players, result }} />
-      <GameChart {...{ players, rounds }} />
+      {rounds.length > 0 && <GameChart {...{ players, rounds }} />}
 
       <FAB to="new" className="self-end">
         <PlusIcon className="h-8 w-8" />
