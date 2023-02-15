@@ -6,7 +6,7 @@ import { useCallback, useState, createContext, useContext } from "react";
 import { Touchable } from "./touchable";
 import { motion } from "framer-motion";
 
-type MarriageContextType = {
+type MarriageValuesContextType = {
   player: MarriageValue;
   opposition: MarriageValue;
   onChangePlayer: (v: MarriageValue) => void;
@@ -14,7 +14,7 @@ type MarriageContextType = {
   playerEnabled: MarriageValue[];
   oppositionEnabled: MarriageValue[];
 };
-const MarriageContext = createContext<MarriageContextType>({
+const MarriageValuesContext = createContext<MarriageValuesContextType>({
   player: "0",
   opposition: "0",
   onChangePlayer: (v: MarriageValue | undefined) => {},
@@ -23,7 +23,7 @@ const MarriageContext = createContext<MarriageContextType>({
   oppositionEnabled: [],
 });
 function useMarriageContext(playedBy: string) {
-  const ctx = useContext(MarriageContext);
+  const ctx = useContext(MarriageValuesContext);
 
   if (playedBy === "player") {
     return {
@@ -53,7 +53,7 @@ function getEnabledOptions(opposingMarriage: MarriageValue | undefined) {
   return enabled;
 }
 
-export function MarriageProvider({
+export function MarriageValuesProvider({
   children,
   initialValues,
 }: {
@@ -94,7 +94,7 @@ export function MarriageProvider({
   );
 
   return (
-    <MarriageContext.Provider
+    <MarriageValuesContext.Provider
       value={{
         player,
         opposition,
@@ -105,12 +105,12 @@ export function MarriageProvider({
       }}
     >
       {children}
-    </MarriageContext.Provider>
+    </MarriageValuesContext.Provider>
   );
 }
 
 const rootClass = cva([
-  "flex divide-x divide-game-border-color  hover:border-game-border-hover-color border-game-border-color rounded border-2",
+  "flex divide-x divide-game-border-color hover:border-game-border-hover-color border-game-border-color rounded border-2",
   "",
 ]);
 
@@ -121,7 +121,7 @@ type Props = {
 };
 const marriageOptions: MarriageValue[] = ["20", "40", "60", "80", "100"];
 
-export function Marriage({ name, playedBy }: Props) {
+export function MarriageValues({ name, playedBy }: Props) {
   const { value, onChange, enabled } = useMarriageContext(playedBy);
 
   return (
@@ -134,7 +134,7 @@ export function Marriage({ name, playedBy }: Props) {
       }}
       aria-label={`marriage.${playedBy}`}
     >
-      <rrg.Item value="0" className="hidden"></rrg.Item>
+      <rrg.Item value="0" className="hidden" />
       {marriageOptions.map((v) => (
         <rrg.Item
           key={v}

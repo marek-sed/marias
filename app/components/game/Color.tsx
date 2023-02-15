@@ -8,7 +8,7 @@ import { HeartBox } from "../heartBox";
 import { Seven, SevenProvider } from "./seven";
 import { Input } from "../input";
 import { Fieldset } from "../fieldset";
-import { Marriage, MarriageProvider } from "../marriage";
+import { MarriageValues, MarriageValuesProvider } from "../marriageValues";
 
 type Props = {
   called: string;
@@ -93,7 +93,7 @@ function Player({ legend, points }: PlayedProps) {
         <Seven playedBy="player" />
 
         <FormControl name="mariage.player" label="Hlasky">
-          <Marriage playedBy="player" />
+          <MarriageValues playedBy="player" />
         </FormControl>
 
         <FormControl name="points" label="Body" {...points}>
@@ -116,7 +116,7 @@ function Opposition({ legend, points }: OppositionProps) {
         <Seven playedBy="opposition" />
 
         <FormControl name="mariage.opposition" label="Hlasky">
-          <Marriage playedBy="opposition" />
+          <MarriageValues playedBy="opposition" />
         </FormControl>
 
         <FormControl name="points" label="Body">
@@ -146,7 +146,7 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
   const [points, setPoints] = useState<number>(player.points);
 
   return (
-    <MarriageProvider
+    <MarriageValuesProvider
       initialValues={{
         player: player.marriage,
         opposition: opposition.marriage,
@@ -172,6 +172,6 @@ export function ColorResult({ player, opposition }: ColorResultProps) {
           seven={player.seven}
         />
       </SevenProvider>
-    </MarriageProvider>
+    </MarriageValuesProvider>
   );
 }

@@ -1,26 +1,21 @@
-import type { Round, Player } from "@prisma/client";
+import type { GraphData } from "~/utils/game";
 import { useEffect, useRef } from "react";
-import { getGraphData } from "~/utils/game";
 
 const { Chart } = require("frappe-charts/dist/frappe-charts.min.cjs");
 
 type Props = {
-  rounds: Round[];
-  players: Player[];
+  data: GraphData;
+  numberOfRounds: number;
 };
 
-export function GameChart({ rounds, players }: Props) {
+export function GameChart({ data, numberOfRounds }: Props) {
   const mounted = useRef(false);
   useEffect(() => {
     if (mounted.current) {
-      const labels = rounds
-        .concat(rounds)
-        .concat(rounds)
-        .map((r, i) => `${i + 1}`);
-      const graphData = getGraphData(
-        rounds.concat(rounds).concat(rounds),
-        players
-      );
+      const labels = Array(numberOfRounds)
+        .fill(null)
+        .map((_, i) => i + 1);
+      const graphData = data;
 
       const c1 = getComputedStyle(document.documentElement).getPropertyValue(
         "--indigo11"
@@ -66,7 +61,7 @@ export function GameChart({ rounds, players }: Props) {
     return () => {
       mounted.current = true;
     };
-  }, [rounds, players]);
+  }, [data, numberOfRounds]);
 
   return (
     <div className="frappe-chart rounded border-2 border-gray-6 bg-gray-2">

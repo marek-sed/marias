@@ -27,13 +27,19 @@ export async function getGames() {
   });
 }
 
-export type ActiveGameType = Awaited<ReturnType<typeof getActiveGame>>;
-export async function getActiveGame() {
-  return prisma.game.findFirst({
+export type ActiveGameType = Awaited<ReturnType<typeof getActiveGames>>;
+export async function getActiveGames() {
+  return prisma.game.findMany({
     where: {
       isActive: true,
     },
     include: {
+      rounds: {
+        select: {
+          cost: true,
+          playerId: true,
+        },
+      },
       players: {
         include: {
           player: true,

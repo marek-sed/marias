@@ -239,7 +239,10 @@ export async function upsertRound(gameId: string, payload: Round) {
 
 export type PrismaFullRound = PrismaRound & {
   colorGameResult?: PrismaColorGameResult & { seven?: PrismaSeven | null };
-  hundredGameResult?: PrismaHundredGameResult & { seven?: PrismaSeven | null };
+  hundredGameResult?: PrismaHundredGameResult & {
+    seven?: PrismaSeven | null;
+    marriages?: Marriage[];
+  };
   trickGameResult?: PrismaTrickGameResult;
   seven?: Seven;
 };
@@ -248,6 +251,7 @@ export type ColorGameResult = Omit<
   PrismaColorGameResult,
   "gameId" | "roundNumber"
 >;
+export type MarriageSymbol = "spade" | "club" | "diamond" | "heart";
 export type Marriage = Omit<PrismaMarriage, "gameId" | "roundNumber">;
 export type HundredGameResult = Omit<
   PrismaHundredGameResult,

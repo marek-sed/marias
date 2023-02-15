@@ -1,5 +1,7 @@
 import type {
   GameType,
+  Marriage,
+  MarriageSymbol,
   PrismaFullRound,
   Round,
   Seven,
@@ -15,18 +17,19 @@ type RoundValues = {
   flek: number;
   marriagePlayer: number;
   marriageOpposition: number;
+  marriages: Array<MarriageSymbol[]>;
   seven: Seven | undefined | null;
   open: boolean;
   won: boolean;
 };
 export function getRoundInitialValues(
   round: PrismaFullRound | undefined,
-  fallback: { nextRoundNUmber: number; actorId: string }
+  fallback: { nextRoundNumber: number; playerId: string }
 ) {
   const initialValues: RoundValues = {
     gameType: (round?.gameType as GameType) ?? "color",
-    roundNumber: round?.number ?? fallback.nextRoundNUmber,
-    playerId: round?.playerId ?? fallback.actorId,
+    roundNumber: round?.number ?? fallback.nextRoundNumber,
+    playerId: round?.playerId ?? fallback.playerId,
     gameOfHearts:
       (round?.colorGameResult?.gameOfHearts ||
         round?.hundredGameResult?.gameOfHearts) ??
@@ -37,6 +40,12 @@ export function getRoundInitialValues(
       (round?.colorGameResult?.points || round?.hundredGameResult?.points) ?? 0,
     marriagePlayer: round?.colorGameResult?.marriagePlayer ?? 0,
     marriageOpposition: round?.colorGameResult?.marriageOpposition || 0,
+    marriages: round?.hundredGameResult?.marriages?.map(
+      (m) =>
+        ["spade", "club", "diamond", "heart"].filter(
+          (symbol) => (m as any)[symbol] as boolean
+        ) as MarriageSymbol[]
+    ) ?? [[], []],
     seven: round?.seven,
     open: round?.trickGameResult?.open ?? false,
     won: round?.trickGameResult?.won ?? false,

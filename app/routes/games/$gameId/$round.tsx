@@ -8,6 +8,7 @@ import { json } from "@remix-run/node";
 import type { Option } from "~/components/select";
 import { GamePicker } from "~/components/gamePicker";
 import { ColorGame, ColorResult } from "~/components/game/Color";
+import { HundredResult } from "~/components/game/Hundred";
 import { TrickGame, TrickResult } from "~/components/game/Trick";
 import { Fieldset } from "~/components/fieldset";
 import { Button } from "~/components/button";
@@ -37,8 +38,6 @@ export const loader = async ({ params }: LoaderArgs) => {
     throw new Response("Not found", { status: 401 });
   }
 
-  console.log("game is", game);
-
   const playerOptions = game.players.map(({ player: p }) => ({
     value: p.id,
     label: p.name,
@@ -47,7 +46,7 @@ export const loader = async ({ params }: LoaderArgs) => {
     ? Math.max(...game.rounds.map((r) => r.number)) + 1
     : 1;
 
-  const actor = game.players.find((p) =>
+  const player = game.players.find((p) =>
     isPlayerActor(p.position, currentRound, game.players.length)
   )!.player;
 
@@ -58,8 +57,8 @@ export const loader = async ({ params }: LoaderArgs) => {
     round = await getRound(gameId, roundNumber);
   }
   initialValues = getRoundInitialValues(round, {
-    nextRoundNUmber: currentRound,
-    actorId: actor.id,
+    nextRoundNumber: currentRound,
+    playerId: player.id,
   });
 
   const oposition = game.players
@@ -70,7 +69,7 @@ export const loader = async ({ params }: LoaderArgs) => {
 
   return json({
     playerOptions,
-    actor,
+    player,
     oposition,
     round,
     initialValues,
@@ -96,8 +95,12 @@ const roundTypes: Array<{ label: string; value: GameType }> = [
 ];
 
 export default function Round() {
-  const { playerOptions, actor, oposition, initialValues } =
-    useAnimatedLoaderData<typeof loader>();
+  const {
+    playerOptions,
+    player: actor,
+    oposition,
+    initialValues,
+  } = useAnimatedLoaderData<typeof loader>();
 
   const [playedBy, setPlayedBy] = useState(initialValues.playerId);
   const [contra100, setContra100] = useState(initialValues.contra);
@@ -182,7 +185,7 @@ export default function Round() {
               </motion.div>
             </div>
           </Fieldset>
-          {isGameOfColor ? (
+          {called === "color" ? (
             <ColorResult
               player={{
                 label: playedLegendLabel,
@@ -196,6 +199,26 @@ export default function Round() {
               opposition={{
                 label: opositioniLegendLabel,
                 marriage: initialValues.marriageOpposition,
+                seven:
+                  initialValues.seven?.role === "opposition"
+                    ? initialValues.seven
+                    : undefined,
+              }}
+            />
+          ) : called === "hundred" ? (
+            <HundredResult
+              player={{
+                label: playedLegendLabel,
+                marriage: initialValues.marriages[0],
+                points: initialValues.points,
+                seven:
+                  initialValues.seven?.role === "player"
+                    ? initialValues.seven
+                    : undefined,
+              }}
+              opposition={{
+                label: opositioniLegendLabel,
+                marriage: initialValues.marriages[1],
                 seven:
                   initialValues.seven?.role === "opposition"
                     ? initialValues.seven

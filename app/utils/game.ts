@@ -139,3 +139,4 @@ export function getGraphData(
 
   return players.map((p) => byPlayerId[p.id]);
 }
+export type GraphData = ReturnType<typeof getGraphData>;

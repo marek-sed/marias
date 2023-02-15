@@ -7,7 +7,7 @@ import invariant from "tiny-invariant";
 
 import { getPlayersAtTable } from "~/models/player.server";
 import { getRoundsForGame } from "~/models/round.server";
-import { calculateCostsPerRound } from "~/utils/game";
+import { calculateCostsPerRound, getGraphData } from "~/utils/game";
 import { RoundBody, RoundHeader } from "~/components/round";
 import { GameResult } from "~/components/game/Result";
 import { GameChart } from "~/components/game/Chart";
@@ -54,7 +54,12 @@ export default function Rounds() {
   return (
     <div className="mx-auto flex w-full max-w-screen-sm flex-col space-y-8">
       <GameResult {...{ players, result }} />
-      {rounds.length > 0 && <GameChart {...{ players, rounds }} />}
+      {rounds.length > 0 && (
+        <GameChart
+          data={getGraphData(rounds, players)}
+          numberOfRounds={rounds.length}
+        />
+      )}
 
       <FAB to="new" className="self-end">
         <PlusIcon className="h-8 w-8" />

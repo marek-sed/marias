@@ -86,14 +86,14 @@ export function useAnimatedLoaderData<T>() {
   return data || previous.current!;
 }
 
-type NavigationDirection = "LEFT" | "RIGHT";
 export function useNavigationAnimation(): {
   x: [string, string];
 } {
   const xRef = useRef<{ x: [string, string] }>({ x: ["20%", "-30%"] });
-  const { location: toLocation } = useNavigation();
+  const { location: toLocation, ...rest } = useNavigation();
   const location = useLocation();
 
+  console.log("nav", toLocation, rest);
   if (!toLocation) {
     return xRef.current;
   }
