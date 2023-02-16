@@ -209,7 +209,7 @@ export default function Round() {
             <HundredResult
               player={{
                 label: playedLegendLabel,
-                marriage: initialValues.marriages[0],
+                marriage: initialValues.marriage.player,
                 points: initialValues.points,
                 seven:
                   initialValues.seven?.role === "player"
@@ -218,7 +218,7 @@ export default function Round() {
               }}
               opposition={{
                 label: opositioniLegendLabel,
-                marriage: initialValues.marriages[1],
+                marriage: initialValues.marriage.opposition,
                 seven:
                   initialValues.seven?.role === "opposition"
                     ? initialValues.seven

@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactNode, SetStateAction, Dispatch } from "react";
+import { useCallback } from "react";
+import type { IconType } from "react-icons";
 import type { MarriageSymbol } from "~/models/round.server";
 import {
   BsHeart,
@@ -11,7 +13,7 @@ import {
   BsSuitSpadeFill,
 } from "react-icons/bs";
 
-import * as rtg from "@radix-ui/react-toggle-group";
+import * as rc from "@radix-ui/react-checkbox";
 import { cva } from "class-variance-authority";
 import { useState, createContext, useContext } from "react";
 import { Touchable } from "./touchable";
@@ -19,8 +21,8 @@ import { Touchable } from "./touchable";
 type MarriageSymbolsContextType = {
   player: MarriageSymbol[];
   opposition: MarriageSymbol[];
-  setPlayer: (value: MarriageSymbol[]) => void;
-  setOpposition: (value: MarriageSymbol[]) => void;
+  setPlayer: Dispatch<SetStateAction<MarriageSymbol[]>>;
+  setOpposition: Dispatch<SetStateAction<MarriageSymbol[]>>;
 };
 const MarriageSymbolContext = createContext<MarriageSymbolsContextType>({
   player: [],
@@ -80,80 +82,60 @@ const rootClass = cva([
 type Props = {
   playedBy: "player" | "opposition";
 };
+const symbols: MarriageSymbol[] = ["spade", "club", "diamond", "heart"];
+const icons: Record<MarriageSymbol, [IconType, IconType]> = {
+  spade: [BsSuitSpade, BsSuitSpadeFill],
+  club: [BsSuitClub, BsSuitClubFill],
+  diamond: [BsSuitDiamond, BsSuitDiamondFill],
+  heart: [BsHeart, BsHeartFill],
+};
+
 export function MarriageSymbols({ playedBy }: Props) {
   const { value, setValue, disabled } = useMarriageContext(playedBy);
+  const onCheckedChange = useCallback(
+    (checked: rc.CheckedState, symbol: MarriageSymbol) => {
+      console.log("checked change", checked, symbol);
+      if (checked) {
+        setValue((s) => [...s, symbol]);
+      } else {
+        setValue((s) => s.filter((v) => v !== symbol));
+      }
+    },
+    [setValue]
+  );
 
   return (
-    <rtg.Root
-      className={rootClass()}
-      type="multiple"
-      value={value}
-      onValueChange={(value) => {
-        setValue(value as MarriageSymbol[]);
-      }}
-      aria-label="Text alignment"
-    >
-      <input type="hidden" name="marriage" value={value} />
-      <rtg.Item
-        asChild
-        value="spade"
-        disabled={disabled.includes("spade")}
-        aria-label="spade"
-      >
-        <Touchable color="game" aspect="square">
-          {!value?.includes("spade") ? (
-            <BsSuitSpade className="h-6 w-6" />
-          ) : (
-            <BsSuitSpadeFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-      <rtg.Item
-        asChild
-        value="club"
-        disabled={disabled.includes("club")}
-        aria-label="club"
-      >
-        <Touchable color="game" aspect="square">
-          {!value?.includes("club") ? (
-            <BsSuitClub className="h-6 w-6" />
-          ) : (
-            <BsSuitClubFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-
-      <rtg.Item
-        asChild
-        disabled={disabled.includes("diamond")}
-        className="ToggleGroupItem"
-        value="diamond"
-        aria-label="diamond"
-      >
-        <Touchable color="game" aspect="square">
-          {!value?.includes("diamond") ? (
-            <BsSuitDiamond className="h-6 w-6" />
-          ) : (
-            <BsSuitDiamondFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-
-      <rtg.Item
-        asChild
-        disabled={disabled.includes("heart")}
-        className="ToggleGroupItem"
-        value="heart"
-        aria-label="heart"
-      >
-        <Touchable color="red" aspect="square">
-          {!value?.includes("heart") ? (
-            <BsHeart className="h-6 w-6" />
-          ) : (
-            <BsHeartFill className="h-6 w-6" />
-          )}
-        </Touchable>
-      </rtg.Item>
-    </rtg.Root>
+    <div className={rootClass()}>
+      {symbols.map((symbol) => {
+        const [UnChecked, Checked] = icons[symbol];
+        return (
+          <rc.Root
+            key={symbol}
+            onCheckedChange={(checked) => {
+              onCheckedChange(checked, symbol);
+            }}
+            name={`marriage.${playedBy}`}
+            asChild
+            defaultChecked={value.includes(symbol)}
+            value={symbol}
+            disabled={disabled.includes(symbol)}
+            aria-label={symbol}
+          >
+            <Touchable
+              color={symbol === "heart" ? "red" : "game"}
+              aspect="square"
+            >
+              <rc.CheckboxIndicator forceMount>
+                {!value?.includes(symbol) ? (
+                  <UnChecked className="h-6 w-6" />
+                ) : (
+                  <Checked className="h-6 w-6" />
+                )}
+              </rc.CheckboxIndicator>
+            </Touchable>
+          </rc.Root>
+        );
+      })}
+    </div>
   );
 }

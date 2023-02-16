@@ -14,7 +14,6 @@ import {
   costOfTrickGame,
 } from "~/utils/utils.server";
 import { prisma } from "~/db.server";
-import { insertIf } from "~/utils";
 
 export async function getRound(gameId: string, roundNumber: number) {
   const round = await prisma.round.findUnique({
@@ -26,7 +25,11 @@ export async function getRound(gameId: string, roundNumber: number) {
     },
     include: {
       colorGameResult: true,
-      hundredGameResult: true,
+      hundredGameResult: {
+        include: {
+          marriage: true,
+        },
+      },
       trickGameResult: true,
       seven: true,
     },
@@ -80,25 +83,104 @@ export async function getRoundsForGame(gameId: string) {
   return getRounds(gameId) as Prisma.PrismaPromise<R[]>;
 }
 
-export async function upsertRound(gameId: string, payload: Round) {
-  let cost;
-  switch (payload.gameType) {
-    case "color":
-      cost = costOfColorGame(payload.colorGameResult, payload.seven);
-      break;
-    case "hundred":
-      cost = costOfHundredGame(payload.hundredGameResult, payload.seven);
-      break;
-    case "betl":
-    case "durch":
-      cost = costOfTrickGame(payload.gameType, payload.trickGameResult);
-      break;
-  }
-  console.log("cost is", cost);
+function upsertOrDeleteSeven(
+  gameId: string,
+  payload: ColorGameRound | HundredGameRound
+) {
+  const gameId_roundNumber = {
+    gameId,
+    roundNumber: payload.number,
+  };
+  return payload.seven
+    ? prisma.seven.upsert({
+        where: {
+          gameId_roundNumber,
+        },
+        create: {
+          gameId,
+          roundNumber: payload.number,
+          ...payload.seven!,
+        },
+        update: {
+          ...payload.seven!,
+        },
+      })
+    : prisma.seven.deleteMany({ where: gameId_roundNumber });
+}
 
-  const shouldDeleteSeven =
-    (payload.gameType === "color" || payload.gameType === "hundred") &&
-    payload.seven === undefined;
+function upsertColorGameResult(gameId: string, payload: ColorGameRound) {
+  const roundNumber = payload.number;
+
+  return prisma.colorGameResult.upsert({
+    where: {
+      gameId_roundNumber: {
+        gameId,
+        roundNumber,
+      },
+    },
+    update: {
+      ...payload.colorGameResult,
+    },
+    create: {
+      gameId,
+      roundNumber,
+      ...payload.colorGameResult,
+    },
+  });
+}
+
+function upsertHundredGameResult(gameId: string, payload: HundredGameRound) {
+  const gameId_roundNumber = {
+    gameId,
+    roundNumber: payload.number,
+  };
+
+  return [
+    prisma.hundredGameResult.upsert({
+      where: { gameId_roundNumber },
+      update: {
+        contra: payload.hundredGameResult.contra,
+        gameOfHearts: payload.hundredGameResult.gameOfHearts,
+        points: payload.hundredGameResult.points,
+      },
+      create: {
+        ...gameId_roundNumber,
+        contra: payload.hundredGameResult.contra,
+        gameOfHearts: payload.hundredGameResult.gameOfHearts,
+        points: payload.hundredGameResult.points,
+      },
+    }),
+    ...payload.hundredGameResult.marriage.map((marriage) =>
+      prisma.marriage.upsert({
+        where: {
+          gameId_roundNumber_role: {
+            ...gameId_roundNumber,
+            role: marriage.role,
+          },
+        },
+        update: {
+          ...marriage,
+          hundredGameResult: {
+            connect: {
+              gameId_roundNumber,
+            },
+          },
+        },
+        create: {
+          ...gameId_roundNumber,
+          ...marriage,
+        },
+      })
+    ),
+  ];
+}
+
+function upsertColorRound(gameId: string, payload: ColorGameRound) {
+  const cost = costOfColorGame(payload.colorGameResult, payload.seven);
+  const where = {
+    gameId,
+    roundNumber: payload.number,
+  };
 
   return prisma.$transaction([
     prisma.round.upsert({
@@ -109,139 +191,135 @@ export async function upsertRound(gameId: string, payload: Round) {
         },
       },
       update: {
-        playerId: payload.playerId,
-        gameType: payload.gameType,
+        ...payload,
         cost,
-        colorGameResult:
-          payload.gameType === "color"
-            ? {
-                upsert: {
-                  create: {
-                    ...payload.colorGameResult,
-                  },
-                  update: {
-                    ...payload.colorGameResult,
-                  },
-                },
-              }
-            : undefined,
-        hundredGameResult:
-          payload.gameType === "hundred"
-            ? {
-                upsert: {
-                  create: {
-                    ...payload.hundredGameResult,
-                  },
-                  update: {
-                    ...payload.hundredGameResult,
-                  },
-                },
-              }
-            : undefined,
-        trickGameResult:
-          payload.gameType === "betl" || payload.gameType === "durch"
-            ? {
-                upsert: {
-                  create: {
-                    ...payload.trickGameResult,
-                  },
-                  update: {
-                    ...payload.trickGameResult,
-                  },
-                },
-              }
-            : undefined,
-        seven:
-          (payload.gameType === "color" || payload.gameType === "hundred") &&
-          payload.seven
-            ? {
-                upsert: {
-                  create: {
-                    ...payload.seven,
-                  },
-                  update: {
-                    ...payload.seven,
-                  },
-                },
-              }
-            : undefined,
+        colorGameResult: undefined,
+        seven: undefined,
+      },
+      create: {
+        gameId,
+        ...payload,
+        cost,
+        colorGameResult: undefined,
+        seven: undefined,
+      },
+    }),
+    upsertOrDeleteSeven(gameId, payload),
+    upsertColorGameResult(gameId, payload),
+    prisma.hundredGameResult.deleteMany({ where }),
+    prisma.trickGameResult.deleteMany({ where }),
+  ]);
+}
+
+function upsertHundredRound(gameId: string, payload: HundredGameRound) {
+  const cost = costOfHundredGame(payload.hundredGameResult, payload.seven);
+
+  const where = {
+    gameId,
+    roundNumber: payload.number,
+  };
+
+  return prisma.$transaction([
+    prisma.round.upsert({
+      where: {
+        gameId_number: {
+          gameId,
+          number: payload.number,
+        },
+      },
+      update: {
+        ...payload,
+        cost,
+        hundredGameResult: undefined,
+        seven: undefined,
+      },
+      create: {
+        gameId,
+        ...payload,
+        cost,
+        hundredGameResult: undefined,
+        seven: undefined,
+      },
+    }),
+    upsertOrDeleteSeven(gameId, payload),
+    ...upsertHundredGameResult(gameId, payload),
+    prisma.colorGameResult.deleteMany({ where }),
+    prisma.trickGameResult.deleteMany({ where }),
+  ]);
+}
+
+function upsertTrickRound(
+  gameId: string,
+  payload: BetlGameRound | DurchGameRound
+) {
+  const cost = costOfTrickGame(payload.gameType, payload.trickGameResult);
+  const where = {
+    gameId,
+    roundNumber: payload.number,
+  };
+
+  return prisma.$transaction([
+    prisma.round.upsert({
+      where: {
+        gameId_number: {
+          gameId,
+          number: payload.number,
+        },
+      },
+      update: {
+        gameType: payload.gameType,
+        playerId: payload.playerId,
+        cost,
+        trickGameResult: {
+          upsert: {
+            create: {
+              ...payload.trickGameResult,
+            },
+            update: {
+              ...payload.trickGameResult,
+            },
+          },
+        },
       },
       create: {
         gameId,
         number: payload.number,
+        gameType: payload.gameType,
         playerId: payload.playerId,
-        gameType: "color",
         cost,
-        colorGameResult:
-          payload.gameType === "color"
-            ? {
-                create: {
-                  ...payload.colorGameResult,
-                },
-              }
-            : undefined,
-        hundredGameResult:
-          payload.gameType === "hundred"
-            ? {
-                create: {
-                  ...payload.hundredGameResult,
-                },
-              }
-            : undefined,
-        trickGameResult:
-          payload.gameType === "betl" || payload.gameType === "durch"
-            ? {
-                create: {
-                  ...payload.trickGameResult,
-                },
-              }
-            : undefined,
-        seven:
-          (payload.gameType === "color" || payload.gameType === "hundred") &&
-          payload.seven
-            ? {
-                create: {
-                  ...payload.seven,
-                },
-              }
-            : undefined,
+        trickGameResult: {
+          create: {
+            ...payload.trickGameResult,
+          },
+        },
       },
     }),
-    ...insertIf(
-      shouldDeleteSeven,
-      prisma.seven.deleteMany({
-        where: {
-          gameId,
-          roundNumber: payload.number,
-        },
-      })
-    ),
-    ...insertIf(
-      payload.gameType !== "color",
-      prisma.colorGameResult.deleteMany({
-        where: { gameId, roundNumber: payload.number },
-      })
-    ),
-    ...insertIf(
-      payload.gameType !== "hundred",
-      prisma.hundredGameResult.deleteMany({
-        where: { gameId, roundNumber: payload.number },
-      })
-    ),
-    ...insertIf(
-      payload.gameType !== "betl" && payload.gameType !== "durch",
-      prisma.trickGameResult.deleteMany({
-        where: { gameId, roundNumber: payload.number },
-      })
-    ),
+    prisma.colorGameResult.deleteMany({ where }),
+    prisma.hundredGameResult.deleteMany({ where }),
+    prisma.seven.deleteMany({ where }),
   ]);
+}
+
+export async function upsertRound(gameId: string, payload: Round) {
+  switch (payload.gameType) {
+    case "color":
+      upsertColorRound(gameId, payload);
+      break;
+    case "hundred":
+      upsertHundredRound(gameId, payload);
+      break;
+    case "betl":
+    case "durch":
+      upsertTrickRound(gameId, payload);
+      break;
+  }
 }
 
 export type PrismaFullRound = PrismaRound & {
   colorGameResult?: PrismaColorGameResult & { seven?: PrismaSeven | null };
   hundredGameResult?: PrismaHundredGameResult & {
     seven?: PrismaSeven | null;
-    marriages?: Marriage[];
+    marriage?: Marriage[];
   };
   trickGameResult?: PrismaTrickGameResult;
   seven?: Seven;
@@ -257,7 +335,7 @@ export type HundredGameResult = Omit<
   PrismaHundredGameResult,
   "gameId" | "roundNumber"
 > & {
-  marriages: Marriage[];
+  marriage: Marriage[];
 };
 
 export type TrickGameResult = Omit<

@@ -71,6 +71,8 @@ type HundredResultProps = {
 export function HundredResult({ player, opposition }: HundredResultProps) {
   const [points, setPoints] = useState<number>(player.points);
 
+  console.log("init", player, opposition);
+
   return (
     <MarriageSymbolsProvider
       initialValues={{

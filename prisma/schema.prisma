@@ -127,12 +127,15 @@ model Marriage {
 
   hundredGameResult HundredGameResult? @relation(fields: [gameId, roundNumber], references: [gameId, roundNumber], onDelete: Cascade)
 
+  // player | opposition
+  role String
+
   spade   Boolean @default(false)
   diamond Boolean @default(false)
   club    Boolean @default(false)
   heart   Boolean @default(false)
 
-  @@id([gameId, roundNumber])
+  @@id([gameId, roundNumber, role])
   @@map("round.hundredResult.marriage")
 }
 

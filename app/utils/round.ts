@@ -17,7 +17,7 @@ type RoundValues = {
   flek: number;
   marriagePlayer: number;
   marriageOpposition: number;
-  marriages: Array<MarriageSymbol[]>;
+  marriage: { [k: string]: MarriageSymbol[] };
   seven: Seven | undefined | null;
   open: boolean;
   won: boolean;
@@ -26,6 +26,7 @@ export function getRoundInitialValues(
   round: PrismaFullRound | undefined,
   fallback: { nextRoundNumber: number; playerId: string }
 ) {
+  console.log("get ini", round?.hundredGameResult);
   const initialValues: RoundValues = {
     gameType: (round?.gameType as GameType) ?? "color",
     roundNumber: round?.number ?? fallback.nextRoundNumber,
@@ -40,12 +41,15 @@ export function getRoundInitialValues(
       (round?.colorGameResult?.points || round?.hundredGameResult?.points) ?? 0,
     marriagePlayer: round?.colorGameResult?.marriagePlayer ?? 0,
     marriageOpposition: round?.colorGameResult?.marriageOpposition || 0,
-    marriages: round?.hundredGameResult?.marriages?.map(
-      (m) =>
-        ["spade", "club", "diamond", "heart"].filter(
-          (symbol) => (m as any)[symbol] as boolean
-        ) as MarriageSymbol[]
-    ) ?? [[], []],
+    marriage: round?.hundredGameResult?.marriage?.reduce(
+      (acc, el) => ({
+        ...acc,
+        [el.role]: ["spade", "club", "diamond", "heart"].filter(
+          (symbol) => (el as any)[symbol] as boolean
+        ) as MarriageSymbol[],
+      }),
+      {}
+    ) ?? { player: [], opposition: [] },
     seven: round?.seven,
     open: round?.trickGameResult?.open ?? false,
     won: round?.trickGameResult?.won ?? false,
@@ -72,7 +76,7 @@ export function parseRoundFormData(form: FormData) {
           gameOfHearts: Boolean(form.get("gameOfHearts")),
           flekCount: parseInt(form.get("flek") as string, 10),
           points: parseInt(form.get("points") as string, 10),
-          ...parseMarriageFormData(form),
+          ...parseMarriageValuesData(form),
         },
         seven: parseSevenFormData(form),
       };
@@ -87,8 +91,7 @@ export function parseRoundFormData(form: FormData) {
           gameOfHearts: Boolean(form.get("gameOfHearts")),
           contra: Boolean(form.get("contra")),
           points: parseInt(form.get("points") as string, 10),
-          //   ...parseMarriageFormData(form),
-          marriages: [],
+          marriage: parseMarriageSymbolData(form),
         },
         seven: parseSevenFormData(form),
       };
@@ -110,7 +113,7 @@ export function parseRoundFormData(form: FormData) {
   return parsed;
 }
 
-export function parseMarriageFormData(form: FormData) {
+export function parseMarriageValuesData(form: FormData) {
   const marriageOpposition = parseInt(
     form.get("marriage.opposition") as string,
     10
@@ -123,12 +126,44 @@ export function parseMarriageFormData(form: FormData) {
   };
 }
 
+export function parseMarriageSymbolData(form: FormData) {
+  const oppositionSymbols = form.getAll(
+    "marriage.opposition"
+  ) as unknown as MarriageSymbol[];
+  const playerSymbols = form.getAll(
+    "marriage.player"
+  ) as unknown as MarriageSymbol[];
+
+  console.log("parseMarriage", playerSymbols, oppositionSymbols);
+
+  const marriagePlayer: Marriage = {
+    role: "player",
+    spade: false,
+    heart: false,
+    diamond: false,
+    club: false,
+  };
+  const marriageOpposition: Marriage = {
+    role: "opposition",
+    spade: false,
+    heart: false,
+    diamond: false,
+    club: false,
+  };
+  for (const s of oppositionSymbols) {
+    marriageOpposition[s] = true;
+  }
+  for (const s of playerSymbols) {
+    marriagePlayer[s] = true;
+  }
+
+  console.log(marriageOpposition, marriagePlayer);
+  return [marriagePlayer, marriageOpposition];
+}
+
 export function parseSevenFormData(form: FormData) {
   const seven = form.getAll("seven.player");
   const oppositionSeven = form.getAll("seven.opposition");
-
-  console.log(seven);
-  console.log(oppositionSeven);
 
   const sevenRole = seven.length
     ? "player"
